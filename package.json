@@ -1,0 +1,45 @@
+{
+  "name": "inpa-website",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=20.19.0"
+  },
+  "scripts": {
+    "build": "nuxt build --preset=cloudflare_module",
+    "dev": "nuxt dev",
+    "dev:worker": "pnpm build && wrangler dev --local",
+    "preview": "wrangler dev --local",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "nuxt typecheck",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:local": "wrangler d1 migrations apply inpa-local --local",
+    "db:seed:local": "wrangler d1 execute inpa-local --local --file=./drizzle/seed.local.sql",
+    "db:setup:local": "pnpm db:migrate:local && pnpm db:seed:local",
+    "db:migrate:remote": "wrangler d1 migrations apply inpa-production --remote",
+    "deploy": "wrangler deploy"
+  },
+  "dependencies": {
+    "drizzle-orm": "0.45.2",
+    "jose": "6.2.6",
+    "nuxt": "4.5.1",
+    "vue": "3.5.40"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "5.20260801.1",
+    "@nuxt/eslint": "1.16.0",
+    "@types/node": "24.10.2",
+    "drizzle-kit": "0.31.10",
+    "eslint": "10.8.0",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10",
+    "vue-tsc": "3.1.6",
+    "wrangler": "4.118.0"
+  }
+}

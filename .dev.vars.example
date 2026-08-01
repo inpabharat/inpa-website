@@ -1,0 +1,4 @@
+# Copy to .dev.vars only after Cloudflare Access is configured.
+# Do not use fabricated values: missing production values intentionally fail closed.
+NUXT_CF_ACCESS_TEAM_DOMAIN=
+NUXT_CF_ACCESS_AUD=

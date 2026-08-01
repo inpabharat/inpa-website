@@ -1,0 +1,32 @@
+# Nuxt output and generated files
+.nuxt/
+.output/
+.data/
+.nitro/
+.cache/
+dist/
+
+# Dependencies and logs
+node_modules/
+*.log
+
+# Local-only configuration and Cloudflare state
+.env
+.env.*
+!.env.example
+.dev.vars
+.wrangler/
+
+# Editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Test output
+coverage/
+playwright-report/
+test-results/
+
+# Local scratch files and generated QA artifacts
+tmp/

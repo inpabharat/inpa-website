@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/admin
+Disallow: /preview
+
+# Add the approved production sitemap URL after the domain is configured.

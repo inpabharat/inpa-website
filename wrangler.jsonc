@@ -1,0 +1,28 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "inpa-website",
+  "main": ".output/server/index.mjs",
+  "compatibility_date": "2026-07-30",
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "binding": "ASSETS",
+    "directory": ".output/public"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "inpa-local",
+      "database_id": "00000000-0000-0000-0000-000000000001",
+      "migrations_dir": "migrations"
+    }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "MEDIA",
+      "bucket_name": "inpa-media-local"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  }
+}

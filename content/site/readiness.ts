@@ -1,0 +1,15 @@
+export const contentReadinessItems = [
+  'Official logo and brand guidance',
+  'Approved organisation-name styling and domain',
+  'President’s identity, photograph and message',
+  'About copy, Executive Council and Constitution',
+  'Office address, contact channels and social links',
+  'Membership and donations information',
+  'Nuclear Horizons issue and archive package',
+  'Verified launch news and events',
+  'Featured research and scientific-image permissions',
+  'Student resources and opportunity owners',
+  'Verified institution and map dataset',
+  'Scientist profiles and member-highlight approvals',
+  'Privacy policy and content-correction contact',
+] as const
