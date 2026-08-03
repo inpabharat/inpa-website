@@ -13,9 +13,9 @@ import { recurringFeatureContent, researchContent } from '~~/content/site/home'
           <PlaceholderNotice :message="researchContent.status" />
           <p>{{ researchContent.summary }}</p>
           <dl class="metadata-list">
-            <div><dt>Authors</dt><dd>Awaiting verification</dd></div>
-            <div><dt>Institutions</dt><dd>Awaiting verification</dd></div>
-            <div><dt>Journal and DOI</dt><dd>Awaiting verification</dd></div>
+            <div><dt>Authors</dt><dd>{{ researchContent.authors }}</dd></div>
+            <div><dt>Institutions</dt><dd>{{ researchContent.institutions }}</dd></div>
+            <div><dt>Published in</dt><dd>{{ researchContent.publication }}</dd></div>
           </dl>
           <NuxtLink class="text-link text-link--light" :to="researchContent.to">Explore research features <span aria-hidden="true">→</span></NuxtLink>
         </article>

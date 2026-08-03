@@ -1,28 +1,78 @@
+import { bulletinContentNotice, bulletinSources, currentLeadership, publicContact } from './bulletin-sources'
+
+export interface RouteSection {
+  heading: string
+  paragraphs?: readonly string[]
+  items?: readonly string[]
+}
+
 export interface PendingRouteContent {
   title: string
   eyebrow: string
   description: string
   requiredContent: string
+  sourceNote?: string
+  sections?: readonly RouteSection[]
 }
 
 export const pendingRoutes: Record<string, PendingRouteContent> = {
   '/about': {
     title: 'About INPA',
     eyebrow: 'Institutional profile',
-    description: 'This route is prepared for the verified institutional history, purpose and activities of INPA.',
-    requiredContent: 'Approved About copy and organisation-name styling are required.',
+    description: 'The Indian Nuclear Physics Association is a scientific society and national platform for India’s nuclear-physics community.',
+    requiredContent: 'A final institutionally approved About statement, office address and full governance documents are still required.',
+    sourceNote: bulletinContentNotice,
+    sections: [
+      {
+        heading: 'Formation and registration',
+        paragraphs: [
+          'A national online meeting held on 5 November 2025 brought together more than one hundred members of the nuclear-physics community and advanced the formation of INPA.',
+          'INPA received its certificate of registration as a society on 2 May 2026. The published registration number is VAR/00818/2026-27.',
+        ],
+      },
+      {
+        heading: 'Published objectives',
+        items: [
+          'Promote fundamental and applied nuclear research.',
+          'Strengthen collaboration across universities, national laboratories, industry and policymakers.',
+          'Support education, laboratory training, mentorship and educational resources.',
+          'Improve awareness of nuclear science and its applications among students, educators and the public.',
+        ],
+      },
+    ],
   },
   '/about/presidents-message': {
     title: 'President’s message',
     eyebrow: 'Office of the President',
-    description: 'This route is reserved for the complete, approved presidential address.',
-    requiredContent: 'President’s name, title, photograph and final approved message are required.',
+    description: currentLeadership.president.name + ', ' + currentLeadership.president.affiliation + ', is listed as President of INPA in Nuclear Horizons, Volume 1, Issue 2 (' + currentLeadership.asOf + ').',
+    requiredContent: 'An approved portrait, photograph credit and final author-approved web version of the full message are still required.',
+    sourceNote: bulletinContentNotice,
+    sections: [
+      {
+        heading: 'Message summary',
+        paragraphs: [
+          'The President describes INPA as a connected national community with a shared responsibility to strengthen nuclear physics in India.',
+          'The published priorities include scientific collaboration, educational resources, laboratory courses, mentorship for younger researchers and public awareness of nuclear science and its applications.',
+        ],
+      },
+    ],
   },
   '/about/executive-council': {
-    title: 'Executive Council',
+    title: 'Executive leadership',
     eyebrow: 'INPA leadership',
-    description: 'This route is prepared for a verified current council listing.',
-    requiredContent: 'The approved council roster, roles, terms and affiliations are required.',
+    description: 'Selected current roles as published in Nuclear Horizons, Volume 1, Issue 2 (' + currentLeadership.asOf + ').',
+    requiredContent: 'The complete council roster, role terms, approved biographies, portraits and future-change process still require confirmation before launch.',
+    sourceNote: bulletinContentNotice,
+    sections: [
+      {
+        heading: 'Leadership snapshot — ' + currentLeadership.asOf,
+        items: [
+          'President: ' + currentLeadership.president.name + ' — ' + currentLeadership.president.affiliation,
+          'Executive Secretary: ' + currentLeadership.executiveSecretary.name + ' — ' + currentLeadership.executiveSecretary.affiliation,
+          'Chief Editor, Nuclear Horizons: ' + currentLeadership.chiefEditor.name + ' — ' + currentLeadership.chiefEditor.affiliation,
+        ],
+      },
+    ],
   },
   '/about/constitution': {
     title: 'Constitution',
@@ -33,26 +83,60 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
   '/research': {
     title: 'Featured research',
     eyebrow: 'Research spotlight',
-    description: 'This archive will present curated and verified research features from India’s nuclear-physics community.',
-    requiredContent: 'Approved selections, author and institution details, citations, DOI links and image permissions are required.',
+    description: 'A source-backed feature from Nuclear Horizons, Volume 1, Issue 2.',
+    requiredContent: 'Web-publication approval, canonical references and permission for any article figures are still required before reproducing the complete article.',
+    sourceNote: bulletinContentNotice,
+    sections: [
+      {
+        heading: 'Nuclear Structure Studies: From Fundamental Symmetries to Exotic Nuclei',
+        paragraphs: [
+          'Authors: Bijay Kumar Agrawal, Nisha Chandnani and Gaurav Saxena.',
+          'Affiliations published with the article: Saha Institute of Nuclear Physics; Manipal University Jaipur; and Government Women Engineering College, Ajmer.',
+          'The article explains how rotational, isospin, gauge and discrete symmetries guide conservation laws, nuclear models and investigations of nuclear structure, including nuclei far from stability.',
+        ],
+      },
+    ],
   },
   '/nuclear-horizons': {
     title: 'Nuclear Horizons',
     eyebrow: 'INPA publication',
-    description: 'This route is prepared to present the publication as an editorial experience rather than a bare file listing.',
-    requiredContent: 'Approved issue metadata, cover, editorial, feature links and submission route are required.',
+    description: 'Nuclear Horizons is the official bulletin of the Indian Nuclear Physics Association and a platform for communication, collaboration and knowledge exchange.',
+    requiredContent: 'Written web-distribution permission, approved cover files, accessible PDFs, article links and a submission route are still required.',
+    sourceNote: bulletinContentNotice,
+    sections: [
+      {
+        heading: 'Publication information',
+        items: [
+          'Chief Editor as published in Issue 2: ' + currentLeadership.chiefEditor.name + ', ' + currentLeadership.chiefEditor.affiliation + '.',
+          'Publication contact: ' + publicContact.email + '.',
+          'Tagline: Advancing Fundamental and Applied Nuclear Science for a Self-Reliant India.',
+        ],
+      },
+      {
+        heading: 'Available issue metadata',
+        items: bulletinSources.map(issue => issue.issueLabel + ' — ' + issue.publicationDate),
+      },
+    ],
   },
   '/nuclear-horizons/archive': {
     title: 'Nuclear Horizons archive',
     eyebrow: 'Publication archive',
-    description: 'This route is prepared for verified issue metadata and accessible PDF links.',
-    requiredContent: 'Approved archive inventory, files, dates and cover credits are required.',
+    description: 'Issue metadata verified from the two supplied Nuclear Horizons publications.',
+    requiredContent: 'The PDFs and cover artwork will remain unavailable on the website until INPA confirms web-distribution permission.',
+    sourceNote: bulletinContentNotice,
+    sections: [
+      {
+        heading: 'Volume 1',
+        items: bulletinSources.map(issue => issue.issueLabel + ' — ' + issue.publicationDate),
+      },
+    ],
   },
   '/students': {
     title: 'Resources for students',
     eyebrow: 'Learn and progress',
-    description: 'This route is prepared for owned, reviewed learning resources and career guidance.',
-    requiredContent: 'Verified links, responsible owners and last-reviewed dates are required.',
+    description: 'The bulletins identify young-researcher articles, thesis summaries and a monthly INPA Young Scientist Colloquium as developing community activities.',
+    requiredContent: 'Verified programme pages, schedules, registration destinations, responsible owners and last-reviewed dates are still required.',
+    sourceNote: bulletinContentNotice,
   },
   '/students/opportunities': {
     title: 'Student opportunities',
@@ -70,7 +154,7 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
     title: 'Distinguished scientists',
     eyebrow: 'Curated profiles',
     description: 'This route is prepared for verified pioneer and contemporary-scientist profiles.',
-    requiredContent: 'Approved biographies, photographs, affiliations, dates, achievements and credits are required.',
+    requiredContent: 'Approved biographies, photographs, affiliations, dates, achievements, selection criteria and credits are required.',
   },
   '/community': {
     title: 'Member highlights',
@@ -93,14 +177,16 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
   '/membership': {
     title: 'Membership',
     eyebrow: 'Membership information',
-    description: 'This is an informational boundary only; no account, payment or membership-management system is included.',
-    requiredContent: 'The approved membership process, eligibility and destination URL are required.',
+    description: 'Nuclear Horizons, Volume 1, Issue 2 reports that more than 500 colleagues had joined the INPA community by June 2026.',
+    requiredContent: 'The approved membership process, eligibility, fees and application destination are required.',
+    sourceNote: bulletinContentNotice,
   },
   '/contact': {
     title: 'Contact INPA',
     eyebrow: 'Contact',
-    description: 'This route is prepared for verified public contact, accessibility and content-correction channels.',
-    requiredContent: 'The official office address, email, phone and responsible contacts are required.',
+    description: 'Published contact email: ' + publicContact.email,
+    requiredContent: publicContact.missing,
+    sourceNote: bulletinContentNotice,
   },
   '/privacy': {
     title: 'Privacy Policy',

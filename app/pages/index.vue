@@ -8,9 +8,9 @@ const home = computed(() => response.value?.data ?? emptyHome)
 
 useSeoMeta({
   title: 'Home',
-  description: 'The public-site foundation for the Indian Nuclear Physics Association, advancing nuclear science and connecting researchers.',
+  description: 'Indian Nuclear Physics Association — advancing fundamental and applied nuclear science for a self-reliant India.',
   ogTitle: 'Indian Nuclear Physics Association',
-  ogDescription: 'Advancing Nuclear Science • Connecting Researchers • Inspiring Future Generations',
+  ogDescription: 'Advancing Fundamental and Applied Nuclear Science for a Self-Reliant India',
   robots: 'index, follow',
 })
 </script>

@@ -15,9 +15,15 @@ defineProps<{ content: PendingRouteContent }>()
     </section>
     <section class="section">
       <div class="container container--reading">
+        <div v-for="section in content.sections" :key="section.heading" class="route-section">
+          <h2>{{ section.heading }}</h2>
+          <p v-for="paragraph in section.paragraphs" :key="paragraph">{{ paragraph }}</p>
+          <ul v-if="section.items">
+            <li v-for="item in section.items" :key="item">{{ item }}</li>
+          </ul>
+        </div>
+        <p v-if="content.sourceNote" class="source-note">{{ content.sourceNote }}</p>
         <PlaceholderNotice :message="content.requiredContent" />
-        <h2>Content readiness</h2>
-        <p>This route is intentionally available as a clearly labelled foundation. It contains no invented institutional or scientific facts.</p>
         <NuxtLink class="text-link" to="/">Return to the homepage <span aria-hidden="true">→</span></NuxtLink>
       </div>
     </section>

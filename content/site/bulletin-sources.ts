@@ -1,0 +1,49 @@
+export interface BulletinSource {
+  id: 'nuclear-horizons-1-1' | 'nuclear-horizons-1-2'
+  title: string
+  issueLabel: string
+  publicationDate: string
+  localFilename: string
+}
+
+export const bulletinSources: BulletinSource[] = [
+  {
+    id: 'nuclear-horizons-1-1',
+    title: 'Nuclear Horizons',
+    issueLabel: 'Volume 1, Issue 1 (Inaugural Issue)',
+    publicationDate: 'January 2026',
+    localFilename: 'Inaugural_Issue_INPABulletin.pdf',
+  },
+  {
+    id: 'nuclear-horizons-1-2',
+    title: 'Nuclear Horizons',
+    issueLabel: 'Volume 1, Issue 2',
+    publicationDate: 'June 2026',
+    localFilename: 'buletin2.pdf',
+  },
+]
+
+export const bulletinContentNotice =
+  'Source: Nuclear Horizons, Volume 1, Issues 1 and 2 (2026). Website copy is a concise factual summary. The supplied issues state that reproduction requires prior written permission from INPA, so their PDFs, photographs and article artwork are not published by this local site.'
+
+export const publicContact = {
+  organisation: 'Indian Nuclear Physics Association (INPA)',
+  email: 'inpa.bharat@gmail.com',
+  missing: 'An INPA office address, public telephone number and social-media destinations have not been supplied.',
+} as const
+
+export const currentLeadership = {
+  asOf: 'June 2026',
+  president: {
+    name: 'Prof. A. K. Jain',
+    affiliation: 'Indian Institute of Technology Roorkee',
+  },
+  executiveSecretary: {
+    name: 'Prof. Manoj Kumar Sharma',
+    affiliation: 'University of Lucknow',
+  },
+  chiefEditor: {
+    name: 'Dr. Soumya Bagchi',
+    affiliation: 'IIT (ISM) Dhanbad',
+  },
+} as const

@@ -29,6 +29,7 @@ function showNext(): void {
       <p class="eyebrow eyebrow--light">Official digital home</p>
       <h1 id="hero-title">{{ heroContent.title }}</h1>
       <p class="hero__tagline">{{ heroContent.tagline }}</p>
+      <p class="source-note source-note--light">{{ heroContent.source }}</p>
       <div class="hero__actions" aria-label="Featured destinations">
         <NuxtLink
           v-for="(action, index) in heroContent.actions"

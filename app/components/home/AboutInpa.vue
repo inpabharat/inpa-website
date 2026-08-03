@@ -12,6 +12,8 @@ import { aboutContent } from '~~/content/site/home'
       <div>
         <PlaceholderNotice :message="aboutContent.status" />
         <p class="lead">{{ aboutContent.summary }}</p>
+        <p class="fact-line">{{ aboutContent.registration }}</p>
+        <p class="source-note">Source: {{ aboutContent.source }}</p>
         <NuxtLink class="text-link" :to="aboutContent.to">Learn More <span aria-hidden="true">→</span></NuxtLink>
       </div>
     </div>
