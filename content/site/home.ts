@@ -4,11 +4,23 @@ export interface LinkItem {
   icon: string
 }
 
+export interface EditorialLinkItem {
+  eyebrow: string
+  title: string
+  summary: string
+  to: string
+}
+
 export const heroContent = {
   title: 'Indian Nuclear Physics Association',
   tagline: 'Advancing Fundamental and Applied Nuclear Science for a Self-Reliant India',
   source: 'Official wording published in Nuclear Horizons, Volume 1, Issues 1 and 2 (2026).',
   imageStatus: 'Development placeholder — approved panoramic scientific imagery and credits are required.',
+  focusAreas: [
+    'Fundamental and applied nuclear science',
+    'National scientific collaboration',
+    'Education, training and future generations',
+  ],
   actions: [
     { label: 'Become a Member', to: '/membership' },
     { label: 'Nuclear Horizons', to: '/nuclear-horizons' },
@@ -16,8 +28,62 @@ export const heroContent = {
   ],
 } as const
 
+export const audiencePathways: readonly EditorialLinkItem[] = [
+  {
+    eyebrow: 'Students and early-career researchers',
+    title: 'Learn, train and find opportunities',
+    summary: 'Explore the prepared framework for lectures, schools, fellowships, careers and frequently asked questions.',
+    to: '/students',
+  },
+  {
+    eyebrow: 'Researchers and faculty',
+    title: 'Follow research and publications',
+    summary: 'Discover verified research features, association news and Nuclear Horizons issue metadata.',
+    to: '/research',
+  },
+  {
+    eyebrow: 'Institutions and collaborators',
+    title: 'Navigate the national ecosystem',
+    summary: 'Use the accessible India map to explore a curated overview of major centres and facilities.',
+    to: '/map',
+  },
+  {
+    eyebrow: 'INPA community',
+    title: 'Connect with the association',
+    summary: 'Find institutional information, events, membership guidance and approved community updates.',
+    to: '/about',
+  },
+] as const
+
+export const scienceDestinations: readonly EditorialLinkItem[] = [
+  {
+    eyebrow: 'Research spotlight',
+    title: 'Curated Indian research',
+    summary: 'Editorially selected features with verified authors, institutions and publication details.',
+    to: '/research',
+  },
+  {
+    eyebrow: 'Official bulletin',
+    title: 'Nuclear Horizons',
+    summary: 'Issue metadata, publication information and the future archive for INPA’s bulletin.',
+    to: '/nuclear-horizons',
+  },
+  {
+    eyebrow: 'National resource',
+    title: 'Centres and facilities map',
+    summary: 'A map and keyboard-accessible directory built from verified institutional sources.',
+    to: '/map',
+  },
+  {
+    eyebrow: 'Next generation',
+    title: 'Student resources',
+    summary: 'A structured destination ready for approved learning materials and opportunities.',
+    to: '/students',
+  },
+] as const
+
 export const presidentContent = {
-  status: 'Identity and message summary verified from Nuclear Horizons, Volume 1, Issue 2 (June 2026). An approved portrait and photograph credit are still required.',
+  status: 'Identity and message summary verified from Nuclear Horizons, Volume 1, Issue 2 (June 2026). Portrait supplied for the website; formal photograph credit is still required.',
   title: 'Prof. A. K. Jain',
   role: 'President, Indian Nuclear Physics Association',
   affiliation: 'Indian Institute of Technology Roorkee',

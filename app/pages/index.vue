@@ -18,9 +18,8 @@ useSeoMeta({
 <template>
   <div>
     <HomeSiteHero :carousel="home.carousel" />
-    <HomePresidentWelcome />
-    <HomeLatestNews :items="home.news" />
-    <HomeUpcomingEvents :items="home.events" />
+    <HomeAudiencePathways />
+    <HomeUpdatesHub :news="home.news" :events="home.events" />
     <HomeAboutInpa />
     <HomeFeaturedResearch />
     <HomeNuclearHorizons />
@@ -28,6 +27,7 @@ useSeoMeta({
     <HomeInstitutionMap />
     <HomeDistinguishedScientists />
     <HomeMemberHighlights />
+    <HomePresidentWelcome />
     <HomeQuickAccess />
   </div>
 </template>

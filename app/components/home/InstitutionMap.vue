@@ -1,21 +1,21 @@
 <template>
   <section class="section map-section" aria-labelledby="map-title">
-    <div class="container map-layout">
+    <div class="container map-introduction">
       <div>
         <p class="eyebrow">India’s nuclear physics map</p>
-        <h2 id="map-title">A national resource, built on verified data</h2>
-        <p class="lead">The map surface and its equivalent keyboard-accessible list are ready to receive an approved institution dataset.</p>
-        <PlaceholderNotice message="No institutions, facilities, profiles or coordinates are shown until they are verified." />
-        <NuxtLink class="button button--navy" to="/map">Open the map framework</NuxtLink>
+        <h2 id="map-title">Major national centres and research facilities</h2>
       </div>
-      <div class="map-placeholder" role="img" aria-label="Development placeholder for an accessible map of verified Indian nuclear physics institutions">
-        <span class="map-placeholder__outline" aria-hidden="true" />
-        <p>Verified map data required</p>
+      <div>
+        <p class="lead">Explore a curated directory of major Indian institutions supporting nuclear science, accelerator research, atomic-mineral research and plasma science.</p>
+        <p class="source-note">Institution identities and classifications were checked against current DAE, UGC and official institution sources. The boundary is the Survey of India’s official generalized vector outline; markers use campus-area coordinates for national-scale orientation.</p>
       </div>
     </div>
-    <div class="container map-alternative" aria-labelledby="map-list-title">
-      <h3 id="map-list-title">Institution list alternative</h3>
-      <p>No verified institution entries have been added.</p>
+    <div class="container">
+      <InstitutionDirectory />
+      <div class="map-scope-note">
+        <strong>Selection boundary:</strong> this is a major-centres overview, not an exhaustive directory of every university laboratory, hospital, industrial unit, regulatory office, mine or nuclear power station.
+        <NuxtLink class="text-link" to="/map">Open the full map page <span aria-hidden="true">→</span></NuxtLink>
+      </div>
     </div>
   </section>
 </template>

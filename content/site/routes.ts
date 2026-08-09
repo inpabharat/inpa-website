@@ -45,7 +45,7 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
     title: 'President’s message',
     eyebrow: 'Office of the President',
     description: currentLeadership.president.name + ', ' + currentLeadership.president.affiliation + ', is listed as President of INPA in Nuclear Horizons, Volume 1, Issue 2 (' + currentLeadership.asOf + ').',
-    requiredContent: 'An approved portrait, photograph credit and final author-approved web version of the full message are still required.',
+    requiredContent: 'The portrait has been supplied. A formal photograph credit and final author-approved web version of the full message are still required.',
     sourceNote: bulletinContentNotice,
     sections: [
       {
@@ -143,12 +143,6 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
     eyebrow: 'Current opportunities',
     description: 'This route will separate current opportunities from expired listings.',
     requiredContent: 'Verified opportunity owners, deadlines, destinations and review dates are required.',
-  },
-  '/map': {
-    title: 'India’s nuclear physics map',
-    eyebrow: 'National scientific resource',
-    description: 'This route is prepared for a lightweight interactive map with a keyboard-accessible list alternative.',
-    requiredContent: 'A verified institution dataset, profiles, official links and geographic data are required.',
   },
   '/people': {
     title: 'Distinguished scientists',

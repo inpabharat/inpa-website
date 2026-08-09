@@ -6,7 +6,7 @@ import { primaryNavigation } from '~~/content/site/navigation'
   <header class="site-header">
     <div class="container site-header__inner">
       <NuxtLink class="wordmark" to="/" aria-label="Indian Nuclear Physics Association home">
-        <span class="wordmark__mark" aria-hidden="true">INPA</span>
+        <img class="wordmark__logo" src="/images/inpa-logo.jpg" alt="" width="256" height="256">
         <span class="wordmark__text">Indian Nuclear Physics Association</span>
       </NuxtLink>
 
