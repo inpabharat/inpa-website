@@ -24,15 +24,9 @@ useSeoMeta({
 <template>
   <div id="digital-hub">
     <HomeSiteHero :carousel="home.carousel" />
-    <HomeAudiencePathways />
+    <HomeInstitutionalSnapshot />
     <HomeUpdatesHub :news="home.news" :events="home.events" />
+    <HomeSciencePublications />
     <HomeCommunityHighlights />
-    <HomeAboutInpa />
-    <HomeStrategicVision />
-    <HomeFeaturedResearch />
-    <HomeNuclearHorizons />
-    <HomeExploreGateway />
-    <HomePresidentWelcome />
-    <HomeParticipationCall />
   </div>
 </template>

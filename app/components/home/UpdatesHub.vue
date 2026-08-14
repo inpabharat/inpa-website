@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import type { PublicEventItem, PublicNewsItem } from '../../../shared/types/content'
-import { youngScientistColloquium } from '~~/content/site/activities'
 import { formatIndiaDate } from '~/utils/date'
 
-defineProps<{
+const props = defineProps<{
   news: PublicNewsItem[]
   events: PublicEventItem[]
 }>()
+
+const visibleNews = computed(() => props.news.slice(0, 2))
+const visibleEvents = computed(() => props.events.slice(0, 2))
 </script>
 
 <template>
@@ -15,9 +17,9 @@ defineProps<{
       <div class="section-heading-row updates-heading">
         <SectionHeading
           id="updates-title"
-          eyebrow="News, events and scientific activity"
-          title="What’s happening across INPA"
-          intro="Published updates appear alongside established programmes documented in material supplied by INPA."
+          eyebrow="Current activity"
+          title="News and upcoming events"
+          intro="A concise view of verified announcements and the next dates in the INPA calendar."
         />
         <NuxtLink class="text-link" to="/news">View all updates <span aria-hidden="true">→</span></NuxtLink>
       </div>
@@ -31,8 +33,8 @@ defineProps<{
             </div>
             <NuxtLink to="/news" aria-label="View the news archive">View all <span aria-hidden="true">→</span></NuxtLink>
           </div>
-          <ul v-if="news.length" class="updates-list">
-            <li v-for="item in news" :key="item.slug">
+          <ul v-if="visibleNews.length" class="updates-list">
+            <li v-for="item in visibleNews" :key="item.slug">
               <p class="meta"><span v-if="item.category">{{ item.category }} · </span>{{ formatIndiaDate(item.publishedAt) }} IST</p>
               <h4>{{ item.title }}</h4>
               <p>{{ item.summary }}</p>
@@ -50,8 +52,8 @@ defineProps<{
             </div>
             <NuxtLink to="/events" aria-label="View the events archive">View all <span aria-hidden="true">→</span></NuxtLink>
           </div>
-          <ol v-if="events.length" class="updates-list updates-list--events">
-            <li v-for="item in events" :key="item.slug">
+          <ol v-if="visibleEvents.length" class="updates-list updates-list--events">
+            <li v-for="item in visibleEvents" :key="item.slug">
               <time :datetime="item.startAt">{{ formatIndiaDate(item.startAt) }}</time>
               <div>
                 <p v-if="item.status !== 'published'" class="status-chip">{{ item.status }}</p>
@@ -65,25 +67,6 @@ defineProps<{
           <PlaceholderNotice v-else message="No verified upcoming events are published. A development-only seed can demonstrate the layout locally." />
         </section>
 
-        <aside class="opportunity-panel" aria-labelledby="colloquium-title">
-          <p class="eyebrow eyebrow--light">Established scientific programme</p>
-          <figure class="opportunity-panel__media">
-            <img
-              src="/images/young-scientist-colloquium-poster.jpg"
-              alt="Official poster for the INPA Young Scientist Colloquium Series"
-              width="1080"
-              height="1350"
-              loading="lazy"
-            >
-            <figcaption>Official programme poster supplied by INPA.</figcaption>
-          </figure>
-          <div class="opportunity-panel__body">
-            <h3 id="colloquium-title">{{ youngScientistColloquium.title }}</h3>
-            <p>{{ youngScientistColloquium.description }}</p>
-            <p class="opportunity-panel__record"><strong>Programme archive:</strong> two supplied seminar records from June and July 2026 are now available.</p>
-            <NuxtLink class="text-link text-link--light" to="/activities/young-scientist-colloquium">Explore the Colloquium <span aria-hidden="true">→</span></NuxtLink>
-          </div>
-        </aside>
       </div>
     </div>
   </section>

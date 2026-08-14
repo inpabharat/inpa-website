@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { footerLinks } from '~~/content/site/home'
 import { publicContact } from '~~/content/site/bulletin-sources'
-import { primaryNavigation } from '~~/content/site/navigation'
+import { navigationGroups } from '~~/content/site/navigation'
+
+const footerExploreLinks = navigationGroups.map(group => ({
+  label: group.label,
+  to: group.links[0]?.to ?? '/',
+}))
 </script>
 
 <template>
@@ -21,7 +26,7 @@ import { primaryNavigation } from '~~/content/site/navigation'
       <div class="site-footer__navigation">
         <nav aria-label="Explore INPA">
           <h3>Explore</h3>
-          <NuxtLink v-for="item in primaryNavigation" :key="item.to" :to="item.to">{{ item.label }}</NuxtLink>
+          <NuxtLink v-for="item in footerExploreLinks" :key="item.to" :to="item.to">{{ item.label }}</NuxtLink>
         </nav>
         <nav aria-label="Association information">
           <h3>Association</h3>
