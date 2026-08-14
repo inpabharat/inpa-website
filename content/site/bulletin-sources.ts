@@ -29,7 +29,12 @@ export const bulletinContentNotice =
 export const publicContact = {
   organisation: 'Indian Nuclear Physics Association (INPA)',
   email: 'inpa.bharat@gmail.com',
-  missing: 'An INPA office address, public telephone number and social-media destinations have not been supplied.',
+  secretary: 'Prof. Manoj Kumar Sharma',
+  phoneDisplay: '+91 98373 82558',
+  phoneHref: '+919837382558',
+  address: 'Department of Physics, Institute of Science, Banaras Hindu University, Varanasi - 221005, Uttar Pradesh, India',
+  source: 'Approved by the INPA President in correspondence dated 10 August 2026.',
+  missing: 'Official social-media destinations and a content-correction contact are still required.',
 } as const
 
 export const currentLeadership = {

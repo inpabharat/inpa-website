@@ -2,7 +2,11 @@
 import { pendingRoutes } from '~~/content/site/routes'
 
 const route = useRoute()
-const content = computed(() => pendingRoutes[route.path])
+const contentRouteKey = computed(() => {
+  if (route.path === '/') return route.path
+  return route.path.replace(/\/+$/, '')
+})
+const content = computed(() => pendingRoutes[contentRouteKey.value])
 
 if (!content.value) {
   throw createError({ statusCode: 404, statusMessage: 'Page not found' })

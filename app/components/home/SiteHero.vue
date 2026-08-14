@@ -19,40 +19,48 @@ function showNext(): void {
 
 <template>
   <section class="hero" aria-labelledby="hero-title">
-    <div class="hero__scientific-field" aria-hidden="true">
-      <span class="orbit orbit--one" />
-      <span class="orbit orbit--two" />
-      <span class="beam" />
-    </div>
+    <HomeNucleusSimulation />
     <div class="container hero__content">
-      <p class="hero__status">{{ heroContent.imageStatus }}</p>
-      <p class="eyebrow eyebrow--light">Official digital home</p>
-      <h1 id="hero-title">{{ heroContent.title }}</h1>
-      <p class="hero__tagline">{{ heroContent.tagline }}</p>
-      <p class="source-note source-note--light">{{ heroContent.source }}</p>
-      <div class="hero__actions" aria-label="Featured destinations">
-        <NuxtLink
-          v-for="(action, index) in heroContent.actions"
-          :key="action.to"
-          :class="['button', index === 0 ? 'button--gold' : 'button--outline-light']"
-          :to="action.to"
-        >
-          {{ action.label }}
-        </NuxtLink>
+      <div class="hero__copy">
+        <p class="eyebrow eyebrow--light">Official digital home</p>
+        <h1 id="hero-title">{{ heroContent.title }}</h1>
+        <p class="hero__mission"><span>Mission</span>{{ heroContent.mission }}</p>
+        <p class="hero__tagline">{{ heroContent.tagline }}</p>
+        <p class="source-note source-note--light">{{ heroContent.source }}</p>
+        <div class="hero__actions" aria-label="Featured destinations">
+          <NuxtLink
+            v-for="(action, index) in heroContent.actions"
+            :key="action.to"
+            :class="['button', index === 0 ? 'button--gold' : 'button--outline-light']"
+            :to="action.to"
+          >
+            {{ action.label }}
+          </NuxtLink>
+        </div>
       </div>
 
-      <div v-if="activeSlide" class="hero__carousel" aria-live="polite">
-        <div>
-          <p class="eyebrow eyebrow--light">{{ activeSlide.eyebrow }}</p>
-          <p class="hero__carousel-title">{{ activeSlide.title }}</p>
-          <p v-if="activeSlide.summary">{{ activeSlide.summary }}</p>
+      <aside class="hero__feature" aria-label="INPA focus and featured update">
+        <p class="eyebrow eyebrow--light">Science · community · future</p>
+        <ul class="hero__focus-list">
+          <li v-for="(item, index) in heroContent.focusAreas" :key="item">
+            <span aria-hidden="true">0{{ index + 1 }}</span>
+            {{ item }}
+          </li>
+        </ul>
+
+        <div v-if="activeSlide" class="hero__carousel" aria-live="polite">
+          <div>
+            <p class="eyebrow eyebrow--light">{{ activeSlide.eyebrow }}</p>
+            <p class="hero__carousel-title">{{ activeSlide.title }}</p>
+            <p v-if="activeSlide.summary">{{ activeSlide.summary }}</p>
+          </div>
+          <div v-if="carousel.length > 1" class="hero__carousel-controls" aria-label="Carousel controls">
+            <button type="button" aria-label="Show previous carousel item" @click="showPrevious">Previous</button>
+            <span aria-live="off">{{ activeIndex + 1 }} / {{ carousel.length }}</span>
+            <button type="button" aria-label="Show next carousel item" @click="showNext">Next</button>
+          </div>
         </div>
-        <div v-if="carousel.length > 1" class="hero__carousel-controls" aria-label="Carousel controls">
-          <button type="button" aria-label="Show previous carousel item" @click="showPrevious">Previous</button>
-          <span aria-live="off">{{ activeIndex + 1 }} / {{ carousel.length }}</span>
-          <button type="button" aria-label="Show next carousel item" @click="showNext">Next</button>
-        </div>
-      </div>
+      </aside>
     </div>
   </section>
 </template>

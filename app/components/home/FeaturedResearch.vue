@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { recurringFeatureContent, researchContent } from '~~/content/site/home'
+import { recurringFeatureContent, researchContent, scienceDestinations } from '~~/content/site/home'
 </script>
 
 <template>
@@ -10,7 +10,6 @@ import { recurringFeatureContent, researchContent } from '~~/content/site/home'
         <article class="research-spotlight">
           <p class="eyebrow eyebrow--light">{{ researchContent.eyebrow }}</p>
           <h3>{{ researchContent.title }}</h3>
-          <PlaceholderNotice :message="researchContent.status" />
           <p>{{ researchContent.summary }}</p>
           <dl class="metadata-list">
             <div><dt>Authors</dt><dd>{{ researchContent.authors }}</dd></div>
@@ -24,9 +23,17 @@ import { recurringFeatureContent, researchContent } from '~~/content/site/home'
           <h3>{{ recurringFeatureContent.title }}</h3>
           <p>{{ recurringFeatureContent.summary }}</p>
           <p class="signature-card__rule">{{ recurringFeatureContent.requirements }}</p>
-          <PlaceholderNotice :message="recurringFeatureContent.status" />
+          <p class="content-caveat">The next feature will be selected only after its scientific claims, references and media permissions are reviewed.</p>
         </article>
       </div>
+      <nav class="science-destinations" aria-label="Explore INPA science and learning destinations">
+        <NuxtLink v-for="item in scienceDestinations" :key="item.to" :to="item.to">
+          <span class="eyebrow">{{ item.eyebrow }}</span>
+          <strong>{{ item.title }}</strong>
+          <span>{{ item.summary }}</span>
+          <span class="science-destinations__action">Explore <span aria-hidden="true">→</span></span>
+        </NuxtLink>
+      </nav>
     </div>
   </section>
 </template>

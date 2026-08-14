@@ -12,14 +12,11 @@ import { nuclearHorizonsContent } from '~~/content/site/home'
       <div>
         <p class="eyebrow">Living publication</p>
         <h2 id="horizons-title">{{ nuclearHorizonsContent.title }}</h2>
-        <PlaceholderNotice :message="nuclearHorizonsContent.status" />
         <p class="lead">{{ nuclearHorizonsContent.summary }}</p>
         <p><strong>Chief Editor:</strong> {{ nuclearHorizonsContent.chiefEditor }}</p>
-        <ul class="publication-links" aria-label="Published Nuclear Horizons issues">
-          <li v-for="issue in nuclearHorizonsContent.issues" :key="issue.label"><strong>{{ issue.label }}</strong> — {{ issue.date }}</li>
-        </ul>
-        <p class="source-note">Download links will be added only after INPA confirms web-distribution permission for the supplied PDFs.</p>
-        <NuxtLink class="text-link" :to="nuclearHorizonsContent.archiveTo">View issue metadata <span aria-hidden="true">→</span></NuxtLink>
+        <p class="source-note">Issue records and future approved downloads are kept on the dedicated publication and archive pages.</p>
+        <p class="content-caveat">Cover art and issue files remain unavailable until web-distribution permission is confirmed.</p>
+        <NuxtLink class="text-link" to="/nuclear-horizons">Explore Nuclear Horizons <span aria-hidden="true">→</span></NuxtLink>
       </div>
     </div>
   </section>

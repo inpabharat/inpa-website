@@ -74,6 +74,32 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
       },
     ],
   },
+  '/about/committees': {
+    title: 'Committees and governance',
+    eyebrow: 'Association governance',
+    description: 'A dedicated home for INPA leadership, committees and governance documents.',
+    requiredContent: 'The complete approved committee structure, committee membership, terms of reference and current terms of office are still required.',
+    sourceNote: bulletinContentNotice,
+    sections: [
+      {
+        heading: 'Currently verified leadership snapshot — ' + currentLeadership.asOf,
+        items: [
+          'President: ' + currentLeadership.president.name + ' — ' + currentLeadership.president.affiliation,
+          'Executive Secretary: ' + currentLeadership.executiveSecretary.name + ' — ' + currentLeadership.executiveSecretary.affiliation,
+          'Chief Editor, Nuclear Horizons: ' + currentLeadership.chiefEditor.name + ' — ' + currentLeadership.chiefEditor.affiliation,
+        ],
+      },
+      {
+        heading: 'Governance information to be published here',
+        items: [
+          'Executive Council roster and terms.',
+          'Approved committees and their responsibilities.',
+          'Committee membership and contact routes.',
+          'Constitution and approved governance documents.',
+        ],
+      },
+    ],
+  },
   '/about/constitution': {
     title: 'Constitution',
     eyebrow: 'Governance',
@@ -93,6 +119,29 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
           'Authors: Bijay Kumar Agrawal, Nisha Chandnani and Gaurav Saxena.',
           'Affiliations published with the article: Saha Institute of Nuclear Physics; Manipal University Jaipur; and Government Women Engineering College, Ajmer.',
           'The article explains how rotational, isospin, gauge and discrete symmetries guide conservation laws, nuclear models and investigations of nuclear structure, including nuclei far from stability.',
+        ],
+      },
+    ],
+  },
+  '/nnpi': {
+    title: 'NNPI — From Vision to Action',
+    eyebrow: 'Developing national framework',
+    description: 'A community-driven framework for transforming India’s nuclear-physics aspirations into coordinated national action.',
+    requiredContent: 'NNPI has not yet been formally announced. Its approved public document, framework figure, scope owners and publication date are required before this page can be treated as a launched programme.',
+    sourceNote: 'Framework wording and structure supplied by the INPA President in website comments received in August 2026.',
+    sections: [
+      {
+        heading: 'A Community Action Framework for Realizing the Mega Science Vision–2035',
+        paragraphs: [
+          'The developing NNPI concept is intended to connect scientific priorities, national capability and community coordination. This page records the proposed framing without presenting it as a formally launched initiative.',
+        ],
+      },
+      {
+        heading: 'Three connected elements',
+        items: [
+          'Science — frontier questions and national priorities.',
+          'Capability — theory, experiment, instrumentation, computing and facilities.',
+          'Community — collaboration, young researchers and national coordination.',
         ],
       },
     ],
@@ -137,6 +186,20 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
     description: 'The bulletins identify young-researcher articles, thesis summaries and a monthly INPA Young Scientist Colloquium as developing community activities.',
     requiredContent: 'Verified programme pages, schedules, registration destinations, responsible owners and last-reviewed dates are still required.',
     sourceNote: bulletinContentNotice,
+    sections: [
+      {
+        heading: 'Resource areas prepared for verified material',
+        items: [
+          'Lecture notes.',
+          'Recorded lectures.',
+          'PhD opportunities.',
+          'Summer schools.',
+          'Fellowships.',
+          'Career guidance.',
+          'Frequently asked questions.',
+        ],
+      },
+    ],
   },
   '/students/opportunities': {
     title: 'Student opportunities',
@@ -178,9 +241,20 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
   '/contact': {
     title: 'Contact INPA',
     eyebrow: 'Contact',
-    description: 'Published contact email: ' + publicContact.email,
+    description: 'Public contact details approved by the INPA President on 10 August 2026.',
     requiredContent: publicContact.missing,
-    sourceNote: bulletinContentNotice,
+    sourceNote: publicContact.source,
+    sections: [
+      {
+        heading: 'INPA office',
+        items: [
+          publicContact.address,
+          'Secretary: ' + publicContact.secretary,
+          'Telephone: ' + publicContact.phoneDisplay,
+          'Email: ' + publicContact.email,
+        ],
+      },
+    ],
   },
   '/privacy': {
     title: 'Privacy Policy',

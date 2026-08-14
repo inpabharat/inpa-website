@@ -29,6 +29,13 @@ export default defineNuxtConfig({
     preset: 'cloudflare_module',
     prerender: {
       crawlLinks: false,
+      routes: [
+        '/about',
+        '/about/committees',
+        '/about/constitution',
+        '/about/executive-council',
+        '/about/presidents-message',
+      ],
     },
   },
   routeRules: {
