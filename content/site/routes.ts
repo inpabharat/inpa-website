@@ -12,7 +12,7 @@ export interface PendingRouteContent {
   eyebrow: string
   description: string
   indexable?: boolean
-  requiredContent: string
+  requiredContent?: string
   sourceNote?: string
   sections?: readonly RouteSection[]
 }
@@ -47,9 +47,7 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
   '/about/presidents-message': {
     title: 'President’s message',
     eyebrow: 'Office of the President',
-    description: currentLeadership.president.name + ', ' + currentLeadership.president.affiliation + ', is listed as President of INPA in Nuclear Horizons, Volume 1, Issue 2 (' + currentLeadership.asOf + ').',
-    requiredContent: 'The portrait has been supplied. A formal photograph credit and final author-approved web version of the full message are still required.',
-    sourceNote: bulletinContentNotice,
+    description: currentLeadership.president.name + ' is President of the Indian Nuclear Physics Association and Professor at ' + currentLeadership.president.affiliation + '.',
     sections: [
       {
         heading: 'Message summary',
@@ -63,7 +61,7 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
   '/about/executive-council': {
     title: 'Executive leadership',
     eyebrow: 'INPA leadership',
-    description: 'Selected current roles as published in Nuclear Horizons, Volume 1, Issue 2 (' + currentLeadership.asOf + ').',
+    description: 'A current leadership snapshot for the Indian Nuclear Physics Association (' + currentLeadership.asOf + ').',
     requiredContent: 'The complete council roster, role terms, approved biographies, portraits and future-change process still require confirmation before launch.',
     sourceNote: bulletinContentNotice,
     sections: [
@@ -112,9 +110,8 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
   '/research': {
     title: 'Featured research',
     eyebrow: 'Research spotlight',
-    description: 'A source-backed feature from Nuclear Horizons, Volume 1, Issue 2.',
-    requiredContent: 'Web-publication approval, canonical references and permission for any article figures are still required before reproducing the complete article.',
-    sourceNote: bulletinContentNotice,
+    description: 'A featured article from Nuclear Horizons, Volume 1, Issue 2.',
+    requiredContent: 'The complete article, including its references and figures, can be read in the downloadable June 2026 issue of Nuclear Horizons.',
     sections: [
       {
         heading: 'Nuclear Structure Studies: From Fundamental Symmetries to Exotic Nuclei',
@@ -154,8 +151,7 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
     eyebrow: 'INPA publication',
     description: 'Nuclear Horizons is the official bulletin of the Indian Nuclear Physics Association and a platform for communication, collaboration and knowledge exchange.',
     indexable: true,
-    requiredContent: 'Written web-distribution permission, approved cover files, accessible PDFs, article links and a submission route are still required.',
-    sourceNote: bulletinContentNotice,
+    requiredContent: 'Author and submission guidance will be added when the editorial route is supplied.',
     sections: [
       {
         heading: 'Publication information',
@@ -166,7 +162,7 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
         ],
       },
       {
-        heading: 'Available issue metadata',
+        heading: 'Available issues',
         items: bulletinSources.map(issue => issue.issueLabel + ' — ' + issue.publicationDate),
       },
     ],
@@ -174,10 +170,9 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
   '/nuclear-horizons/archive': {
     title: 'Nuclear Horizons archive',
     eyebrow: 'Publication archive',
-    description: 'Issue metadata verified from the two supplied Nuclear Horizons publications.',
+    description: 'Read or download published issues of Nuclear Horizons.',
     indexable: true,
-    requiredContent: 'The PDFs and cover artwork will remain unavailable on the website until INPA confirms web-distribution permission.',
-    sourceNote: bulletinContentNotice,
+    requiredContent: 'New issues will be added to this archive as they are published.',
     sections: [
       {
         heading: 'Volume 1',

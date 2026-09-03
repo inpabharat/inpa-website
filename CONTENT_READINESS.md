@@ -7,8 +7,8 @@ The website publishes only information supported by supplied INPA material or ex
 - [ ] Confirmed legal/official organisation name and abbreviation styling.
 - [x] INPA-owned domain options purchased: `inpaindia.org`, `inpa-india.org` and `inpa-bharat.org`.
 - [ ] Confirm the primary domain. `inpa-india.org` is the current preference, but DNS has not been connected.
-- [x] President's name, title and portrait supplied; source-backed message summary available.
-- [ ] Final author-approved President's web message and formal portrait credit.
+- [x] Prof. A. K. Jain confirmed as INPA President; portrait and website message summary supplied.
+- [ ] Optional longer President's message and named portrait credit.
 - [ ] Approved About copy.
 - [ ] Current Executive Council roster, roles, terms and affiliations.
 - [ ] Current Constitution file and publication status.
@@ -21,16 +21,20 @@ The website publishes only information supported by supplied INPA material or ex
 - [x] Membership amounts supplied: annual ₹1,000; life ₹6,000 or above; donor above ₹21,000; institutional amount undecided.
 - [ ] Membership eligibility, duration, renewal, application process, approval process and destination.
 - [ ] Donations information or approved destination, if shown.
-- [ ] Nuclear Horizons latest issue, cover, editorial, archive and submission route.
+- [x] Nuclear Horizons Volume 1, Issues 1 and 2, their covers and public PDF downloads.
+- [ ] Nuclear Horizons author and submission route.
 - [x] Young Scientist Colloquium programme materials and records for the first two seminars supplied; both seminars are archived as past events.
 - [x] Authentic photographs from the INPA inauguration and Nuclear Horizons release at Banaras Hindu University supplied.
 - [ ] Verified upcoming news and event announcements.
-- [ ] Featured-research selection, citation and publication permissions.
+- [x] Initial featured-research selection and publication permission through the hosted Issue 2 PDF.
+- [ ] Canonical web references for future standalone research features.
 - [ ] Student resources, opportunity owners and review dates.
 - [ ] Verified institution/map dataset and official links.
 - [ ] Distinguished-scientist profiles and member-highlight approvals.
-- [ ] Photographer credit and publication/consent metadata for supplied Banaras Hindu University event images.
-- [ ] Identity, context, transcript, consent and caption for the supplied interview video.
+- [x] INPA publication permission for supplied Banaras Hindu University event images.
+- [ ] Named photographer credits for the supplied event images, if available.
+- [x] INPA publication permission for the supplied interview video.
+- [ ] Interview identity, context, transcript and caption.
 - [ ] Scientific/facility imagery, credits, licences and alternative text for the homepage and research features.
 - [ ] Privacy Policy and content-correction contact.
 
@@ -53,10 +57,10 @@ The website publishes only information supported by supplied INPA material or ex
 2. Supply the three authorised editor email addresses and configure Cloudflare Access.
 3. Configure Cloudflare Access and complete the production editor acceptance test.
 4. Supply the current Executive Council, committees and Constitution.
-5. Approve the President’s final web message and portrait credit.
+5. Supply an optional longer President’s message and named portrait credit.
 6. Confirm membership application instructions and eligibility rules.
 7. Provide at least one current news item and one upcoming event, or explicitly approve launching with empty archives.
-8. Confirm Nuclear Horizons web-distribution permissions and submission route.
+8. Supply the Nuclear Horizons author and submission route.
 9. Approve public privacy/correction wording and media credits.
 10. Complete mobile, keyboard, accessibility, link, metadata and 404 release checks on the primary domain.
 

@@ -23,7 +23,7 @@ defineProps<{ content: PendingRouteContent }>()
           </ul>
         </div>
         <p v-if="content.sourceNote" class="source-note">{{ content.sourceNote }}</p>
-        <section class="route-section route-section--availability" aria-labelledby="availability-heading">
+        <section v-if="content.requiredContent" class="route-section route-section--availability" aria-labelledby="availability-heading">
           <h2 id="availability-heading">Further information</h2>
           <p>{{ content.requiredContent }}</p>
         </section>

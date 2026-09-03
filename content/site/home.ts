@@ -137,12 +137,10 @@ export const scienceDestinations: readonly EditorialLinkItem[] = [
 ] as const
 
 export const presidentContent = {
-  status: 'Identity and message summary verified from Nuclear Horizons, Volume 1, Issue 2 (June 2026). Portrait supplied for the website; formal photograph credit is still required.',
   title: 'Prof. A. K. Jain',
   role: 'President, Indian Nuclear Physics Association',
   affiliation: 'Indian Institute of Technology Roorkee',
   message: 'INPA is building a connected national community for nuclear physics, with priorities that include scientific collaboration, educational resources, laboratory training, mentorship and wider public awareness of nuclear science and its applications.',
-  source: 'Summarised from the President’s Address in Nuclear Horizons, Volume 1, Issue 2 (June 2026).',
   to: '/about/presidents-message',
 } as const
 
@@ -156,13 +154,13 @@ export const aboutContent = {
   image: {
     src: '/images/inpa-bhu-inauguration.jpg',
     alt: 'INPA members holding the inaugural issue of Nuclear Horizons at Banaras Hindu University',
-    caption: 'INPA inauguration and Nuclear Horizons release at Banaras Hindu University, 21 April 2026. Photograph supplied by INPA; photographer credit pending.',
+    caption: 'INPA inauguration and Nuclear Horizons release at Banaras Hindu University, 21 April 2026. Photograph supplied by INPA.',
   },
 } as const
 
 export const communityHighlights = {
   introduction: 'Photographs from verified INPA activities and community occasions.',
-  credit: 'Photographs supplied by INPA; individual photographer credits are pending.',
+  credit: 'Photographs supplied by INPA.',
   items: [
     {
       title: 'Nuclear Horizons inaugural issue',
@@ -200,7 +198,7 @@ export const communityHighlights = {
 } as const
 
 export const researchContent = {
-  status: 'Article metadata and scientific scope are sourced from Nuclear Horizons, Volume 1, Issue 2. Article artwork is withheld pending web-republication permission.',
+  status: 'Featured in Nuclear Horizons, Volume 1, Issue 2. The complete article is available in the issue PDF.',
   eyebrow: 'Research spotlight',
   title: 'Nuclear Structure Studies: From Fundamental Symmetries to Exotic Nuclei',
   summary: 'This feature introduces how rotational, isospin, gauge and discrete symmetries guide nuclear models, conservation laws and the study of nuclear structure, including nuclei far from stability.',
@@ -215,18 +213,18 @@ export const recurringFeatureContent = {
   eyebrow: 'INPA recurring feature',
   title: 'A curated scientific story for repeat visits',
   summary: 'The shared feature format supports Research of the Month, Historical Milestone, Figure of the Week, Nuclear Physics Explained and Did You Know?',
-  requirements: 'Each published story must identify its author or source and include verified references and image permissions.',
+  requirements: 'Each published story will identify its author or source and include relevant references and media credits.',
 } as const
 
 export const nuclearHorizonsContent = {
-  status: 'Issue metadata is verified from the supplied publications. Covers, PDFs and article artwork are not republished because written web permission has not been supplied.',
+  status: 'Both published issues are available to read or download from the Nuclear Horizons archive.',
   title: 'Nuclear Horizons',
   descriptor: 'A Bulletin of the Indian Nuclear Physics Association',
   summary: 'Nuclear Horizons is INPA’s official bulletin and a platform for communication, collaboration and knowledge exchange across the nuclear-physics community.',
   chiefEditor: 'Dr. Soumya Bagchi, IIT (ISM) Dhanbad (as published in Issue 2)',
   issues: [
-    { label: 'Volume 1, Issue 2', date: 'June 2026' },
-    { label: 'Volume 1, Issue 1 — Inaugural Issue', date: 'January 2026' },
+    { label: 'Volume 1, Issue 2', date: 'June 2026', downloadPath: '/publications/nuclear-horizons-volume-1-issue-2.pdf' },
+    { label: 'Volume 1, Issue 1 — Inaugural Issue', date: 'January 2026', downloadPath: '/publications/nuclear-horizons-volume-1-issue-1.pdf' },
   ],
   archiveTo: '/nuclear-horizons/archive',
 } as const

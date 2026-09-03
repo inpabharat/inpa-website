@@ -4,6 +4,10 @@ export interface BulletinSource {
   issueLabel: string
   publicationDate: string
   localFilename: string
+  downloadPath: string
+  coverImage: string
+  pageCount: number
+  fileSize: string
 }
 
 export const bulletinSources: BulletinSource[] = [
@@ -13,6 +17,10 @@ export const bulletinSources: BulletinSource[] = [
     issueLabel: 'Volume 1, Issue 1 (Inaugural Issue)',
     publicationDate: 'January 2026',
     localFilename: 'Inaugural_Issue_INPABulletin.pdf',
+    downloadPath: '/publications/nuclear-horizons-volume-1-issue-1.pdf',
+    coverImage: '/images/publications/nuclear-horizons-volume-1-issue-1.jpg',
+    pageCount: 80,
+    fileSize: '4.5 MB',
   },
   {
     id: 'nuclear-horizons-1-2',
@@ -20,11 +28,15 @@ export const bulletinSources: BulletinSource[] = [
     issueLabel: 'Volume 1, Issue 2',
     publicationDate: 'June 2026',
     localFilename: 'buletin2.pdf',
+    downloadPath: '/publications/nuclear-horizons-volume-1-issue-2.pdf',
+    coverImage: '/images/publications/nuclear-horizons-volume-1-issue-2.jpg',
+    pageCount: 81,
+    fileSize: '3.6 MB',
   },
 ]
 
 export const bulletinContentNotice =
-  'Source: Nuclear Horizons, Volume 1, Issues 1 and 2 (2026). Website copy is a concise factual summary. The supplied issues state that reproduction requires prior written permission from INPA, so their PDFs, photographs and article artwork are not published by this local site.'
+  'Institutional information is drawn from INPA’s published material and direct project correspondence.'
 
 export const publicContact = {
   organisation: 'Indian Nuclear Physics Association (INPA)',
@@ -33,7 +45,7 @@ export const publicContact = {
   phoneDisplay: '+91 98373 82558',
   phoneHref: '+919837382558',
   address: 'Department of Physics, Institute of Science, Banaras Hindu University, Varanasi - 221005, Uttar Pradesh, India',
-  source: 'Approved by the INPA President in correspondence dated 10 August 2026.',
+  source: 'Official INPA contact information.',
   missing: 'Official social-media destinations and a content-correction contact are still required.',
 } as const
 

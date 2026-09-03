@@ -23,7 +23,7 @@ import { recurringFeatureContent, researchContent, scienceDestinations } from '~
           <h3>{{ recurringFeatureContent.title }}</h3>
           <p>{{ recurringFeatureContent.summary }}</p>
           <p class="signature-card__rule">{{ recurringFeatureContent.requirements }}</p>
-          <p class="content-caveat">The next feature will be selected only after its scientific claims, references and media permissions are reviewed.</p>
+          <p class="content-caveat">Future features will be selected and reviewed by the INPA editorial team.</p>
         </article>
       </div>
       <nav class="science-destinations" aria-label="Explore INPA science and learning destinations">

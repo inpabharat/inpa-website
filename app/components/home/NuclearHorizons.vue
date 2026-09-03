@@ -5,17 +5,23 @@ import { nuclearHorizonsContent } from '~~/content/site/home'
 <template>
   <section class="section section--subtle" aria-labelledby="horizons-title">
     <div class="container publication-feature">
-      <div class="publication-cover" role="img" aria-label="Text-only representation of Nuclear Horizons, Volume 1, Issue 2">
-        <span>Nuclear Horizons</span>
-        <small>{{ nuclearHorizonsContent.descriptor }}<br>Volume 1, Issue 2 · June 2026</small>
-      </div>
+      <img
+        class="publication-cover-image"
+        src="/images/publications/nuclear-horizons-volume-1-issue-2.jpg"
+        alt="Cover of Nuclear Horizons, Volume 1, Issue 2, June 2026"
+        width="992"
+        height="1403"
+      >
       <div>
         <p class="eyebrow">Living publication</p>
         <h2 id="horizons-title">{{ nuclearHorizonsContent.title }}</h2>
         <p class="lead">{{ nuclearHorizonsContent.summary }}</p>
         <p><strong>Chief Editor:</strong> {{ nuclearHorizonsContent.chiefEditor }}</p>
-        <p class="source-note">Issue records and future approved downloads are kept on the dedicated publication and archive pages.</p>
-        <NuxtLink class="text-link" to="/nuclear-horizons">Explore Nuclear Horizons <span aria-hidden="true">→</span></NuxtLink>
+        <p class="source-note">The January and June 2026 issues are available in the publication archive.</p>
+        <div class="science-publications__actions">
+          <a class="button button--navy" href="/publications/nuclear-horizons-volume-1-issue-2.pdf" download>Download latest issue</a>
+          <NuxtLink class="text-link" to="/nuclear-horizons">Explore Nuclear Horizons <span aria-hidden="true">→</span></NuxtLink>
+        </div>
       </div>
     </div>
   </section>

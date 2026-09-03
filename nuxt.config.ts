@@ -35,6 +35,8 @@ export default defineNuxtConfig({
         '/about/constitution',
         '/about/executive-council',
         '/about/presidents-message',
+        '/nuclear-horizons',
+        '/nuclear-horizons/archive',
       ],
     },
   },
@@ -45,6 +47,8 @@ export default defineNuxtConfig({
       },
     },
     '/about/**': { prerender: true },
+    '/nuclear-horizons': { prerender: true },
+    '/nuclear-horizons/**': { prerender: true },
     '/membership': { prerender: true },
     '/privacy': { prerender: true },
     '/admin/**': {

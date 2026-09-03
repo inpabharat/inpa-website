@@ -30,6 +30,7 @@ import { nuclearHorizonsContent, researchContent } from '~~/content/site/home'
           <p>{{ nuclearHorizonsContent.summary }}</p>
           <p><strong>Latest verified issue:</strong> {{ nuclearHorizonsContent.issues[0].label }} · {{ nuclearHorizonsContent.issues[0].date }}</p>
           <div class="science-publications__actions">
+            <a class="text-link" :href="nuclearHorizonsContent.issues[0].downloadPath" download>Download latest issue <span aria-hidden="true">↓</span></a>
             <NuxtLink class="text-link" to="/nuclear-horizons">Explore Nuclear Horizons <span aria-hidden="true">→</span></NuxtLink>
             <NuxtLink class="text-link" :to="nuclearHorizonsContent.archiveTo">Issue archive <span aria-hidden="true">→</span></NuxtLink>
           </div>
