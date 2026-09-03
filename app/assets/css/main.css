@@ -735,6 +735,158 @@ h4 {
   background: var(--color-surface-subtle);
 }
 
+.nnpi-front {
+  position: relative;
+  overflow: hidden;
+  padding-block: clamp(3.25rem, 7vw, 6rem);
+  background:
+    radial-gradient(circle at 12% 55%, rgb(200 155 60 / 15%), transparent 24rem),
+    linear-gradient(115deg, var(--color-navy-950), #0b3558);
+  color: #dce7ed;
+}
+
+.nnpi-front::after {
+  position: absolute;
+  top: -12rem;
+  right: -8rem;
+  width: 32rem;
+  height: 32rem;
+  border: 1px solid rgb(230 200 121 / 16%);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 4rem rgb(230 200 121 / 4%),
+    0 0 0 9rem rgb(230 200 121 / 3%);
+  content: "";
+  pointer-events: none;
+}
+
+.nnpi-front__layout {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  align-items: stretch;
+  gap: clamp(2rem, 6vw, 5rem);
+}
+
+.nnpi-front__identity {
+  display: flex;
+  min-height: 11rem;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.nnpi-front__monogram {
+  color: var(--color-surface);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(4.5rem, 15vw, 9rem);
+  font-weight: 600;
+  letter-spacing: -0.075em;
+  line-height: 0.8;
+}
+
+.nnpi-front__line {
+  width: min(100%, 24rem);
+  height: 1px;
+  margin-block: 1.75rem 0.8rem;
+  background: linear-gradient(90deg, var(--color-gold-300), transparent);
+}
+
+.nnpi-front__direction {
+  color: var(--color-gold-300);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.nnpi-front__heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+}
+
+.nnpi-front h2 {
+  max-width: 13ch;
+  margin-bottom: 0;
+  color: var(--color-surface);
+  font-size: clamp(2.25rem, 5vw, 4rem);
+}
+
+.nnpi-front__status {
+  display: inline-flex;
+  min-height: 2rem;
+  align-items: center;
+  padding: 0.35rem 0.65rem;
+  border: 1px solid rgb(230 200 121 / 65%);
+  color: var(--color-gold-300);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.nnpi-front__descriptor {
+  max-width: 45rem;
+  margin: 1.35rem 0 0.75rem;
+  color: var(--color-surface);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.25rem, 2.4vw, 1.7rem);
+  line-height: 1.35;
+}
+
+.nnpi-front__summary {
+  max-width: 48rem;
+  color: #cbd8df;
+}
+
+.nnpi-front__pillars {
+  display: grid;
+  margin: 1.75rem 0 0;
+  padding: 0;
+  border-top: 1px solid rgb(255 255 255 / 20%);
+  list-style: none;
+}
+
+.nnpi-front__pillars li {
+  display: grid;
+  min-height: 3.5rem;
+  align-items: center;
+  padding-block: 0.7rem;
+  border-bottom: 1px solid rgb(255 255 255 / 20%);
+  grid-template-columns: 2.5rem 1fr;
+  gap: 0.75rem;
+}
+
+.nnpi-front__pillars span {
+  color: var(--color-gold-300);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+.nnpi-front__pillars strong {
+  color: var(--color-surface);
+  font-size: 1rem;
+}
+
+.nnpi-front__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 1.75rem;
+  gap: 1rem 1.5rem;
+}
+
+.nnpi-front__footer p {
+  max-width: 38rem;
+  margin: 0;
+  color: #aebfc8;
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
 .institutional-snapshot {
   padding-block: clamp(3.5rem, 7vw, 6rem);
 }
@@ -2210,20 +2362,45 @@ a.future-card:hover {
 }
 
 .site-footer__credit a {
-  color: inherit;
-  font-weight: 600;
-  text-decoration: none;
-  text-underline-offset: 0.22rem;
+  color: var(--color-gold-300);
+  font-weight: 750;
+  text-decoration: underline;
+  text-decoration-color: var(--color-gold-500);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.25rem;
 }
 
 .site-footer__credit a:hover {
   color: var(--color-surface);
-  text-decoration: underline;
-  text-decoration-color: var(--color-gold-500);
-  text-decoration-thickness: 2px;
+  text-decoration-color: var(--color-gold-300);
+}
+
+.site-footer__credit a span {
+  display: inline-block;
+  margin-left: 0.12rem;
+  font-size: 0.9em;
+  text-decoration: none;
+  transition: transform 160ms ease;
+}
+
+.site-footer__credit a:hover span {
+  transform: translate(0.12rem, -0.12rem);
 }
 
 @media (min-width: 40rem) {
+  .nnpi-front__pillars {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .nnpi-front__pillars li {
+    padding-inline: 1rem;
+    border-right: 1px solid rgb(255 255 255 / 20%);
+  }
+
+  .nnpi-front__pillars li:last-child {
+    border-right: 0;
+  }
+
   .institutional-snapshot__president {
     grid-template-columns: 7rem minmax(0, 1fr);
   }
@@ -2301,6 +2478,10 @@ a.future-card:hover {
 }
 
 @media (min-width: 60rem) {
+  .nnpi-front__layout {
+    grid-template-columns: minmax(18rem, 0.7fr) minmax(0, 1.3fr);
+  }
+
   .community-highlights__track {
     grid-auto-columns: calc((100% - 2rem) / 3);
   }

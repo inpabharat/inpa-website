@@ -40,7 +40,9 @@ const footerExploreLinks = navigationGroups.map(group => ({
         <p>Prototype website — selected media permissions and programme details remain pending.</p>
         <p class="site-footer__credit">
           Website design and development:
-          <a href="https://www.dr-abhishek.com/" target="_blank" rel="author external noopener noreferrer">Dr Abhishek</a>
+          <a href="https://www.dr-abhishek.com/" target="_blank" rel="author external noopener noreferrer">
+            Dr Abhishek <span aria-hidden="true">↗</span>
+          </a>
         </p>
       </div>
     </div>
