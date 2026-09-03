@@ -93,12 +93,17 @@ pnpm deploy:production
 
 `deploy:preview` updates the preview Worker immediately. `upload:production` creates a candidate version on the production Worker without sending it live; an authorised administrator can then open **Workers & Pages → inpa-website → Deployments → Promote deployment** and select that version. `deploy:production` is the direct command-line alternative and immediately sends the new version to all production traffic.
 
-Before editor access or the official domain is enabled, an authorised administrator must:
+Cloudflare Access is configured for the preview and production Workers. The current allowlist is:
 
-1. Obtain the official email address of each approved editor.
-2. Configure a Cloudflare Access application for `/admin/**` and `/api/admin/**` with that explicit editor allowlist.
-3. Supply `NUXT_CF_ACCESS_TEAM_DOMAIN` and `NUXT_CF_ACCESS_AUD` as protected runtime configuration.
-4. Acceptance-test the completed editor workflow through Cloudflare Access before permitting production writes.
+- Bhoomika Maheshwari (`bhoomika.physics@gmail.com`)
+- Gagandeep Singh (`gags02@gmail.com`)
+- Dr Abhishek (`abi00779@gmail.com`)
+
+Before editor access is considered accepted for launch, an authorised administrator must:
+
+1. Keep the explicit Cloudflare Access editor allowlist current.
+2. Acceptance-test one-time-PIN login and a complete create/edit/delete workflow in preview.
+3. Repeat the acceptance test in production before permitting routine production writes.
 5. Configure the approved domain, DNS, TLS, cache rules, logs and usage visibility.
 
 See [`docs/editor-guide.md`](./docs/editor-guide.md) and [`docs/deployment.md`](./docs/deployment.md).

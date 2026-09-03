@@ -8,7 +8,7 @@ The editor manages only news, events and homepage carousel items. Institutional 
 2. Run `pnpm db:setup:local`, `pnpm build`, and `pnpm preview`.
 3. Open `http://127.0.0.1:8787/admin`.
 
-The bypass works only with the local environment marker. Preview and production deny access until Cloudflare Access is configured.
+The bypass works only with the local environment marker. Preview and production are protected by separate Cloudflare Access applications and validate their environment-specific audience tags.
 
 ## Editorial workflow
 
@@ -28,7 +28,7 @@ Do not upload unapproved portraits, event photographs, scientific figures, or pu
 
 ## Production safeguards
 
-- Cloudflare Access must explicitly allow only the approved editor email addresses.
+- Cloudflare Access explicitly allows Bhoomika Maheshwari (`bhoomika.physics@gmail.com`), Gagandeep Singh (`gags02@gmail.com`) and Dr Abhishek (`abi00779@gmail.com`). Update the reusable Access policy when authorised editors change.
 - `/admin/**` and `/api/admin/**` are verified again by the Worker; a client-side page is never the security boundary.
 - Every administrative response is private and non-cacheable.
 - Mutation requests require same-origin requests, server validation, and an authenticated editor identity.

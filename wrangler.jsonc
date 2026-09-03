@@ -37,7 +37,9 @@
       "workers_dev": true,
       "vars": {
         "INPA_ENVIRONMENT": "preview",
-        "NUXT_PUBLIC_SITE_URL": "https://inpa-website-preview.inpa-website.workers.dev"
+        "NUXT_PUBLIC_SITE_URL": "https://inpa-website-preview.inpa-website.workers.dev",
+        "NUXT_CF_ACCESS_TEAM_DOMAIN": "https://crimson-queen-235a.cloudflareaccess.com",
+        "NUXT_CF_ACCESS_AUD": "8f9f9c21f37cf7168f6883b2dd5df63638fa3f7671f1ed07f70baa3a66c74e20"
       },
       "d1_databases": [
         {
@@ -59,7 +61,9 @@
       "workers_dev": true,
       "vars": {
         "INPA_ENVIRONMENT": "production",
-        "NUXT_PUBLIC_SITE_URL": "https://inpa-website.inpa-website.workers.dev"
+        "NUXT_PUBLIC_SITE_URL": "https://inpa-website.inpa-website.workers.dev",
+        "NUXT_CF_ACCESS_TEAM_DOMAIN": "https://crimson-queen-235a.cloudflareaccess.com",
+        "NUXT_CF_ACCESS_AUD": "bf3017c955bbc1f7ccd37bf5b26cb47f23b9af508489e1acd16916d5e371d30b"
       },
       "d1_databases": [
         {
