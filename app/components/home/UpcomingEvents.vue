@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PublicEventItem } from '../../../shared/types/content'
 import { formatIndiaDate } from '~/utils/date'
+import { publicMediaUrl } from '~/utils/media'
 
 defineProps<{ items: PublicEventItem[] }>()
 </script>
@@ -16,6 +17,7 @@ defineProps<{ items: PublicEventItem[] }>()
         <li v-for="item in items" :key="item.slug" class="timeline__item">
           <time :datetime="item.startAt">{{ formatIndiaDate(item.startAt) }}</time>
           <div>
+            <img v-if="item.coverImageKey" class="timeline__image" :src="publicMediaUrl(item.coverImageKey) ?? undefined" :alt="item.coverImageAlt ?? ''" width="720" height="405" loading="lazy">
             <p v-if="item.status !== 'published'" class="status-chip">{{ item.status }}</p>
             <h3>{{ item.title }}</h3>
             <p>{{ item.summary }}</p>

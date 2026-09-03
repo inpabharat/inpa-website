@@ -25,6 +25,7 @@
     "db:migrate:preview": "wrangler d1 migrations apply DB --env preview --remote",
     "db:migrate:production": "wrangler d1 migrations apply DB --env production --remote",
     "deploy:preview": "pnpm build && wrangler deploy .output/server/index.mjs --assets .output/public --config wrangler.jsonc --env preview",
+    "upload:production": "pnpm build && wrangler versions upload .output/server/index.mjs --assets .output/public --config wrangler.jsonc --env production",
     "deploy:production": "pnpm build && wrangler deploy .output/server/index.mjs --assets .output/public --config wrangler.jsonc --env production",
     "deploy": "pnpm deploy:production"
   },

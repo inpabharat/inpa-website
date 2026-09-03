@@ -4,7 +4,7 @@ import { decideEditorAuth } from '../../shared/utils/auth-policy'
 describe('decideEditorAuth', () => {
   it('allows an explicitly requested bypass only in a development build', () => {
     expect(decideEditorAuth({
-      isDevelopmentBuild: true,
+      isDevelopmentEnvironment: true,
       bypassRequested: true,
       teamDomainConfigured: false,
       audienceConfigured: false,
@@ -14,7 +14,7 @@ describe('decideEditorAuth', () => {
 
   it('fails closed in production when Access configuration is missing', () => {
     expect(decideEditorAuth({
-      isDevelopmentBuild: false,
+      isDevelopmentEnvironment: false,
       bypassRequested: true,
       teamDomainConfigured: false,
       audienceConfigured: false,
@@ -24,7 +24,7 @@ describe('decideEditorAuth', () => {
 
   it('requires configuration and an assertion before verification', () => {
     expect(decideEditorAuth({
-      isDevelopmentBuild: false,
+      isDevelopmentEnvironment: false,
       bypassRequested: false,
       teamDomainConfigured: true,
       audienceConfigured: true,

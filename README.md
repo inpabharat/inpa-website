@@ -65,13 +65,13 @@ Remote migrations are always explicit. Never load `drizzle/seed.local.sql` into 
 
 `/admin/**` and `/api/admin/**` are enforced by server middleware. By default they return `403` because Cloudflare Access is not configured.
 
-For ordinary Nuxt development only, copy `.env.example` to `.env` and deliberately set:
+For the standard Nuxt development server, copy `.env.example` to `.env` and deliberately set:
 
 ```text
 NUXT_DEV_AUTH_BYPASS=true
 ```
 
-The bypass also requires Nuxt's compile-time development mode. A production build ignores it and fails closed when the Cloudflare Access team domain, application audience, or signed assertion is absent. Do not put the bypass in `.dev.vars`, Wrangler configuration, CI, previews, or production.
+For the locally simulated Worker, copy `.dev.vars.example` to `.dev.vars`. The bypass requires both the explicit opt-in and the checked-in `local` environment marker. Preview and production are marked separately and fail closed when the Cloudflare Access team domain, application audience, or signed assertion is absent. Never configure the bypass in preview, production, or CI.
 
 ## Cloudflare environments
 
@@ -81,23 +81,27 @@ The checked-in `wrangler.jsonc` defines explicit `local`, INPA-owned `preview`, 
 - `MEDIA` for R2.
 - `ASSETS` for compiled Nuxt assets.
 
-The INPA Cloudflare account currently owns `inpa-preview` and `inpa-production` D1 databases. R2 is intentionally not bound to either remote environment until R2 has been enabled in the account and the corresponding buckets exist. The server treats a missing `MEDIA` binding as unavailable rather than failing public requests.
+The INPA Cloudflare account owns separate `inpa-preview` and `inpa-production` D1 databases and separate `inpa-media-preview` and `inpa-media-production` R2 buckets. All four resources are explicitly bound by environment. Media objects use random immutable keys and are never seeded into production.
 
 Deployment commands:
 
 ```powershell
 pnpm deploy:preview
+pnpm upload:production
 pnpm deploy:production
 ```
+
+`deploy:preview` updates the preview Worker immediately. `upload:production` creates a candidate version on the production Worker without sending it live; an authorised administrator can then open **Workers & Pages → inpa-website → Deployments → Promote deployment** and select that version. `deploy:production` is the direct command-line alternative and immediately sends the new version to all production traffic.
 
 Before editor access or the official domain is enabled, an authorised administrator must:
 
 1. Obtain the official email address of each approved editor.
 2. Configure a Cloudflare Access application for `/admin/**` and `/api/admin/**` with that explicit editor allowlist.
 3. Supply `NUXT_CF_ACCESS_TEAM_DOMAIN` and `NUXT_CF_ACCESS_AUD` as protected runtime configuration.
-4. Complete and acceptance-test the editor CRUD workflow before permitting production writes.
-5. Enable R2 later, create preview and production buckets, and add their `MEDIA` bindings when INPA can provide the billing details required by Cloudflare.
-6. Configure the approved domain, DNS, TLS, cache rules, logs and usage visibility.
+4. Acceptance-test the completed editor workflow through Cloudflare Access before permitting production writes.
+5. Configure the approved domain, DNS, TLS, cache rules, logs and usage visibility.
+
+See [`docs/editor-guide.md`](./docs/editor-guide.md) and [`docs/deployment.md`](./docs/deployment.md).
 
 The INPA-owned GitHub repository is connected to Cloudflare. Pushes to `main` automatically build and deploy the preview Worker. Production deployment remains explicit until the primary domain and release workflow are approved.
 

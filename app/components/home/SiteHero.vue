@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PublicCarouselItem } from '../../../shared/types/content'
 import { heroContent } from '~~/content/site/home'
+import { publicMediaUrl } from '~/utils/media'
 
 const props = defineProps<{ carousel: PublicCarouselItem[] }>()
 const activeIndex = ref(0)
@@ -49,10 +50,12 @@ function showNext(): void {
         </ul>
 
         <div v-if="activeSlide" class="hero__carousel" aria-live="polite">
+          <img class="hero__carousel-image" :src="publicMediaUrl(activeSlide.imageKey) ?? undefined" :alt="activeSlide.imageAlt" width="720" height="405">
           <div>
             <p class="eyebrow eyebrow--light">{{ activeSlide.eyebrow }}</p>
             <p class="hero__carousel-title">{{ activeSlide.title }}</p>
             <p v-if="activeSlide.summary">{{ activeSlide.summary }}</p>
+            <NuxtLink v-if="activeSlide.ctaLabel && activeSlide.ctaUrl" class="text-link text-link--light" :to="activeSlide.ctaUrl">{{ activeSlide.ctaLabel }} <span aria-hidden="true">→</span></NuxtLink>
           </div>
           <div v-if="carousel.length > 1" class="hero__carousel-controls" aria-label="Carousel controls">
             <button type="button" aria-label="Show previous carousel item" @click="showPrevious">Previous</button>

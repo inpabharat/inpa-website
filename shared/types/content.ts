@@ -37,6 +37,8 @@ export interface PublicEventItem {
   isOnline: boolean
   status: EventStatus
   externalUrl: string | null
+  coverImageKey: string | null
+  coverImageAlt: string | null
 }
 
 export interface PublicCarouselItem {

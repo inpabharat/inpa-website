@@ -1,4 +1,4 @@
-import { and, asc, desc, eq, gt, gte, inArray, isNull, lte, or } from 'drizzle-orm'
+import { and, asc, desc, eq, gt, gte, inArray, isNull, lt, lte, or } from 'drizzle-orm'
 import type { InpaDatabase } from '../database/client'
 import { carouselItems, events, news } from '../database/schema'
 
@@ -12,6 +12,7 @@ export class PublicContentRepository {
         title: news.title,
         summary: news.summary,
         publishedAt: news.publishedAt,
+        publishAt: news.publishAt,
         category: news.category,
         coverImageKey: news.coverImageKey,
         coverImageAlt: news.coverImageAlt,
@@ -20,8 +21,10 @@ export class PublicContentRepository {
       .from(news)
       .where(
         and(
-          eq(news.status, 'published'),
-          lte(news.publishedAt, now),
+          or(
+            and(eq(news.status, 'published'), lte(news.publishedAt, now)),
+            and(eq(news.status, 'scheduled'), lte(news.publishAt, now)),
+          ),
           or(isNull(news.expiresAt), gt(news.expiresAt, now)),
         ),
       )
@@ -33,8 +36,10 @@ export class PublicContentRepository {
     return this.database.query.news.findFirst({
       where: and(
         eq(news.slug, slug),
-        eq(news.status, 'published'),
-        lte(news.publishedAt, now),
+        or(
+          and(eq(news.status, 'published'), lte(news.publishedAt, now)),
+          and(eq(news.status, 'scheduled'), lte(news.publishAt, now)),
+        ),
         or(isNull(news.expiresAt), gt(news.expiresAt, now)),
       ),
     })
@@ -53,11 +58,13 @@ export class PublicContentRepository {
         isOnline: events.isOnline,
         status: events.status,
         externalUrl: events.externalUrl,
+        coverImageKey: events.coverImageKey,
+        coverImageAlt: events.coverImageAlt,
       })
       .from(events)
       .where(
         and(
-          inArray(events.status, ['published', 'postponed', 'cancelled']),
+          inArray(events.status, ['scheduled', 'published', 'postponed', 'cancelled']),
           or(isNull(events.publishAt), lte(events.publishAt, now)),
           gte(events.startAt, now),
         ),
@@ -66,11 +73,39 @@ export class PublicContentRepository {
       .limit(limit)
   }
 
+  listPastEvents(now: string, limit = 50) {
+    return this.database
+      .select({
+        slug: events.slug,
+        title: events.title,
+        summary: events.summary,
+        startAt: events.startAt,
+        endAt: events.endAt,
+        timezone: events.timezone,
+        locationName: events.locationName,
+        isOnline: events.isOnline,
+        status: events.status,
+        externalUrl: events.externalUrl,
+        coverImageKey: events.coverImageKey,
+        coverImageAlt: events.coverImageAlt,
+      })
+      .from(events)
+      .where(
+        and(
+          inArray(events.status, ['scheduled', 'published', 'postponed', 'cancelled', 'completed']),
+          or(isNull(events.publishAt), lte(events.publishAt, now)),
+          lt(events.startAt, now),
+        ),
+      )
+      .orderBy(desc(events.startAt))
+      .limit(limit)
+  }
+
   getEventBySlug(slug: string, now: string) {
     return this.database.query.events.findFirst({
       where: and(
         eq(events.slug, slug),
-        inArray(events.status, ['published', 'postponed', 'cancelled', 'completed']),
+        inArray(events.status, ['scheduled', 'published', 'postponed', 'cancelled', 'completed']),
         or(isNull(events.publishAt), lte(events.publishAt, now)),
       ),
     })

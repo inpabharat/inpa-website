@@ -1,4 +1,7 @@
-# Copy to .dev.vars only after Cloudflare Access is configured.
-# Do not use fabricated values: missing production values intentionally fail closed.
+# Copy to .dev.vars for the locally simulated Worker only.
+# This bypass works only when the checked-in environment marker is `local`.
+NUXT_DEV_AUTH_BYPASS=true
+
+# Supply these only after Cloudflare Access is configured.
 NUXT_CF_ACCESS_TEAM_DOMAIN=
 NUXT_CF_ACCESS_AUD=

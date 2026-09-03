@@ -6,6 +6,8 @@ interface NewsDetail {
   body: string
   publishedAt: string | null
   category: string | null
+  coverImageKey: string | null
+  coverImageAlt: string | null
 }
 
 const route = useRoute()
@@ -34,6 +36,7 @@ useSeoMeta({
     </section>
     <section class="section">
       <div class="container container--reading prose">
+        <img v-if="item?.coverImageKey" class="detail-cover" :src="publicMediaUrl(item.coverImageKey) ?? undefined" :alt="item.coverImageAlt ?? ''" width="960" height="540">
         <p>{{ item?.body }}</p>
         <NuxtLink class="text-link" to="/news">Return to news <span aria-hidden="true">→</span></NuxtLink>
       </div>

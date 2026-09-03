@@ -42,15 +42,16 @@ The website publishes only information supported by supplied INPA material or ex
 - [x] Authorised editor names supplied: Bhoomika Maheshwari, Gagandeep Singh and Dr Abhishek.
 - [ ] Official email address for each authorised editor.
 - [ ] Cloudflare Access application, email allowlist, login method and application audience.
-- [ ] Editor CRUD interface and administrative APIs for news, events and carousel items.
-- [ ] R2 activation, media buckets and upload workflow. Activation currently requires INPA payment-card details and is deferred.
-- [ ] Editor acceptance test and short operating guide.
+- [x] Editor CRUD interface and administrative APIs for news, events and carousel items, including scheduling, previews and audit revisions.
+- [x] Separate R2 preview/production buckets, validated upload endpoint and public immutable-media delivery route.
+- [x] Local editor workflow acceptance test and short operating guide.
+- [ ] Production editor acceptance test through the final Cloudflare Access policy.
 
 ## Public beta blockers in priority order
 
 1. Confirm the primary domain and connect it to the production Worker.
 2. Supply the three authorised editor email addresses and configure Cloudflare Access.
-3. Complete and test the news/event/carousel editor workflow.
+3. Configure Cloudflare Access and complete the production editor acceptance test.
 4. Supply the current Executive Council, committees and Constitution.
 5. Approve the President’s final web message and portrait credit.
 6. Confirm membership application instructions and eligibility rules.

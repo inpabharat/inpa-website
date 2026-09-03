@@ -7,6 +7,8 @@ interface EventDetail {
   status: string
   startAt: string
   timezone: string
+  coverImageKey: string | null
+  coverImageAlt: string | null
 }
 
 const route = useRoute()
@@ -36,6 +38,7 @@ useSeoMeta({
     <section class="section">
       <div class="container container--reading prose">
         <template v-if="item">
+          <img v-if="item.coverImageKey" class="detail-cover" :src="publicMediaUrl(item.coverImageKey) ?? undefined" :alt="item.coverImageAlt ?? ''" width="960" height="540">
           <p><strong>Timezone:</strong> {{ item.timezone }}</p>
           <p>{{ item.body }}</p>
         </template>

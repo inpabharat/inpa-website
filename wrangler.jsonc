@@ -14,6 +14,9 @@
   "env": {
     "local": {
       "name": "inpa-website-local",
+      "vars": {
+        "INPA_ENVIRONMENT": "local"
+      },
       "d1_databases": [
         {
           "binding": "DB",
@@ -33,6 +36,7 @@
       "name": "inpa-website-preview",
       "workers_dev": true,
       "vars": {
+        "INPA_ENVIRONMENT": "preview",
         "NUXT_PUBLIC_SITE_URL": "https://inpa-website-preview.inpa-website.workers.dev"
       },
       "d1_databases": [
@@ -42,12 +46,19 @@
           "database_id": "a864a9ab-3c0f-472b-89eb-1662b9406fb0",
           "migrations_dir": "migrations"
         }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "MEDIA",
+          "bucket_name": "inpa-media-preview"
+        }
       ]
     },
     "production": {
       "name": "inpa-website",
       "workers_dev": true,
       "vars": {
+        "INPA_ENVIRONMENT": "production",
         "NUXT_PUBLIC_SITE_URL": "https://inpa-website.inpa-website.workers.dev"
       },
       "d1_databases": [
@@ -56,6 +67,12 @@
           "database_name": "inpa-production",
           "database_id": "e7e11805-a1f0-476c-8b8c-a5fde9360809",
           "migrations_dir": "migrations"
+        }
+      ],
+      "r2_buckets": [
+        {
+          "binding": "MEDIA",
+          "bucket_name": "inpa-media-production"
         }
       ]
     }

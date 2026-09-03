@@ -4,6 +4,8 @@ export interface CloudflareBindings {
   DB?: D1Database
   MEDIA?: R2Bucket
   ASSETS?: Fetcher
+  INPA_ENVIRONMENT?: 'local' | 'preview' | 'production'
+  NUXT_DEV_AUTH_BYPASS?: string
 }
 
 interface CloudflareEventContext {

@@ -2,6 +2,7 @@ import { createRemoteJWKSet, jwtVerify } from 'jose'
 import type { H3Event } from 'h3'
 import { createError, getHeader } from 'h3'
 import { decideEditorAuth } from '../../shared/utils/auth-policy'
+import { getCloudflareBindings } from '../database/bindings'
 
 export interface EditorIdentity {
   email: string
@@ -29,10 +30,11 @@ function verifiedTeamDomain(value: string): string {
 
 export async function requireEditor(event: H3Event): Promise<EditorIdentity> {
   const config = useRuntimeConfig(event) as unknown as EditorAuthConfig
+  const bindings = getCloudflareBindings(event)
   const assertion = getHeader(event, 'cf-access-jwt-assertion') ?? ''
   const decision = decideEditorAuth({
-    isDevelopmentBuild: import.meta.dev,
-    bypassRequested: isEnabled(config.devAuthBypass),
+    isDevelopmentEnvironment: import.meta.dev || bindings?.INPA_ENVIRONMENT === 'local',
+    bypassRequested: isEnabled(config.devAuthBypass) || isEnabled(bindings?.NUXT_DEV_AUTH_BYPASS ?? false),
     teamDomainConfigured: config.cfAccessTeamDomain.length > 0,
     audienceConfigured: config.cfAccessAud.length > 0,
     assertionPresent: assertion.length > 0,

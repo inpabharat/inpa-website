@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PublicNewsItem } from '../../../shared/types/content'
 import { formatIndiaDate } from '~/utils/date'
+import { publicMediaUrl } from '~/utils/media'
 
 defineProps<{ items: PublicNewsItem[] }>()
 </script>
@@ -14,7 +15,7 @@ defineProps<{ items: PublicNewsItem[] }>()
       </div>
       <div v-if="items.length" class="card-grid card-grid--three">
         <article v-for="item in items" :key="item.slug" class="editorial-card">
-          <div class="editorial-card__media" aria-hidden="true">Image</div>
+          <img v-if="item.coverImageKey" class="editorial-card__media editorial-card__image" :src="publicMediaUrl(item.coverImageKey) ?? undefined" :alt="item.coverImageAlt ?? ''" width="720" height="405" loading="lazy">
           <p class="meta"><span v-if="item.category">{{ item.category }} · </span>{{ formatIndiaDate(item.publishedAt) }} IST</p>
           <h3>{{ item.title }}</h3>
           <p>{{ item.summary }}</p>

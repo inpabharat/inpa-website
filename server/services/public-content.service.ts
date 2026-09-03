@@ -38,8 +38,8 @@ export async function getPublicHome(event: H3Event): Promise<ApiResponse<PublicH
   ])
 
   const mappedNews: PublicNewsItem[] = newsItems
-    .filter(item => item.publishedAt !== null)
-    .map(item => ({ ...item, publishedAt: item.publishedAt as string }))
+    .filter(item => item.publishedAt !== null || item.publishAt !== null)
+    .map(({ publishAt, ...item }) => ({ ...item, publishedAt: (item.publishedAt ?? publishAt) as string }))
 
   return response(
     {
@@ -56,8 +56,8 @@ export async function getPublicNews(event: H3Event): Promise<ApiResponse<PublicN
   if (!repository) return response([], 'unavailable')
   const rows = await repository.listLatestNews(new Date().toISOString(), 24)
   const data = rows
-    .filter(item => item.publishedAt !== null)
-    .map(item => ({ ...item, publishedAt: item.publishedAt as string }))
+    .filter(item => item.publishedAt !== null || item.publishAt !== null)
+    .map(({ publishAt, ...item }) => ({ ...item, publishedAt: (item.publishedAt ?? publishAt) as string }))
   return response(data, 'd1')
 }
 
@@ -65,6 +65,13 @@ export async function getPublicEvents(event: H3Event): Promise<ApiResponse<Publi
   const repository = repositoryFor(event)
   if (!repository) return response([], 'unavailable')
   const data = await repository.listUpcomingEvents(new Date().toISOString(), 50)
+  return response(data as PublicEventItem[], 'd1')
+}
+
+export async function getPastPublicEvents(event: H3Event): Promise<ApiResponse<PublicEventItem[]>> {
+  const repository = repositoryFor(event)
+  if (!repository) return response([], 'unavailable')
+  const data = await repository.listPastEvents(new Date().toISOString(), 50)
   return response(data as PublicEventItem[], 'd1')
 }
 
