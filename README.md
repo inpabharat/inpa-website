@@ -55,9 +55,11 @@ pnpm db:generate
 pnpm db:migrate:local
 pnpm db:seed:local
 pnpm db:setup:local
+pnpm db:migrate:preview
+pnpm db:migrate:production
 ```
 
-Do not run `db:migrate:remote` or `deploy` until an INPA-owned Cloudflare account, production resource identifiers, and an approved deployment process exist.
+Remote migrations are always explicit. Never load `drizzle/seed.local.sql` into a remote database.
 
 ## Local editor boundary
 
@@ -71,25 +73,33 @@ NUXT_DEV_AUTH_BYPASS=true
 
 The bypass also requires Nuxt's compile-time development mode. A production build ignores it and fails closed when the Cloudflare Access team domain, application audience, or signed assertion is absent. Do not put the bypass in `.dev.vars`, Wrangler configuration, CI, previews, or production.
 
-## Cloudflare setup deferred until account ownership exists
+## Cloudflare environments
 
-The checked-in `wrangler.jsonc` uses a clearly local placeholder D1 identifier and logical bindings:
+The checked-in `wrangler.jsonc` defines explicit `local`, INPA-owned `preview`, and INPA-owned `production` environments:
 
 - `DB` for D1.
 - `MEDIA` for R2.
 - `ASSETS` for compiled Nuxt assets.
 
-After INPA creates and owns its Cloudflare account, an authorised administrator must:
+The INPA Cloudflare account currently owns `inpa-preview` and `inpa-production` D1 databases. R2 is intentionally not bound to either remote environment until R2 has been enabled in the account and the corresponding buckets exist. The server treats a missing `MEDIA` binding as unavailable rather than failing public requests.
 
-1. Create production and preview D1 databases and R2 buckets.
-2. Replace local placeholder resource identifiers in the appropriate Wrangler environments.
-3. Configure a Cloudflare Access application for `/admin/**` and `/api/admin/**` with an explicit editor allowlist.
-4. Supply `NUXT_CF_ACCESS_TEAM_DOMAIN` and `NUXT_CF_ACCESS_AUD` as protected runtime configuration.
-5. Connect the GitHub repository to the approved Cloudflare deployment workflow.
-6. Apply checked-in migrations explicitly before enabling editor writes.
-7. Configure the approved domain, DNS, TLS, cache rules, logs and usage visibility.
+Deployment commands:
 
-No account, domain, external deployment, paid service or GitHub deployment configuration is created by this repository foundation.
+```powershell
+pnpm deploy:preview
+pnpm deploy:production
+```
+
+Before editor access or the official domain is enabled, an authorised administrator must:
+
+1. Enable R2, create preview and production buckets, and add their `MEDIA` bindings.
+2. Configure a Cloudflare Access application for `/admin/**` and `/api/admin/**` with an explicit editor allowlist.
+3. Supply `NUXT_CF_ACCESS_TEAM_DOMAIN` and `NUXT_CF_ACCESS_AUD` as protected runtime configuration.
+4. Connect the INPA GitHub repository to the approved Cloudflare deployment workflow.
+5. Apply checked-in migrations explicitly before enabling editor writes.
+6. Configure the approved domain, DNS, TLS, cache rules, logs and usage visibility.
+
+Namecheap nameserver changes remain deferred until the preview Worker has been verified.
 
 ## Content safety
 

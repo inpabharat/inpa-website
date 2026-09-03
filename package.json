@@ -10,8 +10,8 @@
   "scripts": {
     "build": "nuxt build --preset=cloudflare_module",
     "dev": "nuxt dev",
-    "dev:worker": "pnpm build && wrangler dev --local",
-    "preview": "wrangler dev --local",
+    "dev:worker": "pnpm build && wrangler dev --local --env local",
+    "preview": "wrangler dev --local --env local",
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
@@ -19,11 +19,14 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
-    "db:migrate:local": "wrangler d1 migrations apply inpa-local --local",
-    "db:seed:local": "wrangler d1 execute inpa-local --local --file=./drizzle/seed.local.sql",
+    "db:migrate:local": "wrangler d1 migrations apply DB --env local --local",
+    "db:seed:local": "wrangler d1 execute DB --env local --local --file=./drizzle/seed.local.sql",
     "db:setup:local": "pnpm db:migrate:local && pnpm db:seed:local",
-    "db:migrate:remote": "wrangler d1 migrations apply inpa-production --remote",
-    "deploy": "wrangler deploy"
+    "db:migrate:preview": "wrangler d1 migrations apply DB --env preview --remote",
+    "db:migrate:production": "wrangler d1 migrations apply DB --env production --remote",
+    "deploy:preview": "pnpm build && wrangler deploy --env preview",
+    "deploy:production": "pnpm build && wrangler deploy --env production",
+    "deploy": "pnpm deploy:production"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",
