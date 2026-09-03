@@ -24,8 +24,8 @@
     "db:setup:local": "pnpm db:migrate:local && pnpm db:seed:local",
     "db:migrate:preview": "wrangler d1 migrations apply DB --env preview --remote",
     "db:migrate:production": "wrangler d1 migrations apply DB --env production --remote",
-    "deploy:preview": "pnpm build && wrangler deploy --env preview",
-    "deploy:production": "pnpm build && wrangler deploy --env production",
+    "deploy:preview": "pnpm build && wrangler deploy .output/server/index.mjs --assets .output/public --config wrangler.jsonc --env preview",
+    "deploy:production": "pnpm build && wrangler deploy .output/server/index.mjs --assets .output/public --config wrangler.jsonc --env production",
     "deploy": "pnpm deploy:production"
   },
   "dependencies": {
