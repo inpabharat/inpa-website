@@ -4,7 +4,6 @@ defineProps<{ message: string }>()
 
 <template>
   <p class="placeholder-notice" role="note">
-    <span aria-hidden="true">Development status</span>
     {{ message }}
   </p>
 </template>

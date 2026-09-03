@@ -20,8 +20,6 @@ const footerExploreLinks = navigationGroups.map(group => ({
           <a :href="`tel:${publicContact.phoneHref}`">{{ publicContact.secretary }}, Secretary — {{ publicContact.phoneDisplay }}</a>
           <a :href="`mailto:${publicContact.email}`">{{ publicContact.email }}</a>
         </address>
-        <p class="site-footer__source">{{ publicContact.source }}</p>
-        <p class="site-footer__note">{{ publicContact.missing }}</p>
       </div>
       <div class="site-footer__navigation">
         <nav aria-label="Explore INPA">
@@ -37,7 +35,6 @@ const footerExploreLinks = navigationGroups.map(group => ({
     <div class="container site-footer__legal">
       <p>© 2026 Indian Nuclear Physics Association (INPA). All rights reserved.</p>
       <div class="site-footer__legal-meta">
-        <p>Prototype website — selected media permissions and programme details remain pending.</p>
         <p class="site-footer__credit">
           Website design and development:
           <a href="https://www.dr-abhishek.com/" target="_blank" rel="author external noopener noreferrer">

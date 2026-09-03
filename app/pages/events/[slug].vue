@@ -13,6 +13,10 @@ const route = useRoute()
 const { data: response } = await useFetch<{ data: EventDetail | null, meta: { source: string } }>(`/api/public/events/${route.params.slug}`)
 const item = computed(() => response.value?.data ?? null)
 
+if (!item.value) {
+  throw createError({ statusCode: 404, statusMessage: 'Event not found' })
+}
+
 useSeoMeta({
   title: () => item.value?.title ?? 'Event unavailable',
   description: () => item.value?.summary ?? 'This event is not currently available.',
@@ -35,7 +39,6 @@ useSeoMeta({
           <p><strong>Timezone:</strong> {{ item.timezone }}</p>
           <p>{{ item.body }}</p>
         </template>
-        <PlaceholderNotice v-else message="This may be an unpublished item, a missing record, or a local development session without a D1 binding." />
         <NuxtLink class="text-link" to="/events">Return to events <span aria-hidden="true">→</span></NuxtLink>
       </div>
     </section>

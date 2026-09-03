@@ -29,7 +29,6 @@ import { nuclearHorizonsContent, researchContent } from '~~/content/site/home'
           <h3>{{ nuclearHorizonsContent.title }}</h3>
           <p>{{ nuclearHorizonsContent.summary }}</p>
           <p><strong>Latest verified issue:</strong> {{ nuclearHorizonsContent.issues[0].label }} · {{ nuclearHorizonsContent.issues[0].date }}</p>
-          <p class="source-note">Cover art and issue files remain unavailable until web-distribution permission is confirmed.</p>
           <div class="science-publications__actions">
             <NuxtLink class="text-link" to="/nuclear-horizons">Explore Nuclear Horizons <span aria-hidden="true">→</span></NuxtLink>
             <NuxtLink class="text-link" :to="nuclearHorizonsContent.archiveTo">Issue archive <span aria-hidden="true">→</span></NuxtLink>

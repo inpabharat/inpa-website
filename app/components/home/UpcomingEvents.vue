@@ -24,7 +24,7 @@ defineProps<{ items: PublicEventItem[] }>()
           </div>
         </li>
       </ol>
-      <PlaceholderNotice v-else message="No verified upcoming events are published. A development-only seed can be loaded into the local D1 database." />
+      <PlaceholderNotice v-else message="No upcoming events have been published." />
     </div>
   </section>
 </template>

@@ -21,7 +21,7 @@ defineProps<{ items: PublicNewsItem[] }>()
           <NuxtLink class="text-link" :to="item.externalUrl ?? `/news/${item.slug}`">Read this news item <span aria-hidden="true">→</span></NuxtLink>
         </article>
       </div>
-      <PlaceholderNotice v-else message="No verified published news is available. Local D1 fixtures can demonstrate this layout without becoming production content." />
+      <PlaceholderNotice v-else message="No current news has been published." />
     </div>
   </section>
 </template>

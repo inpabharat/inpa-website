@@ -14,10 +14,9 @@ import { strategicVision } from '~~/content/site/home'
       <div class="nnpi-front__content">
         <div class="nnpi-front__heading">
           <div>
-            <p class="eyebrow eyebrow--light">Developing national framework</p>
+            <p class="eyebrow eyebrow--light">National framework</p>
             <h2 id="nnpi-front-title">{{ strategicVision.nnpi.title }}</h2>
           </div>
-          <span class="nnpi-front__status">Framework in development</span>
         </div>
 
         <p class="nnpi-front__descriptor">{{ strategicVision.nnpi.descriptor }}</p>

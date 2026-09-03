@@ -41,7 +41,7 @@ const visibleEvents = computed(() => props.events.slice(0, 2))
               <NuxtLink :to="item.externalUrl ?? `/news/${item.slug}`">Read news <span aria-hidden="true">→</span></NuxtLink>
             </li>
           </ul>
-          <PlaceholderNotice v-else message="No verified published news is available. Local development fixtures may be used to demonstrate the layout." />
+          <PlaceholderNotice v-else message="No current news has been published." />
         </section>
 
         <section class="updates-panel" aria-labelledby="upcoming-events-title">
@@ -64,7 +64,7 @@ const visibleEvents = computed(() => props.events.slice(0, 2))
               </div>
             </li>
           </ol>
-          <PlaceholderNotice v-else message="No verified upcoming events are published. A development-only seed can demonstrate the layout locally." />
+          <PlaceholderNotice v-else message="No upcoming events have been published." />
         </section>
 
       </div>

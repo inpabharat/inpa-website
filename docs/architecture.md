@@ -20,7 +20,7 @@ R2 is exposed through the `MEDIA` binding adapter, but upload and delivery endpo
 - Public database APIs emit shared-cache directives with stale-while-revalidate support.
 - The homepage may be stale-while-revalidated for a short interval.
 - Editor routes are server-rendered, protected and marked `noindex, nofollow, noarchive`.
-- The initial sitemap contains only the homepage because all other repository-managed routes still contain unverified placeholders.
+- The sitemap includes only routes backed by verified public material. Incomplete content routes remain reachable from navigation but carry `noindex` until approved content is supplied.
 
 ## Authentication rule
 

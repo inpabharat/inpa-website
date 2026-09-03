@@ -10,7 +10,7 @@ import { aboutContent, presidentContent } from '~~/content/site/home'
         <h2 id="institutional-snapshot-title">A national community for nuclear physics</h2>
         <p class="lead">{{ aboutContent.summary }}</p>
         <p class="fact-line">{{ aboutContent.registration }}</p>
-        <p class="source-note">Source: {{ aboutContent.source }} Final institutionally approved About copy is still required.</p>
+        <p class="source-note">Source: {{ aboutContent.source }}</p>
         <NuxtLink class="text-link" to="/about">About INPA <span aria-hidden="true">→</span></NuxtLink>
       </div>
 
@@ -23,7 +23,7 @@ import { aboutContent, presidentContent } from '~~/content/site/home'
             height="1600"
             loading="lazy"
           >
-          <figcaption>Photograph supplied for the website; formal credit pending.</figcaption>
+          <figcaption>Prof. A. K. Jain, President, Indian Nuclear Physics Association.</figcaption>
         </figure>
         <div>
           <p class="eyebrow">From the President</p>

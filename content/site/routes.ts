@@ -1,6 +1,7 @@
 import { bulletinContentNotice, bulletinSources, currentLeadership, publicContact } from './bulletin-sources'
 
 export interface RouteSection {
+  id?: string
   heading: string
   paragraphs?: readonly string[]
   items?: readonly string[]
@@ -10,6 +11,7 @@ export interface PendingRouteContent {
   title: string
   eyebrow: string
   description: string
+  indexable?: boolean
   requiredContent: string
   sourceNote?: string
   sections?: readonly RouteSection[]
@@ -20,6 +22,7 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
     title: 'About INPA',
     eyebrow: 'Institutional profile',
     description: 'The Indian Nuclear Physics Association is a scientific society and national platform for India’s nuclear-physics community.',
+    indexable: true,
     requiredContent: 'A final institutionally approved About statement, office address and full governance documents are still required.',
     sourceNote: bulletinContentNotice,
     sections: [
@@ -150,6 +153,7 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
     title: 'Nuclear Horizons',
     eyebrow: 'INPA publication',
     description: 'Nuclear Horizons is the official bulletin of the Indian Nuclear Physics Association and a platform for communication, collaboration and knowledge exchange.',
+    indexable: true,
     requiredContent: 'Written web-distribution permission, approved cover files, accessible PDFs, article links and a submission route are still required.',
     sourceNote: bulletinContentNotice,
     sections: [
@@ -171,6 +175,7 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
     title: 'Nuclear Horizons archive',
     eyebrow: 'Publication archive',
     description: 'Issue metadata verified from the two supplied Nuclear Horizons publications.',
+    indexable: true,
     requiredContent: 'The PDFs and cover artwork will remain unavailable on the website until INPA confirms web-distribution permission.',
     sourceNote: bulletinContentNotice,
     sections: [
@@ -235,17 +240,30 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
     title: 'Membership',
     eyebrow: 'Membership information',
     description: 'Nuclear Horizons, Volume 1, Issue 2 reports that more than 500 colleagues had joined the INPA community by June 2026.',
-    requiredContent: 'The approved membership process, eligibility, fees and application destination are required.',
-    sourceNote: bulletinContentNotice,
+    requiredContent: 'Application instructions, eligibility details, membership duration, renewal terms and the approved payment route will be added after confirmation. No online payment is currently offered through this website.',
+    sourceNote: 'Membership amounts supplied by the INPA President in project correspondence. Application and payment procedures remain to be confirmed.',
+    sections: [
+      {
+        heading: 'Membership categories and amounts',
+        items: [
+          'Annual membership: ₹1,000.',
+          'Life membership: ₹6,000 or above.',
+          'Donor membership: above ₹21,000.',
+          'Institutional membership: amount not yet decided.',
+        ],
+      },
+    ],
   },
   '/contact': {
     title: 'Contact INPA',
     eyebrow: 'Contact',
     description: 'Public contact details approved by the INPA President on 10 August 2026.',
+    indexable: true,
     requiredContent: publicContact.missing,
     sourceNote: publicContact.source,
     sections: [
       {
+        id: 'contact-details',
         heading: 'INPA office',
         items: [
           publicContact.address,
@@ -254,12 +272,54 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
           'Email: ' + publicContact.email,
         ],
       },
+      {
+        id: 'corrections',
+        heading: 'Content corrections',
+        paragraphs: [
+          'To report an error or request a correction, write to ' + publicContact.email + ' with the page address and the information that should be reviewed.',
+        ],
+      },
+      {
+        id: 'accessibility',
+        heading: 'Accessibility assistance',
+        paragraphs: [
+          'If any website content or document is difficult to access, contact ' + publicContact.email + ' and describe the page, document or format required.',
+        ],
+      },
     ],
   },
   '/privacy': {
     title: 'Privacy Policy',
     eyebrow: 'Privacy',
-    description: 'The current foundation collects no public personal data and uses no advertising or invasive analytics.',
-    requiredContent: 'A formally reviewed privacy policy and responsible contact are required before launch.',
+    description: 'How the current INPA website handles information and third-party services.',
+    requiredContent: 'This notice describes the present website. It should be reviewed by INPA whenever forms, analytics, payments, newsletters or other data-collection features are introduced.',
+    sourceNote: 'Last updated: 3 September 2026.',
+    sections: [
+      {
+        heading: 'Information collected through the public website',
+        paragraphs: [
+          'The website currently has no public account system, payment facility, newsletter form or general contact form. It does not intentionally collect personal information directly from public visitors.',
+          'Like other websites, the hosting and security infrastructure may process technical request information needed to deliver and protect the service.',
+        ],
+      },
+      {
+        heading: 'Cookies and analytics',
+        paragraphs: [
+          'The public website does not currently use advertising trackers or behavioural advertising. If privacy-respecting analytics are enabled later, this notice will be updated before their use.',
+        ],
+      },
+      {
+        heading: 'External links and documents',
+        paragraphs: [
+          'Links to external organisations, forms or publications are governed by those services’ own privacy practices. Visitors should review the destination before submitting personal information.',
+        ],
+      },
+      {
+        heading: 'Privacy questions',
+        paragraphs: [
+          'Questions about this notice or the handling of website information may be sent to ' + publicContact.email + '.',
+        ],
+      },
+    ],
   },
 }

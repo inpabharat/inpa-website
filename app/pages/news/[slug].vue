@@ -12,6 +12,10 @@ const route = useRoute()
 const { data: response } = await useFetch<{ data: NewsDetail | null, meta: { source: string } }>(`/api/public/news/${route.params.slug}`)
 const item = computed(() => response.value?.data ?? null)
 
+if (!item.value) {
+  throw createError({ statusCode: 404, statusMessage: 'News item not found' })
+}
+
 useSeoMeta({
   title: () => item.value?.title ?? 'News item unavailable',
   description: () => item.value?.summary ?? 'This news item is not currently available.',
@@ -30,8 +34,7 @@ useSeoMeta({
     </section>
     <section class="section">
       <div class="container container--reading prose">
-        <p v-if="item">{{ item.body }}</p>
-        <PlaceholderNotice v-else message="This may be an unpublished item, a missing record, or a local development session without a D1 binding." />
+        <p>{{ item?.body }}</p>
         <NuxtLink class="text-link" to="/news">Return to news <span aria-hidden="true">→</span></NuxtLink>
       </div>
     </section>

@@ -15,7 +15,7 @@ defineProps<{ content: PendingRouteContent }>()
     </section>
     <section class="section">
       <div class="container container--reading">
-        <div v-for="section in content.sections" :key="section.heading" class="route-section">
+        <div v-for="section in content.sections" :id="section.id" :key="section.heading" class="route-section">
           <h2>{{ section.heading }}</h2>
           <p v-for="paragraph in section.paragraphs" :key="paragraph">{{ paragraph }}</p>
           <ul v-if="section.items">
@@ -23,7 +23,10 @@ defineProps<{ content: PendingRouteContent }>()
           </ul>
         </div>
         <p v-if="content.sourceNote" class="source-note">{{ content.sourceNote }}</p>
-        <PlaceholderNotice :message="content.requiredContent" />
+        <section class="route-section route-section--availability" aria-labelledby="availability-heading">
+          <h2 id="availability-heading">Further information</h2>
+          <p>{{ content.requiredContent }}</p>
+        </section>
         <NuxtLink class="text-link" to="/">Return to the homepage <span aria-hidden="true">→</span></NuxtLink>
       </div>
     </section>

@@ -814,19 +814,6 @@ h4 {
   font-size: clamp(2.25rem, 5vw, 4rem);
 }
 
-.nnpi-front__status {
-  display: inline-flex;
-  min-height: 2rem;
-  align-items: center;
-  padding: 0.35rem 0.65rem;
-  border: 1px solid rgb(230 200 121 / 65%);
-  color: var(--color-gold-300);
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
 .nnpi-front__descriptor {
   max-width: 45rem;
   margin: 1.35rem 0 0.75rem;
@@ -1358,26 +1345,16 @@ a.future-card:hover {
 
 .placeholder-notice {
   max-width: 54rem;
-  padding: 0.85rem 1rem;
-  border-left: 3px solid var(--color-gold-500);
-  background: #fff8e8;
-  color: #644b16;
+  padding-block: 0.85rem;
+  border-block: 1px solid var(--color-border);
+  color: var(--color-text-muted);
   font-size: 0.92rem;
-}
-
-.placeholder-notice span {
-  display: block;
-  margin-bottom: 0.15rem;
-  font-size: 0.7rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .section--navy .placeholder-notice,
 .research-spotlight .placeholder-notice {
-  background: rgb(200 155 60 / 14%);
-  color: #f8e8bd;
+  border-color: rgb(255 255 255 / 24%);
+  color: #d4dee4;
 }
 
 .split-feature,

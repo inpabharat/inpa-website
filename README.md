@@ -92,15 +92,17 @@ pnpm deploy:production
 
 Before editor access or the official domain is enabled, an authorised administrator must:
 
-1. Enable R2, create preview and production buckets, and add their `MEDIA` bindings.
-2. Configure a Cloudflare Access application for `/admin/**` and `/api/admin/**` with an explicit editor allowlist.
+1. Obtain the official email address of each approved editor.
+2. Configure a Cloudflare Access application for `/admin/**` and `/api/admin/**` with that explicit editor allowlist.
 3. Supply `NUXT_CF_ACCESS_TEAM_DOMAIN` and `NUXT_CF_ACCESS_AUD` as protected runtime configuration.
-4. Connect the INPA GitHub repository to the approved Cloudflare deployment workflow.
-5. Apply checked-in migrations explicitly before enabling editor writes.
+4. Complete and acceptance-test the editor CRUD workflow before permitting production writes.
+5. Enable R2 later, create preview and production buckets, and add their `MEDIA` bindings when INPA can provide the billing details required by Cloudflare.
 6. Configure the approved domain, DNS, TLS, cache rules, logs and usage visibility.
+
+The INPA-owned GitHub repository is connected to Cloudflare. Pushes to `main` automatically build and deploy the preview Worker. Production deployment remains explicit until the primary domain and release workflow are approved.
 
 Namecheap nameserver changes remain deferred until the preview Worker has been verified.
 
 ## Content safety
 
-The local seed and visible UI placeholders are not official INPA content. They are labelled as development material, and production launch remains blocked until the items in [`CONTENT_READINESS.md`](./CONTENT_READINESS.md) are verified.
+The local seed is not official INPA content and must never be applied to a remote database. Public empty states do not invent missing announcements or institutional facts. See [`CONTENT_READINESS.md`](./CONTENT_READINESS.md) for the remaining beta inputs and operational blockers.

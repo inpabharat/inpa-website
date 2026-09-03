@@ -15,7 +15,7 @@ if (!content.value) {
 useSeoMeta({
   title: () => content.value?.title ?? 'Page unavailable',
   description: () => content.value?.description ?? 'This public route is not available.',
-  robots: 'noindex, nofollow',
+  robots: () => content.value?.indexable ? 'index, follow' : 'noindex, follow',
 })
 </script>
 

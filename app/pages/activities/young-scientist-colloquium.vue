@@ -34,7 +34,7 @@ useSeoMeta({
 
         <aside class="colloquium-note" aria-label="Programme status">
           <strong>Programme record</strong>
-          <p>The supplied materials establish this as a recurring INPA activity. A verified date and poster for the next seminar have not yet been supplied.</p>
+          <p>Past seminars are listed below. The next seminar will be added when its date and programme poster are announced.</p>
         </aside>
       </div>
 
