@@ -47,6 +47,9 @@
     "production": {
       "name": "inpa-website",
       "workers_dev": true,
+      "vars": {
+        "NUXT_PUBLIC_SITE_URL": "https://inpa-website.inpa-website.workers.dev"
+      },
       "d1_databases": [
         {
           "binding": "DB",
