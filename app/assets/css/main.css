@@ -3,6 +3,7 @@
   --color-navy-900: #082038;
   --color-navy-800: #0b3558;
   --color-navy-700: #134f79;
+  --color-sky-200: #b8d9ec;
   --color-gold-500: #c89b3c;
   --color-gold-300: #e6c879;
   --color-surface: #ffffff;
@@ -2446,17 +2447,17 @@ a.future-card:hover {
 }
 
 .site-footer__credit a {
-  color: var(--color-gold-300);
+  color: var(--color-sky-200);
   font-weight: 750;
   text-decoration: underline;
-  text-decoration-color: var(--color-gold-500);
+  text-decoration-color: var(--color-sky-200);
   text-decoration-thickness: 2px;
   text-underline-offset: 0.25rem;
 }
 
 .site-footer__credit a:hover {
   color: var(--color-surface);
-  text-decoration-color: var(--color-gold-300);
+  text-decoration-color: var(--color-surface);
 }
 
 .site-footer__credit a span {
