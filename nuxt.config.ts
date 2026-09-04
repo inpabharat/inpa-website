@@ -19,6 +19,9 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { lang: 'en-IN' },
       titleTemplate: '%s · Indian Nuclear Physics Association',
+      link: [
+        { rel: 'icon', type: 'image/jpeg', href: '/images/inpa-logo.jpg' },
+      ],
       meta: [
         { name: 'theme-color', content: '#09243d' },
         { name: 'color-scheme', content: 'light' },
