@@ -132,7 +132,7 @@ function getMarkerStyle(institution: typeof nuclearInstitutions[number]) {
 
     <div class="map-alternative" aria-labelledby="map-list-title">
       <div class="map-list-heading">
-        <h3 id="map-list-title">Keyboard-accessible institution list</h3>
+        <h3 id="map-list-title">Browse institutions as a list</h3>
         <span>{{ filteredInstitutions.length }} shown</span>
       </div>
       <ul class="institution-list">
