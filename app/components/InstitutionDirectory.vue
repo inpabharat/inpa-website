@@ -4,6 +4,7 @@ import {
   getInstitutionCategoryLabel,
   institutionCategories,
   nuclearInstitutions,
+  scientificAreas,
 } from '~~/content/site/institutions'
 
 type FilterId = 'all' | InstitutionCategory
@@ -20,11 +21,14 @@ const mapBounds = {
 } as const
 
 const activeFilter = ref<FilterId>('all')
+const activeResearchArea = ref('all')
 const selectedId = ref(nuclearInstitutions[0]?.id ?? '')
 
-const filteredInstitutions = computed(() => activeFilter.value === 'all'
-  ? nuclearInstitutions
-  : nuclearInstitutions.filter(institution => institution.category === activeFilter.value))
+const filteredInstitutions = computed(() => nuclearInstitutions.filter((institution) => {
+  const matchesType = activeFilter.value === 'all' || institution.category === activeFilter.value
+  const matchesScience = activeResearchArea.value === 'all' || institution.researchAreas?.includes(activeResearchArea.value)
+  return matchesType && matchesScience
+}))
 
 const selectedInstitution = computed(() => nuclearInstitutions.find(institution => institution.id === selectedId.value)
   ?? filteredInstitutions.value[0])
@@ -35,6 +39,12 @@ function selectFilter(filter: FilterId) {
   if (!selectionIsVisible) {
     selectedId.value = filteredInstitutions.value[0]?.id ?? ''
   }
+}
+
+function selectResearchArea(area: string) {
+  activeResearchArea.value = area
+  const selectionIsVisible = filteredInstitutions.value.some(institution => institution.id === selectedId.value)
+  if (!selectionIsVisible) selectedId.value = filteredInstitutions.value[0]?.id ?? ''
 }
 
 function getMarkerStyle(institution: typeof nuclearInstitutions[number]) {
@@ -52,7 +62,9 @@ function getMarkerStyle(institution: typeof nuclearInstitutions[number]) {
 
 <template>
   <div class="institution-directory">
-    <div class="map-filters" aria-label="Filter institutions by type">
+    <div class="map-filter-group">
+      <p><strong>Institution type</strong></p>
+      <div class="map-filters" aria-label="Filter institutions by type">
       <button
         v-for="category in institutionCategories"
         :key="category.id"
@@ -64,6 +76,15 @@ function getMarkerStyle(institution: typeof nuclearInstitutions[number]) {
       >
         {{ category.label }}
       </button>
+      </div>
+    </div>
+
+    <div class="map-filter-group">
+      <label for="research-area-filter"><strong>Scientific area</strong></label>
+      <select id="research-area-filter" :value="activeResearchArea" @change="selectResearchArea(($event.target as HTMLSelectElement).value)">
+        <option value="all">All scientific areas</option>
+        <option v-for="area in scientificAreas" :key="area" :value="area">{{ area }}</option>
+      </select>
     </div>
 
     <div class="nuclear-map" aria-label="Interactive geographic overview of major nuclear-science centres on an official outline map of India">
@@ -89,15 +110,29 @@ function getMarkerStyle(institution: typeof nuclearInstitutions[number]) {
       <p class="map-detail__type">{{ getInstitutionCategoryLabel(selectedInstitution.category) }}</p>
       <h3>{{ selectedInstitution.name }}</h3>
       <p class="map-detail__location">{{ selectedInstitution.city }}, {{ selectedInstitution.state }}</p>
+      <p v-if="selectedInstitution.character"><strong>{{ selectedInstitution.character }}</strong></p>
       <p>{{ selectedInstitution.summary }}</p>
-      <a class="text-link" :href="selectedInstitution.officialUrl" target="_blank" rel="noopener noreferrer">
+      <div v-if="selectedInstitution.researchAreas?.length" class="map-detail__section">
+        <h4>Research areas</h4>
+        <ul class="map-detail__tags"><li v-for="area in selectedInstitution.researchAreas" :key="area">{{ area }}</li></ul>
+      </div>
+      <div v-if="selectedInstitution.researchers?.length" class="map-detail__section">
+        <h4>Researchers and groups</h4>
+        <p>{{ selectedInstitution.researchers.map(researcher => researcher.name).join(' · ') }}</p>
+      </div>
+      <div v-if="selectedInstitution.facilities?.length" class="map-detail__section">
+        <h4>Facilities</h4>
+        <p>{{ selectedInstitution.facilities.map(facility => facility.name).join(' · ') }}</p>
+      </div>
+      <a v-if="selectedInstitution.officialUrl" class="text-link" :href="selectedInstitution.officialUrl" target="_blank" rel="noopener noreferrer">
         Visit official website <span aria-hidden="true">↗</span>
       </a>
     </article>
+    <p v-else class="map-detail" role="status">No institutions match both selected filters. Choose another institution type or scientific area.</p>
 
     <div class="map-alternative" aria-labelledby="map-list-title">
       <div class="map-list-heading">
-        <h3 id="map-list-title">Keyboard-accessible centre list</h3>
+        <h3 id="map-list-title">Keyboard-accessible institution list</h3>
         <span>{{ filteredInstitutions.length }} shown</span>
       </div>
       <ul class="institution-list">
@@ -111,7 +146,7 @@ function getMarkerStyle(institution: typeof nuclearInstitutions[number]) {
     </div>
 
     <p class="map-attribution">
-      Map boundary source: <a href="https://surveyofindia.gov.in/pages/outline-maps-of-india" target="_blank" rel="noopener noreferrer">Survey of India, 1:16 million generalized vector outline</a>. Coordinates are for national-scale orientation; markers sharing a city are slightly separated for readability.
+      Map boundary source: <a href="https://surveyofindia.gov.in/pages/outline-maps-of-india" target="_blank" rel="noopener noreferrer">Survey of India, 1:16 million generalized vector outline</a>. Markers indicate cities for national-scale orientation and are separated where several entries share a city.
     </p>
   </div>
 </template>

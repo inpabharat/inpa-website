@@ -2051,6 +2051,24 @@ a.future-card:hover {
   max-width: 15ch;
 }
 
+.map-page-heading .lead {
+  max-width: 58rem;
+}
+
+.map-page-heading .landscape-subtitle {
+  margin: -0.5rem 0 1rem;
+  color: var(--color-navy-700);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.hero__statement {
+  max-width: 48rem;
+  color: rgb(255 255 255 / 88%);
+  font-size: clamp(0.95rem, 1.4vw, 1.08rem);
+  line-height: 1.6;
+}
+
 .institution-directory {
   display: grid;
   gap: 1.25rem;
@@ -2060,6 +2078,27 @@ a.future-card:hover {
   display: flex;
   flex-wrap: wrap;
   gap: 0.6rem;
+}
+
+.map-filter-group {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.map-filter-group p,
+.map-filter-group label {
+  margin: 0;
+  color: var(--color-navy-950);
+}
+
+.map-filter-group select {
+  width: min(100%, 28rem);
+  min-height: 2.75rem;
+  padding: 0.55rem 2.5rem 0.55rem 0.8rem;
+  border: 1px solid #9eb2be;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
 }
 
 .map-filter {
@@ -2157,6 +2196,18 @@ a.future-card:hover {
   box-shadow: 0 0 0 2px #8a5a00, 0 0.4rem 1rem rgb(6 26 44 / 22%);
 }
 
+.map-marker--university,
+.map-marker--iit-nit-iiser {
+  background: #17684f;
+  box-shadow: 0 0 0 2px #17684f, 0 0.4rem 1rem rgb(6 26 44 / 22%);
+}
+
+.map-marker--college,
+.map-marker--specialized-centre {
+  background: #7b3f78;
+  box-shadow: 0 0 0 2px #7b3f78, 0 0.4rem 1rem rgb(6 26 44 / 22%);
+}
+
 .map-marker--selected {
   z-index: 3;
   transform: translate(-50%, -50%) scale(1.12);
@@ -2186,6 +2237,63 @@ a.future-card:hover {
 .map-detail__location {
   color: var(--color-text-muted);
   font-weight: 700;
+}
+
+.map-detail__section {
+  margin-top: 1rem;
+}
+
+.map-detail__section h4 {
+  margin-bottom: 0.35rem;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.map-detail__section p {
+  margin: 0;
+}
+
+.map-detail__tags {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+  gap: 0.4rem;
+  list-style: none;
+}
+
+.map-detail__tags li {
+  padding: 0.3rem 0.55rem;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-subtle);
+  font-size: 0.78rem;
+}
+
+.landscape-questions {
+  display: grid;
+  margin-top: 2rem;
+  gap: 0.75rem;
+  grid-template-columns: 1fr;
+}
+
+.landscape-questions p {
+  margin: 0;
+  padding: 1rem;
+  border-top: 3px solid var(--color-gold-500);
+  background: var(--color-surface);
+}
+
+.landscape-questions strong,
+.landscape-questions span {
+  display: block;
+}
+
+.landscape-questions span {
+  margin-top: 0.35rem;
+  color: var(--color-text-muted);
+  font-size: 0.86rem;
 }
 
 .map-alternative {
@@ -2541,7 +2649,11 @@ a.future-card:hover {
     grid-template-columns: minmax(8.5rem, 0.42fr) minmax(0, 0.58fr);
   }
   .nnpi-front__pillars {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .landscape-questions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .nnpi-front__pillars li {
@@ -2630,6 +2742,9 @@ a.future-card:hover {
 }
 
 @media (min-width: 60rem) {
+  .landscape-questions {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
   .nnpi-front__layout {
     grid-template-columns: minmax(18rem, 0.7fr) minmax(0, 1.3fr);
   }

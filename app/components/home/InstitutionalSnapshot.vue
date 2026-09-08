@@ -10,7 +10,6 @@ import { aboutContent, presidentContent } from '~~/content/site/home'
         <h2 id="institutional-snapshot-title">A national community for nuclear physics</h2>
         <p class="lead">{{ aboutContent.summary }}</p>
         <p class="fact-line">{{ aboutContent.registration }}</p>
-        <p class="source-note">Source: {{ aboutContent.source }}</p>
         <NuxtLink class="text-link" to="/about">About INPA <span aria-hidden="true">→</span></NuxtLink>
       </div>
 
@@ -28,7 +27,7 @@ import { aboutContent, presidentContent } from '~~/content/site/home'
         <div>
           <p class="eyebrow">From the President</p>
           <h3 id="snapshot-president-title">{{ presidentContent.title }}</h3>
-          <p class="profile-role">{{ presidentContent.role }}<br>{{ presidentContent.affiliation }}</p>
+        <p class="profile-role">{{ presidentContent.role }}</p>
           <p>{{ presidentContent.message }}</p>
           <NuxtLink class="text-link" :to="presidentContent.to">Read the President’s Message <span aria-hidden="true">→</span></NuxtLink>
         </div>

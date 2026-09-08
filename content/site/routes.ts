@@ -23,7 +23,7 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
     eyebrow: 'Institutional profile',
     description: 'The Indian Nuclear Physics Association is a scientific society and national platform for India’s nuclear-physics community.',
     indexable: true,
-    requiredContent: 'A final institutionally approved About statement, office address and full governance documents are still required.',
+    requiredContent: 'The office address and full governance documents are still required.',
     sourceNote: bulletinContentNotice,
     sections: [
       {
@@ -47,7 +47,7 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
   '/about/presidents-message': {
     title: 'President’s message',
     eyebrow: 'Office of the President',
-    description: currentLeadership.president.name + ' is President of the Indian Nuclear Physics Association and Professor at ' + currentLeadership.president.affiliation + '.',
+    description: currentLeadership.president.name + ' is President of the Indian Nuclear Physics Association.',
     sections: [
       {
         heading: 'Message summary',
@@ -127,13 +127,12 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
     title: 'NNPI — From Vision to Action',
     eyebrow: 'Developing national framework',
     description: 'A community-driven framework for transforming India’s nuclear-physics aspirations into coordinated national action.',
-    requiredContent: 'NNPI has not yet been formally announced. Its approved public document, framework figure, scope owners and publication date are required before this page can be treated as a launched programme.',
-    sourceNote: 'Framework wording and structure supplied by the INPA President in website comments received in August 2026.',
+    requiredContent: 'The full framework document, scope owners and publication date will be added when available.',
     sections: [
       {
         heading: 'A Community Action Framework for Realizing the Mega Science Vision–2035',
         paragraphs: [
-          'The developing NNPI concept is intended to connect scientific priorities, national capability and community coordination. This page records the proposed framing without presenting it as a formally launched initiative.',
+          'NNPI connects scientific priorities with present and future national capabilities and the nuclear-physics community, creating the road from shared vision to coordinated action.',
         ],
       },
       {
@@ -142,6 +141,7 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
           'Science — frontier questions and national priorities.',
           'Capability — theory, experiment, instrumentation, computing and facilities.',
           'Community — collaboration, young researchers and national coordination.',
+          'Action — coordinated programmes, partnerships and implementation.',
         ],
       },
     ],

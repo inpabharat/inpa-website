@@ -25,6 +25,7 @@ useSeoMeta({
   <div id="digital-hub">
     <HomeSiteHero :carousel="home.carousel" />
     <HomeNnpiFront />
+    <HomeExploreGateway />
     <HomeInstitutionalSnapshot />
     <HomeUpdatesHub :news="home.news" :events="home.events" />
     <HomeSciencePublications />

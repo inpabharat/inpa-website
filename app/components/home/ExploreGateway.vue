@@ -6,12 +6,12 @@ import { dedicatedSections } from '~~/content/site/home'
   <section id="explore" class="section explore-gateway" aria-labelledby="explore-inpa-title">
     <div class="container explore-gateway__layout">
       <header>
-        <p class="eyebrow">Explore INPA</p>
-        <h2 id="explore-inpa-title">Detailed resources, without crowding the homepage</h2>
-        <p class="section-heading__intro">Continue to the dedicated area for learning resources, publication records, governance information or India’s major centres and facilities.</p>
+        <p class="eyebrow">National discovery gateway</p>
+        <h2 id="explore-inpa-title">Explore Nuclear Physics in India</h2>
+        <p class="section-heading__intro">Find the scientific people, places and possibilities that can turn a question into an experiment, opportunity or collaboration.</p>
       </header>
 
-      <nav class="explore-gateway__links" aria-label="Dedicated INPA sections">
+      <nav class="explore-gateway__links" aria-label="Explore nuclear physics in India">
         <NuxtLink v-for="item in dedicatedSections" :key="item.to" :to="item.to">
           <span class="explore-gateway__mark" aria-hidden="true">{{ item.mark }}</span>
           <span>

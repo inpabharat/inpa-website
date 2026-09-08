@@ -1,7 +1,7 @@
 <script setup lang="ts">
 useSeoMeta({
-  title: 'India’s nuclear physics map',
-  description: 'An accessible interactive overview of major nuclear-science centres and national research facilities in India.',
+  title: 'The Nuclear Physics Landscape of India',
+  description: 'A living national resource mapping nuclear-physics research and capability across India.',
   robots: 'index, follow',
 })
 </script>
@@ -9,14 +9,20 @@ useSeoMeta({
 <template>
   <main class="section map-section">
     <div class="container map-page-heading">
-      <p class="eyebrow">National scientific resource</p>
-      <h1>India’s nuclear physics map</h1>
-      <p class="lead">Select a marker or use the centre list to explore major Indian nuclear-science institutions and reach their official websites.</p>
-      <p class="source-note">This curated overview is based on current Department of Atomic Energy, University Grants Commission and institution sources. The boundary uses Survey of India vector data and markers use campus-area coordinates; the official institutional website remains authoritative.</p>
+      <p class="eyebrow">Nuclear Physics in India</p>
+      <h1>The Nuclear Physics Landscape of India</h1>
+      <p class="landscape-subtitle">People · Research Groups · Institutions · Facilities</p>
+      <p class="lead">A living national resource mapping nuclear-physics research and capability across India—from national laboratories and accelerator facilities to universities, IITs, NITs and colleges.</p>
     </div>
     <div class="container">
       <InstitutionDirectory />
-      <p class="map-scope-note"><strong>Scope:</strong> DAE research centres, selected DAE-supported institutes with direct nuclear, accelerator or plasma-science relevance, and national university user facilities. It excludes power stations and is not a complete list of university departments or laboratories.</p>
+      <div class="landscape-questions" aria-label="Questions this resource is designed to answer">
+        <p><strong>Where?</strong><span>Where is nuclear physics being pursued?</span></p>
+        <p><strong>What?</strong><span>What research is being carried out?</span></p>
+        <p><strong>Who?</strong><span>Who are the active researchers and groups?</span></p>
+        <p><strong>With what?</strong><span>What facilities and capabilities are available?</span></p>
+      </div>
+      <p class="map-scope-note"><strong>Coverage:</strong> The directory combines established national centres with the North India V1.0 academic dataset. Inclusion reflects current nuclear-physics research activity rather than institutional category. Other regions and detailed researcher profiles will be added progressively.</p>
     </div>
   </main>
 </template>

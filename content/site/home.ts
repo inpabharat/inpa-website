@@ -32,7 +32,7 @@ export const heroContent = {
   title: 'Indian Nuclear Physics Association',
   tagline: 'Advancing Fundamental and Applied Nuclear Science for a Self-Reliant India',
   mission: 'Connecting People and Enabling Discovery',
-  source: 'Mission confirmed in INPA website comments supplied in August 2026; institutional tagline published in Nuclear Horizons, Volume 1, Issues 1 and 2.',
+  source: 'Bringing together scientists, institutions, facilities and future generations to strengthen India\'s nuclear-physics ecosystem for growth and innovation.',
   focusAreas: [
     'Fundamental and applied nuclear science',
     'National scientific collaboration',
@@ -49,7 +49,6 @@ export const strategicVision = {
   eyebrow: 'One connected scientific ecosystem',
   title: 'Community • Voice • Roadmap',
   introduction: 'INPA connects the community, Nuclear Horizons carries its voice, and the developing NNPI framework is intended to help translate shared scientific aspirations into coordinated national action.',
-  source: 'Strategic framing supplied by the INPA President in website comments received in August 2026. NNPI has not yet been formally announced.',
   verticals: [
     {
       mark: 'INPA',
@@ -76,8 +75,8 @@ export const strategicVision = {
   nnpi: {
     title: 'NNPI — From Vision to Action',
     descriptor: 'A Community Action Framework for Realizing the Mega Science Vision–2035',
-    summary: 'Its developing structure brings together science priorities, national capabilities and community coordination. Formal public material and a simple framework figure are still being prepared.',
-    pillars: ['Science', 'Capability', 'Community'],
+    summary: 'NNPI connects scientific priorities with present and future national capabilities and the nuclear-physics community, creating the road from shared vision to coordinated action.',
+    pillars: ['Science', 'Capability', 'Community', 'Action'],
     to: '/nnpi',
   },
 } as const
@@ -98,7 +97,7 @@ export const audiencePathways: readonly EditorialLinkItem[] = [
   {
     eyebrow: 'Institutions and collaborators',
     title: 'I represent an Institution',
-    summary: 'Use the accessible India map to explore a curated overview of major centres and facilities.',
+    summary: 'Explore India\'s nuclear-physics institutions, research groups, people and experimental facilities.',
     to: '/map',
   },
   {
@@ -124,8 +123,8 @@ export const scienceDestinations: readonly EditorialLinkItem[] = [
   },
   {
     eyebrow: 'National resource',
-    title: 'Centres and facilities map',
-    summary: 'A map and keyboard-accessible directory built from verified institutional sources.',
+    title: 'Nuclear Physics in India',
+    summary: 'Explore institutions, research groups, people and experimental facilities across India.',
     to: '/map',
   },
   {
@@ -139,17 +138,15 @@ export const scienceDestinations: readonly EditorialLinkItem[] = [
 export const presidentContent = {
   title: 'Prof. A. K. Jain',
   role: 'President, Indian Nuclear Physics Association',
-  affiliation: 'Indian Institute of Technology Roorkee',
   message: 'INPA is building a connected national community for nuclear physics, with priorities that include scientific collaboration, educational resources, laboratory training, mentorship and wider public awareness of nuclear science and its applications.',
   to: '/about/presidents-message',
 } as const
 
 export const aboutContent = {
-  status: 'Institutional facts are sourced from Nuclear Horizons, Volume 1, Issues 1 and 2. A formally approved full About statement is still required.',
+  status: 'Institutional profile',
   title: 'About INPA',
-  summary: 'The Indian Nuclear Physics Association is a scientific society created as a national platform for India’s nuclear-physics community. INPA was formally registered on 2 May 2026 and seeks to support fundamental and applied research, collaboration, education, training and communication across universities, laboratories and the wider scientific community.',
+  summary: 'INPA brings together India’s nuclear-physics community across universities, national laboratories, research facilities and emerging centres in colleges as well. It seeks to create connections across institutions and generations—enabling collaboration, strengthening scientific capability and helping young researchers participate in the future of nuclear science. Established as a society on 2 May 2026.',
   registration: 'Registration No. VAR/00818/2026-27',
-  source: 'Nuclear Horizons, Volume 1, Issues 1 and 2 (2026).',
   to: '/about',
   image: {
     src: '/images/inpa-bhu-inauguration.jpg',
@@ -241,27 +238,27 @@ export const studentResourceCategories = [
 
 export const dedicatedSections = [
   {
-    mark: 'ST',
-    title: 'Student resources',
-    summary: 'Learning materials, opportunities and guidance.',
-    to: '/students',
+    mark: 'F',
+    title: 'Find a Facility',
+    summary: 'Accelerators, detectors, laboratories and experimental capabilities.',
+    to: '/map',
   },
   {
-    mark: 'AR',
-    title: 'Publication archive',
-    summary: 'Verified Nuclear Horizons issue records.',
-    to: '/nuclear-horizons/archive',
+    mark: 'O',
+    title: 'Find an Opportunity',
+    summary: 'Beam time, PhD and postdoctoral positions, schools, workshops and jobs.',
+    to: '/students/opportunities',
   },
   {
-    mark: 'CG',
-    title: 'Committees and governance',
-    summary: 'Leadership, committee and governance information.',
-    to: '/about/committees',
+    mark: 'E',
+    title: 'Find Expertise',
+    summary: 'Researchers, research groups and areas of activity.',
+    to: '/map',
   },
   {
-    mark: 'IN',
-    title: 'Major centres and facilities',
-    summary: 'The accessible national map and institution directory.',
+    mark: 'C',
+    title: 'Find a Collaboration',
+    summary: 'Connect scientific questions with people and capabilities.',
     to: '/map',
   },
 ] as const

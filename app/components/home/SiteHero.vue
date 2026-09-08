@@ -27,7 +27,7 @@ function showNext(): void {
         <h1 id="hero-title">{{ heroContent.title }}</h1>
         <p class="hero__mission"><span>Mission</span>{{ heroContent.mission }}</p>
         <p class="hero__tagline">{{ heroContent.tagline }}</p>
-        <p class="source-note source-note--light">{{ heroContent.source }}</p>
+        <p class="hero__statement">{{ heroContent.source }}</p>
         <div class="hero__actions" aria-label="Featured destinations">
           <NuxtLink
             v-for="(action, index) in heroContent.actions"

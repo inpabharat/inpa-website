@@ -126,6 +126,105 @@ export const contentRevisions = sqliteTable(
   ],
 )
 
+export const landscapeInstitutions = sqliteTable(
+  'landscape_institutions',
+  {
+    id: text('id').primaryKey(),
+    name: text('name').notNull(),
+    department: text('department'),
+    city: text('city').notNull(),
+    state: text('state').notNull(),
+    region: text('region').notNull(),
+    institutionType: text('institution_type').notNull(),
+    character: text('character'),
+    latitude: integer('latitude_microdegrees'),
+    longitude: integer('longitude_microdegrees'),
+    officialUrl: text('official_url'),
+    description: text('description').notNull(),
+    verificationStatus: text('verification_status').notNull().default('pending'),
+    sourceProfile: text('source_profile'),
+    lastVerified: text('last_verified'),
+    editorialNotes: text('editorial_notes'),
+    ...auditColumns,
+  },
+  table => [
+    index('idx_landscape_institutions_region_type').on(table.region, table.institutionType),
+    index('idx_landscape_institutions_verification').on(table.verificationStatus, table.lastVerified),
+  ],
+)
+
+export const landscapeResearchers = sqliteTable(
+  'landscape_researchers',
+  {
+    id: text('id').primaryKey(),
+    institutionId: text('institution_id').notNull().references(() => landscapeInstitutions.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    designation: text('designation'),
+    department: text('department'),
+    character: text('character'),
+    officialProfileUrl: text('official_profile_url'),
+    orcid: text('orcid'),
+    verificationStatus: text('verification_status').notNull().default('pending'),
+    lastVerified: text('last_verified'),
+    ...auditColumns,
+  },
+  table => [index('idx_landscape_researchers_institution').on(table.institutionId)],
+)
+
+export const landscapeFacilities = sqliteTable(
+  'landscape_facilities',
+  {
+    id: text('id').primaryKey(),
+    institutionId: text('institution_id').notNull().references(() => landscapeInstitutions.id, { onDelete: 'cascade' }),
+    name: text('name').notNull(),
+    facilityType: text('facility_type'),
+    detectorSystems: text('detector_systems'),
+    capabilities: text('capabilities'),
+    isUserFacility: integer('is_user_facility', { mode: 'boolean' }).notNull().default(false),
+    officialUrl: text('official_url'),
+    verificationStatus: text('verification_status').notNull().default('pending'),
+    lastVerified: text('last_verified'),
+    ...auditColumns,
+  },
+  table => [index('idx_landscape_facilities_institution').on(table.institutionId)],
+)
+
+export const landscapeResearchAreas = sqliteTable(
+  'landscape_research_areas',
+  {
+    id: text('id').primaryKey(),
+    label: text('label').notNull(),
+  },
+  table => [uniqueIndex('uq_landscape_research_areas_label').on(table.label)],
+)
+
+export const landscapeInstitutionAreas = sqliteTable(
+  'landscape_institution_areas',
+  {
+    institutionId: text('institution_id').notNull().references(() => landscapeInstitutions.id, { onDelete: 'cascade' }),
+    researchAreaId: text('research_area_id').notNull().references(() => landscapeResearchAreas.id, { onDelete: 'cascade' }),
+  },
+  table => [
+    uniqueIndex('uq_landscape_institution_area').on(table.institutionId, table.researchAreaId),
+    index('idx_landscape_institution_areas_area').on(table.researchAreaId),
+  ],
+)
+
+export const landscapeResearcherAreas = sqliteTable(
+  'landscape_researcher_areas',
+  {
+    researcherId: text('researcher_id').notNull().references(() => landscapeResearchers.id, { onDelete: 'cascade' }),
+    researchAreaId: text('research_area_id').notNull().references(() => landscapeResearchAreas.id, { onDelete: 'cascade' }),
+  },
+  table => [
+    uniqueIndex('uq_landscape_researcher_area').on(table.researcherId, table.researchAreaId),
+    index('idx_landscape_researcher_areas_area').on(table.researchAreaId),
+  ],
+)
+
 export type NewsRow = typeof news.$inferSelect
 export type EventRow = typeof events.$inferSelect
 export type CarouselItemRow = typeof carouselItems.$inferSelect
+export type LandscapeInstitutionRow = typeof landscapeInstitutions.$inferSelect
+export type LandscapeResearcherRow = typeof landscapeResearchers.$inferSelect
+export type LandscapeFacilityRow = typeof landscapeFacilities.$inferSelect

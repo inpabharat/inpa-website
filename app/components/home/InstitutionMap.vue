@@ -2,8 +2,8 @@
   <section class="section map-section" aria-labelledby="map-title">
     <div class="container map-introduction">
       <div>
-        <p class="eyebrow">India’s nuclear physics map</p>
-        <h2 id="map-title">Major national centres and research facilities</h2>
+        <p class="eyebrow">Nuclear Physics in India</p>
+        <h2 id="map-title">The Nuclear Physics Landscape of India</h2>
       </div>
       <div>
         <p class="lead">Explore a curated directory of major Indian institutions supporting nuclear science, accelerator research, atomic-mineral research and plasma science.</p>

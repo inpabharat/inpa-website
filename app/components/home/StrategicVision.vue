@@ -40,7 +40,6 @@ import { strategicVision } from '~~/content/site/home'
           </ul>
         </div>
       </div>
-      <p class="source-note vision-source">{{ strategicVision.source }}</p>
     </div>
   </section>
 </template>

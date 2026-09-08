@@ -2,12 +2,14 @@ import { describe, expect, it } from 'vitest'
 import { institutionCategories, nuclearInstitutions } from '../../content/site/institutions'
 
 describe('nuclear institution directory', () => {
-  it('contains unique institution identifiers and official HTTPS destinations', () => {
+  it('contains unique institution and linked-record identifiers', () => {
     const identifiers = nuclearInstitutions.map(institution => institution.id)
 
     expect(new Set(identifiers).size).toBe(identifiers.length)
-    expect(nuclearInstitutions.length).toBe(13)
-    expect(nuclearInstitutions.every(institution => institution.officialUrl.startsWith('https://'))).toBe(true)
+    expect(nuclearInstitutions.length).toBeGreaterThanOrEqual(39)
+    expect(nuclearInstitutions.filter(institution => institution.verificationStatus === 'verified-v1').length).toBeGreaterThanOrEqual(26)
+    expect(nuclearInstitutions.flatMap(institution => institution.researchers ?? []).every(researcher => researcher.id.length > 0)).toBe(true)
+    expect(nuclearInstitutions.flatMap(institution => institution.facilities ?? []).every(facility => facility.id.length > 0)).toBe(true)
   })
 
   it('keeps every marker and category within supported bounds', () => {

@@ -33,7 +33,7 @@ export const navigationGroups: readonly NavigationGroup[] = [
     links: [
       { label: 'NNPI Framework', to: '/nnpi', description: 'From vision to coordinated national action.' },
       { label: 'Featured Research', to: '/research', description: 'Curated Indian nuclear-physics research.' },
-      { label: 'Major Centres and Facilities', to: '/map' },
+      { label: 'Nuclear Physics in India', to: '/map', description: 'Explore India’s nuclear-physics institutions, research groups, people and experimental facilities.' },
       { label: 'Distinguished Scientists', to: '/people' },
     ],
   },
