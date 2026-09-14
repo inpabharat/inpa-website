@@ -38,20 +38,20 @@ export default defineNuxtConfig({
         '/about/constitution',
         '/about/executive-council',
         '/about/presidents-message',
-        '/nuclear-horizons',
-        '/nuclear-horizons/archive',
       ],
     },
   },
   routeRules: {
     '/': {
       headers: {
-        'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=3600',
+        'Cache-Control': 'public, max-age=0, s-maxage=60, must-revalidate',
       },
     },
     '/about/**': { prerender: true },
-    '/nuclear-horizons': { prerender: true },
-    '/nuclear-horizons/**': { prerender: true },
+    '/nuclear-horizons': { headers: { 'Cache-Control': 'public, max-age=0, must-revalidate' } },
+    '/nuclear-horizons/**': { headers: { 'Cache-Control': 'public, max-age=0, must-revalidate' } },
+    '/research': { headers: { 'Cache-Control': 'public, max-age=0, must-revalidate' } },
+    '/research/**': { headers: { 'Cache-Control': 'public, max-age=0, must-revalidate' } },
     '/membership': { prerender: true },
     '/privacy': { prerender: true },
     '/admin/**': {

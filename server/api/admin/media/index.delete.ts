@@ -1,6 +1,7 @@
 import { createError, getQuery } from 'h3'
 import { getR2Binding } from '../../../database/bindings'
 import { AdminContentRepository } from '../../../repositories/admin-content.repository'
+import { ScienceRepository } from '../../../repositories/science.repository'
 import { assertSameOrigin, prepareAdminResponse, requireAdminDatabase, requireAdminIdentity } from '../../../utils/admin-api'
 
 export default defineEventHandler(async (event) => {
@@ -16,7 +17,7 @@ export default defineEventHandler(async (event) => {
   const object = await bucket.head(key)
   if (!object) throw createError({ statusCode: 404, statusMessage: 'Media object not found.' })
   const repository = new AdminContentRepository(requireAdminDatabase(event))
-  if (await repository.mediaReferenceCount(key) > 0) {
+  if (await repository.mediaReferenceCount(key) > 0 || (await new ScienceRepository(requireAdminDatabase(event)).mediaReferences(key)).length > 0) {
     throw createError({ statusCode: 409, statusMessage: 'This media object is still used by published or draft content.' })
   }
   await bucket.delete(key)

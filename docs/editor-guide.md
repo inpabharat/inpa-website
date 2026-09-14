@@ -1,6 +1,6 @@
 # INPA editor guide
 
-The editor manages only news, events and homepage carousel items. Institutional pages remain repository-managed until their text is formally approved.
+The editor manages news, events, homepage slides, Nuclear Horizons and featured research. Open `/admin` and sign in with the existing email verification flow. Institutional pages remain repository-managed.
 
 ## Local access
 
@@ -22,13 +22,35 @@ The bypass works only with the local environment marker. Preview and production 
 
 ## Media
 
-Upload JPEG, PNG, WebP, or PDF files up to 8 MB from the Media tab. Meaningful images require alternative text. Supply photographer/source credit and a permission or licence note whenever they are known. The returned object key can be applied directly to a new news, event, or carousel record.
+**Images & PDFs** is the reusable media library. Upload JPEG, PNG, WebP or PDF files up to 8 MB. The library shows filenames, previews, descriptions and which saved content uses a file. Uploading alone does not add a file to a page. Choose the image or PDF inside the relevant content form, then publish that item. Images require a description for visitors who cannot see them. Direct file links are public; do not upload confidential files.
 
-Do not upload unapproved portraits, event photographs, scientific figures, or publication PDFs. Production media must not contain local test files.
+Files used by saved content, including drafts and archived items, cannot be deleted. Replace or remove the reference first. Preview and production use separate libraries: content uploaded in preview does not automatically appear in production.
+
+## Nuclear Horizons
+
+Select **Nuclear Horizons → Add an issue**. Enter the volume, issue number, issue heading, publication date and page count. Choose/upload the PDF and cover. Optionally add an introduction, editorial and featured review, including titles, authors and page references in the text. Check the preview and open the selected PDF, then **Save draft** or **Publish on website**.
+
+The newest published issue appears on the homepage and Nuclear Horizons page; every published issue appears in the archive. To replace a corrected PDF, edit the existing issue and choose a new file, avoiding a duplicate issue. The two original issues remain editable. For month-only publication dates use the first day; public issue cards display month and year.
+
+## Featured research
+
+Select **Featured research → Add research**. Enter a title, summary, full story, authors, institutions, journal, DOI and story publication date. Optionally choose an image with description and caption/credit. Select **Feature on the homepage** for the spotlight. If several stories are selected, the most recently dated one appears first. Every published story has a detail page and appears in the Research list.
+
+Plain text and paragraph breaks are supported. DOI syntax is validated and normalised to a link; editors should verify that the linked paper is correct. Keep the page address unchanged when editing so shared links continue working.
+
+## Saving and publishing
+
+Incomplete science items can be saved as drafts. Publish checks required fields. Future-dated published science items become visible on their publication date in India. Published changes need no code deployment; homepage/API caches may take up to one minute to refresh. Use **Publish changes** to update a live item; saving it as a draft removes it from public view.
+
+**Remove from public view** archives an item so it can be republished. **Remove** confirms deletion of new items; removing one of the two original issues records a withdrawal so it cannot reappear from the baseline. Audit history is retained but is not an undo feature. Unsaved changes trigger a warning when leaving forms.
+
+## Local integration checks
+
+After building and applying local migrations, run `pnpm exec wrangler dev --env local --local --port 8790 --var NUXT_DEV_AUTH_BYPASS:true`, then `pnpm test:editor:local`. The script refuses remote hosts. It checks draft privacy, publishing, PDF replacement, file references, dates, archive, duplicates and cross-origin rejection, then removes its local fixture records and uploads. Audit entries remain. `INPA_TEST_URL` can change the local port.
 
 ## Production safeguards
 
-- Cloudflare Access explicitly allows Bhoomika Maheshwari (`bhoomika.physics@gmail.com`), Gagandeep Singh (`gags02@gmail.com`) and Dr Abhishek (`abi00779@gmail.com`). Update the reusable Access policy when authorised editors change.
+- Cloudflare Access owns the authorised editor allowlist. Existing authorised editors receive these publishing tools without a new account or role.
 - `/admin/**` and `/api/admin/**` are verified again by the Worker; a client-side page is never the security boundary.
 - Every administrative response is private and non-cacheable.
 - Mutation requests require same-origin requests, server validation, and an authenticated editor identity.

@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm'
 import { check, index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core'
 import { eventStatuses, linkedContentTypes, newsStatuses } from '../../shared/types/content'
+import { scienceStatuses } from '../../shared/types/science'
 
 const auditColumns = {
   createdAt: text('created_at').notNull(),
@@ -126,6 +127,66 @@ export const contentRevisions = sqliteTable(
   ],
 )
 
+export const publications = sqliteTable(
+  'publications',
+  {
+    id: text('id').primaryKey(),
+    slug: text('slug').notNull(),
+    title: text('title').notNull(),
+    volume: integer('volume').notNull(),
+    issueNumber: integer('issue_number').notNull(),
+    issueLabel: text('issue_label').notNull(),
+    publicationDate: text('publication_date').notNull(),
+    summary: text('summary').notNull(),
+    editorial: text('editorial').notNull(),
+    featuredReview: text('featured_review').notNull(),
+    pdfKey: text('pdf_key').notNull(),
+    coverImageKey: text('cover_image_key').notNull(),
+    coverImageAlt: text('cover_image_alt').notNull(),
+    pageCount: integer('page_count').notNull(),
+    status: text('status', { enum: scienceStatuses }).notNull().default('draft'),
+    ...auditColumns,
+  },
+  table => [
+    uniqueIndex('uq_publications_slug').on(table.slug),
+    uniqueIndex('uq_publications_volume_issue').on(table.volume, table.issueNumber),
+    index('idx_publications_public').on(table.status, table.publicationDate),
+    check('ck_publications_status', sql`${table.status} in ('draft','published','archived')`),
+    check('ck_publications_numbers', sql`${table.volume} > 0 and ${table.issueNumber} > 0 and ${table.pageCount} >= 0`),
+  ],
+)
+
+export const featuredResearch = sqliteTable(
+  'featured_research',
+  {
+    id: text('id').primaryKey(),
+    slug: text('slug').notNull(),
+    title: text('title').notNull(),
+    summary: text('summary').notNull(),
+    body: text('body').notNull(),
+    authors: text('authors').notNull(),
+    institutions: text('institutions').notNull(),
+    journal: text('journal').notNull(),
+    doi: text('doi').notNull(),
+    imageKey: text('image_key'),
+    imageAlt: text('image_alt'),
+    imageCredit: text('image_credit'),
+    status: text('status', { enum: scienceStatuses }).notNull().default('draft'),
+    isFeatured: integer('is_featured', { mode: 'boolean' }).notNull().default(false),
+    publishedAt: text('published_at').notNull(),
+    ...auditColumns,
+  },
+  table => [
+    uniqueIndex('uq_featured_research_slug').on(table.slug),
+    index('idx_featured_research_public').on(table.status, table.isFeatured, table.publishedAt),
+    check('ck_featured_research_status', sql`${table.status} in ('draft','published','archived')`),
+    check(
+      'ck_featured_research_image',
+      sql`(${table.imageKey} is null and ${table.imageAlt} is null and ${table.imageCredit} is null) or (${table.imageKey} is not null and length(trim(${table.imageAlt})) > 0 and length(trim(${table.imageCredit})) > 0)`,
+    ),
+  ],
+)
+
 export const landscapeInstitutions = sqliteTable(
   'landscape_institutions',
   {
@@ -225,6 +286,8 @@ export const landscapeResearcherAreas = sqliteTable(
 export type NewsRow = typeof news.$inferSelect
 export type EventRow = typeof events.$inferSelect
 export type CarouselItemRow = typeof carouselItems.$inferSelect
+export type PublicationRow = typeof publications.$inferSelect
+export type FeaturedResearchRow = typeof featuredResearch.$inferSelect
 export type LandscapeInstitutionRow = typeof landscapeInstitutions.$inferSelect
 export type LandscapeResearcherRow = typeof landscapeResearchers.$inferSelect
 export type LandscapeFacilityRow = typeof landscapeFacilities.$inferSelect

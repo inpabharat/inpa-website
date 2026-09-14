@@ -38,6 +38,7 @@ export default defineEventHandler(async (event) => {
   const now = new Date()
   const key = `uploads/${now.getUTCFullYear()}/${String(now.getUTCMonth() + 1).padStart(2, '0')}/${crypto.randomUUID()}.${allowed.extension}`
   const metadata = {
+    originalName: [...(file.filename ?? 'Upload')].filter(char => char.charCodeAt(0) >= 32 && char.charCodeAt(0) !== 127).join('').slice(0, 180),
     alt,
     credit,
     licence,
@@ -56,8 +57,8 @@ export default defineEventHandler(async (event) => {
   }
 
   return {
-    data: { key, url: `/media/${key}`, alt, credit, licence, size: file.data.length, contentType: file.type },
-    message: 'Media uploaded.',
+    data: { key, url: `/media/${key}`, alt, credit, licence, originalName: metadata.originalName, size: file.data.length, contentType: file.type },
+    message: 'File saved to your library. Choose it in an item and publish that item to show it on the website.',
     meta: { generatedAt: now.toISOString() },
   }
 })

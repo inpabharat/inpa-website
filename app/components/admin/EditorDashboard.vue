@@ -6,7 +6,7 @@ import type {
 import { eventStatuses, newsStatuses } from '~~/shared/types/content'
 import { makeSlug } from '~~/shared/utils/content-validation'
 
-type Panel = 'overview' | 'news' | 'events' | 'carousel' | 'media'
+type Panel = 'overview' | 'news' | 'events' | 'carousel' | 'publications' | 'research' | 'media'
 type EntityKind = 'news' | 'events' | 'carousel'
 
 const props = defineProps<{ initialSnapshot: AdminContentSnapshot, editorEmail: string }>()
@@ -17,8 +17,19 @@ const busy = ref(false)
 const message = ref('')
 const errorMessage = ref('')
 const editingId = ref<string | null>(null)
-const uploaded = ref<{ key: string, url: string, alt: string } | null>(null)
+const formOpen = ref(false)
+const savedForm = ref('')
+const scienceEditor = ref<{ canLeave: () => boolean } | null>(null)
 const mediaRefreshKey = ref(0)
+const panels: { id: Panel, label: string, description: string }[] = [
+  { id: 'overview', label: 'Overview', description: '' },
+  { id: 'news', label: 'News', description: 'Post an announcement on the homepage and News page.' },
+  { id: 'events', label: 'Events', description: 'Add a conference, lecture or school to Upcoming Events.' },
+  { id: 'publications', label: 'Nuclear Horizons', description: 'Upload an issue PDF and cover, add its editorial and publish it in the archive.' },
+  { id: 'research', label: 'Featured research', description: 'Publish a research story and select it for the homepage spotlight.' },
+  { id: 'carousel', label: 'Homepage slides', description: 'Add a featured image and link to the homepage banner.' },
+  { id: 'media', label: 'Images & PDFs', description: 'Browse uploaded files and see which content uses them.' },
+]
 
 const blankNews = (): AdminNewsInput => ({
   slug: '', title: '', summary: '', body: '', coverImageKey: null, coverImageAlt: null,
@@ -38,6 +49,8 @@ const blankCarousel = (): AdminCarouselInput => ({
 const newsForm = reactive(blankNews())
 const eventForm = reactive(blankEvent())
 const carouselForm = reactive(blankCarousel())
+const activeForm = computed(() => panel.value === 'news' ? newsForm : panel.value === 'events' ? eventForm : carouselForm)
+const dirty = computed(() => formOpen.value && JSON.stringify(activeForm.value) !== savedForm.value)
 const counts = computed(() => ({
   drafts: snapshot.value.news.filter(item => item.status === 'draft').length + snapshot.value.events.filter(item => item.status === 'draft').length,
   scheduled: snapshot.value.news.filter(item => item.status === 'scheduled').length + snapshot.value.events.filter(item => item.status === 'scheduled').length,
@@ -66,13 +79,22 @@ function toDateTimeLocal(value: string | null): string | null {
   return local.toISOString().slice(0, 16)
 }
 
+function canLeave(): boolean {
+  if (busy.value) return false
+  if (scienceEditor.value && !scienceEditor.value.canLeave()) return false
+  return !dirty.value || window.confirm('Discard the changes you have not saved?')
+}
+
 function selectPanel(next: Panel): void {
+  if (next === panel.value || !canLeave()) return
   panel.value = next
   editingId.value = null
+  formOpen.value = false
   resetFeedback()
 }
 
 function startNews(item?: AdminNewsRecord): void {
+  if (!canLeave()) return
   editingId.value = item?.id ?? null
   Object.assign(newsForm, item ? {
     ...item,
@@ -81,10 +103,13 @@ function startNews(item?: AdminNewsRecord): void {
     expiresAt: toDateTimeLocal(item.expiresAt),
   } : blankNews())
   panel.value = 'news'
+  formOpen.value = true
+  savedForm.value = JSON.stringify(newsForm)
   resetFeedback()
 }
 
 function startEvent(item?: AdminEventRecord): void {
+  if (!canLeave()) return
   editingId.value = item?.id ?? null
   Object.assign(eventForm, item ? {
     ...item,
@@ -93,10 +118,13 @@ function startEvent(item?: AdminEventRecord): void {
     publishAt: toDateTimeLocal(item.publishAt),
   } : blankEvent())
   panel.value = 'events'
+  formOpen.value = true
+  savedForm.value = JSON.stringify(eventForm)
   resetFeedback()
 }
 
 function startCarousel(item?: AdminCarouselRecord): void {
+  if (!canLeave()) return
   editingId.value = item?.id ?? null
   Object.assign(carouselForm, item ? {
     ...item,
@@ -104,6 +132,8 @@ function startCarousel(item?: AdminCarouselRecord): void {
     endsAt: toDateTimeLocal(item.endsAt),
   } : blankCarousel())
   panel.value = 'carousel'
+  formOpen.value = true
+  savedForm.value = JSON.stringify(carouselForm)
   resetFeedback()
 }
 
@@ -145,6 +175,7 @@ async function save(kind: EntityKind, body: AdminNewsInput | AdminEventInput | A
     message.value = response.message
     await reload()
     editingId.value = null
+    formOpen.value = false
     if (kind === 'news') Object.assign(newsForm, blankNews())
     if (kind === 'events') Object.assign(eventForm, blankEvent())
     if (kind === 'carousel') Object.assign(carouselForm, blankCarousel())
@@ -170,29 +201,20 @@ async function remove(kind: EntityKind, id: string, title: string): Promise<void
   }
 }
 
-function useUploadedMedia(target: 'news' | 'event' | 'carousel'): void {
-  if (!uploaded.value) return
-  if (target === 'news') {
-    startNews()
-    newsForm.coverImageKey = uploaded.value.key
-    newsForm.coverImageAlt = uploaded.value.alt
-  } else if (target === 'event') {
-    startEvent()
-    eventForm.coverImageKey = uploaded.value.key
-    eventForm.coverImageAlt = uploaded.value.alt
-  } else {
-    startCarousel()
-    carouselForm.imageKey = uploaded.value.key
-    carouselForm.imageAlt = uploaded.value.alt
-  }
+function closeForm(): void { if (canLeave()) formOpen.value = false }
+function beforeUnload(event: BeforeUnloadEvent): void {
+  if (dirty.value) { event.preventDefault(); event.returnValue = '' }
 }
+onMounted(() => window.addEventListener('beforeunload', beforeUnload))
+onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
+onBeforeRouteLeave(() => !dirty.value || window.confirm('Discard the changes you have not saved?'))
 </script>
 
 <template>
   <div class="editor-dashboard">
     <nav class="editor-tabs" aria-label="Editor sections">
-      <button v-for="item in (['overview', 'news', 'events', 'carousel', 'media'] as Panel[])" :key="item" type="button" :aria-current="panel === item ? 'page' : undefined" @click="selectPanel(item)">
-        {{ item === 'carousel' ? 'Homepage carousel' : item }}
+      <button v-for="item in panels" :key="item.id" type="button" :disabled="busy" :aria-current="panel === item.id ? 'page' : undefined" @click="selectPanel(item.id)">
+        {{ item.label }}
       </button>
     </nav>
     <p v-if="message" class="admin-alert admin-alert--success" role="status">{{ message }}</p>
@@ -203,36 +225,40 @@ function useUploadedMedia(target: 'news' | 'event' | 'carousel'): void {
       <dl class="editor-stats">
         <div><dt>Drafts</dt><dd>{{ counts.drafts }}</dd></div><div><dt>Scheduled</dt><dd>{{ counts.scheduled }}</dd></div><div><dt>Published news</dt><dd>{{ counts.publishedNews }}</dd></div><div><dt>Upcoming events</dt><dd>{{ counts.upcomingEvents }}</dd></div><div><dt>Active slides</dt><dd>{{ counts.activeSlides }}</dd></div>
       </dl>
-      <div class="editor-actions"><button class="button button--navy" type="button" @click="startNews()">Create news</button><button class="button button--navy" type="button" @click="startEvent()">Create event</button><button class="button button--navy" type="button" @click="startCarousel()">Create carousel item</button></div>
+      <h3>What would you like to update?</h3>
+      <div class="editor-task-grid"><button v-for="item in panels.filter(item => item.id !== 'overview')" :key="item.id" type="button" @click="selectPanel(item.id)"><strong>{{ item.label }}</strong><span>{{ item.description }}</span><span class="text-link">Manage →</span></button></div>
+      <div class="editor-guide"><h3>From draft to website</h3><ol><li>Choose a section and add or edit an item.</li><li>Choose images or a PDF in that item's form. Uploads are saved in Images & PDFs for reuse.</li><li>Check the preview, then publish. Saving a draft does not publish it.</li></ol><p>Files uploaded here belong to this website environment. A file uploaded to preview does not automatically appear in production.</p></div>
     </section>
 
     <section v-else-if="panel === 'news'" aria-labelledby="news-editor-title">
-      <div class="editor-heading"><div><p class="eyebrow">News</p><h2 id="news-editor-title">{{ editingId ? 'Edit news item' : 'Create news item' }}</h2></div><button type="button" class="text-button" @click="startNews()">New blank item</button></div>
-      <div class="editor-workspace">
+      <div class="editor-heading"><div><p class="eyebrow">News</p><h2 id="news-editor-title">{{ formOpen ? (editingId ? 'Edit news item' : 'Create news item') : 'News items' }}</h2></div><button v-if="!formOpen" type="button" class="button button--navy" @click="startNews()">Add news</button><button v-else type="button" class="text-button" @click="closeForm()">Back to all news</button></div>
+      <p>Published news appears on the News page and in homepage updates. Save a draft to finish it later.</p>
+      <div v-if="formOpen" class="editor-workspace">
         <form class="editor-form" @submit.prevent="save('news', normaliseNews())">
           <label>Title <input v-model="newsForm.title" required maxlength="180" @blur="fillSlug('news')"></label>
-          <label>Slug <input v-model="newsForm.slug" required maxlength="120" pattern="[a-z0-9]+(?:-[a-z0-9]+)*"></label>
+          <details><summary>Page address (generated from the title)</summary><label>Address ending <input v-model="newsForm.slug" required maxlength="120" pattern="[a-z0-9]+(?:-[a-z0-9]+)*"></label></details>
           <label>Summary <textarea v-model="newsForm.summary" required maxlength="500" rows="3" /></label>
-          <label>Body <textarea v-model="newsForm.body" required maxlength="50000" rows="10" /></label>
+          <label>Full article <textarea v-model="newsForm.body" required maxlength="50000" rows="10" /></label>
           <div class="editor-form__row"><label>Category <input v-model="newsForm.category" maxlength="80"></label><label>Status <select v-model="newsForm.status"><option v-for="status in newsStatuses" :key="status" :value="status">{{ status }}</option></select></label></div>
           <div class="editor-form__row"><label>Publish/schedule time <input v-model="newsForm.publishAt" type="datetime-local"></label><label>Published date <input v-model="newsForm.publishedAt" type="datetime-local"></label></div>
           <label>Expiry time <input v-model="newsForm.expiresAt" type="datetime-local"></label>
           <label>External URL <input v-model="newsForm.externalUrl" maxlength="500" placeholder="https://… or /route"></label>
-          <div class="editor-form__row"><label>Cover image key <input v-model="newsForm.coverImageKey" maxlength="500"></label><label>Image alternative text <input v-model="newsForm.coverImageAlt" maxlength="300"></label></div>
+          <AdminMediaField v-model="newsForm.coverImageKey" v-model:alt="newsForm.coverImageAlt" label="News cover image" accept="image" />
           <label class="editor-check"><input v-model="newsForm.isFeatured" type="checkbox"> Feature this item</label>
-          <button class="button button--gold" type="submit" :disabled="busy">{{ busy ? 'Saving…' : (editingId ? 'Save changes' : 'Create draft') }}</button>
+          <button class="button button--gold" type="submit" :disabled="busy">{{ busy ? 'Saving…' : newsForm.status === 'published' ? 'Publish news' : newsForm.status === 'scheduled' ? 'Schedule news' : 'Save ' + newsForm.status }}</button>
         </form>
         <aside class="editor-preview" aria-label="News preview"><p class="eyebrow">Preview</p><p class="meta">{{ newsForm.category || 'INPA news' }} · {{ newsForm.status }}</p><h3>{{ newsForm.title || 'Untitled news item' }}</h3><p>{{ newsForm.summary || 'A summary will appear here.' }}</p><div class="editor-preview__body">{{ newsForm.body || 'The article body will appear here.' }}</div></aside>
       </div>
-      <AdminRecordList :items="snapshot.news" kind="news" @edit="item => startNews(item as AdminNewsRecord)" @remove="(id, title) => remove('news', id, title)" />
+      <AdminRecordList v-if="!formOpen" :items="snapshot.news" kind="news" @edit="item => startNews(item as AdminNewsRecord)" @remove="(id, title) => remove('news', id, title)" />
     </section>
 
     <section v-else-if="panel === 'events'" aria-labelledby="event-editor-title">
-      <div class="editor-heading"><div><p class="eyebrow">Events</p><h2 id="event-editor-title">{{ editingId ? 'Edit event' : 'Create event' }}</h2></div><button type="button" class="text-button" @click="startEvent()">New blank event</button></div>
-      <div class="editor-workspace">
+      <div class="editor-heading"><div><p class="eyebrow">Events</p><h2 id="event-editor-title">{{ formOpen ? (editingId ? 'Edit event' : 'Create event') : 'Events' }}</h2></div><button v-if="!formOpen" type="button" class="button button--navy" @click="startEvent()">Add event</button><button v-else type="button" class="text-button" @click="closeForm()">Back to all events</button></div>
+      <p>Published upcoming events appear on the homepage. Past events remain available in the event archive.</p>
+      <div v-if="formOpen" class="editor-workspace">
         <form class="editor-form" @submit.prevent="save('events', normaliseEvent())">
           <label>Title <input v-model="eventForm.title" required maxlength="180" @blur="fillSlug('events')"></label>
-          <label>Slug <input v-model="eventForm.slug" required maxlength="120" pattern="[a-z0-9]+(?:-[a-z0-9]+)*"></label>
+          <details><summary>Page address (generated from the title)</summary><label>Address ending <input v-model="eventForm.slug" required maxlength="120" pattern="[a-z0-9]+(?:-[a-z0-9]+)*"></label></details>
           <label>Summary <textarea v-model="eventForm.summary" required maxlength="500" rows="3" /></label>
           <label>Body <textarea v-model="eventForm.body" required maxlength="50000" rows="8" /></label>
           <div class="editor-form__row"><label>Starts <input v-model="eventForm.startAt" type="datetime-local" required></label><label>Ends <input v-model="eventForm.endAt" type="datetime-local"></label></div>
@@ -240,37 +266,48 @@ function useUploadedMedia(target: 'news' | 'event' | 'carousel'): void {
           <label>Publication schedule <input v-model="eventForm.publishAt" type="datetime-local"></label>
           <label>Location <input v-model="eventForm.locationName" maxlength="180"></label>
           <label>External URL <input v-model="eventForm.externalUrl" maxlength="500" placeholder="https://… or /route"></label>
-          <div class="editor-form__row"><label>Cover image key <input v-model="eventForm.coverImageKey" maxlength="500"></label><label>Image alternative text <input v-model="eventForm.coverImageAlt" maxlength="300"></label></div>
+          <AdminMediaField v-model="eventForm.coverImageKey" v-model:alt="eventForm.coverImageAlt" label="Event image or poster" accept="image" />
           <div class="editor-check-row"><label class="editor-check"><input v-model="eventForm.isOnline" type="checkbox"> Online event</label><label class="editor-check"><input v-model="eventForm.isFeatured" type="checkbox"> Feature this event</label></div>
-          <button class="button button--gold" type="submit" :disabled="busy">{{ busy ? 'Saving…' : (editingId ? 'Save changes' : 'Create draft') }}</button>
+          <button class="button button--gold" type="submit" :disabled="busy">{{ busy ? 'Saving…' : eventForm.status === 'published' ? 'Publish event' : eventForm.status === 'scheduled' ? 'Schedule event' : 'Save ' + eventForm.status }}</button>
         </form>
         <aside class="editor-preview" aria-label="Event preview"><p class="eyebrow">Preview</p><p class="status-chip">{{ eventForm.status }}</p><h3>{{ eventForm.title || 'Untitled event' }}</h3><p>{{ eventForm.summary || 'An event summary will appear here.' }}</p><p class="meta">{{ eventForm.startAt || 'Start date required' }} · {{ eventForm.timezone }}</p><div class="editor-preview__body">{{ eventForm.body || 'Event details will appear here.' }}</div></aside>
       </div>
-      <AdminRecordList :items="snapshot.events" kind="events" @edit="item => startEvent(item as AdminEventRecord)" @remove="(id, title) => remove('events', id, title)" />
+      <AdminRecordList v-if="!formOpen" :items="snapshot.events" kind="events" @edit="item => startEvent(item as AdminEventRecord)" @remove="(id, title) => remove('events', id, title)" />
     </section>
 
     <section v-else-if="panel === 'carousel'" aria-labelledby="carousel-editor-title">
-      <div class="editor-heading"><div><p class="eyebrow">Homepage</p><h2 id="carousel-editor-title">{{ editingId ? 'Edit carousel item' : 'Create carousel item' }}</h2></div><button type="button" class="text-button" @click="startCarousel()">New blank item</button></div>
-      <div class="editor-workspace">
+      <div class="editor-heading"><div><p class="eyebrow">Homepage</p><h2 id="carousel-editor-title">{{ formOpen ? (editingId ? 'Edit homepage slide' : 'Create homepage slide') : 'Homepage slides' }}</h2></div><button v-if="!formOpen" type="button" class="button button--navy" @click="startCarousel()">Add slide</button><button v-else type="button" class="text-button" @click="closeForm()">Back to all slides</button></div>
+      <p>Active slides appear in the homepage banner. A lower position number appears first.</p>
+      <div v-if="formOpen" class="editor-workspace">
         <form class="editor-form" @submit.prevent="save('carousel', normaliseCarousel())">
-          <label>Eyebrow <input v-model="carouselForm.eyebrow" maxlength="80"></label><label>Title <input v-model="carouselForm.title" required maxlength="180"></label><label>Summary <textarea v-model="carouselForm.summary" maxlength="500" rows="3" /></label>
-          <div class="editor-form__row"><label>Image key <input v-model="carouselForm.imageKey" required maxlength="500"></label><label>Image alternative text <input v-model="carouselForm.imageAlt" required maxlength="300"></label></div>
+          <label>Small heading above title <input v-model="carouselForm.eyebrow" maxlength="80"></label><label>Title <input v-model="carouselForm.title" required maxlength="180"></label><label>Summary <textarea v-model="carouselForm.summary" maxlength="500" rows="3" /></label>
+          <AdminMediaField v-model="carouselForm.imageKey" v-model:alt="carouselForm.imageAlt" label="Homepage slide image" accept="image" />
           <div class="editor-form__row"><label>Action label <input v-model="carouselForm.ctaLabel" maxlength="80"></label><label>Action URL <input v-model="carouselForm.ctaUrl" maxlength="500"></label></div>
-          <div class="editor-form__row"><label>Linked type <select v-model="carouselForm.linkedContentType"><option :value="null">None</option><option value="news">News</option><option value="event">Event</option><option value="custom">Custom</option></select></label><label>Linked content ID <input v-model="carouselForm.linkedContentId" maxlength="120"></label></div>
           <div class="editor-form__row"><label>Starts <input v-model="carouselForm.startsAt" type="datetime-local"></label><label>Ends <input v-model="carouselForm.endsAt" type="datetime-local"></label></div>
           <label>Sort order <input v-model.number="carouselForm.sortOrder" type="number" min="0" max="10000" step="1" required></label><label class="editor-check"><input v-model="carouselForm.isActive" type="checkbox"> Active on the homepage</label>
           <button class="button button--gold" type="submit" :disabled="busy">{{ busy ? 'Saving…' : (editingId ? 'Save changes' : 'Create item') }}</button>
         </form>
         <aside class="editor-preview editor-preview--dark" aria-label="Carousel preview"><p class="eyebrow eyebrow--light">{{ carouselForm.eyebrow || 'Featured update' }}</p><h3>{{ carouselForm.title || 'Untitled carousel item' }}</h3><p>{{ carouselForm.summary || 'Optional summary text will appear here.' }}</p><p class="meta meta--light">{{ carouselForm.isActive ? 'Active' : 'Inactive' }} · position {{ carouselForm.sortOrder }}</p></aside>
       </div>
-      <AdminRecordList :items="snapshot.carousel" kind="carousel" @edit="item => startCarousel(item as AdminCarouselRecord)" @remove="(id, title) => remove('carousel', id, title)" />
+      <AdminRecordList v-if="!formOpen" :items="snapshot.carousel" kind="carousel" @edit="item => startCarousel(item as AdminCarouselRecord)" @remove="(id, title) => remove('carousel', id, title)" />
     </section>
 
+    <AdminScienceEditor v-else-if="panel === 'publications' || panel === 'research'" :key="panel" ref="scienceEditor" :kind="panel" />
     <section v-else aria-labelledby="media-editor-title">
-      <div class="editor-heading"><div><p class="eyebrow">Media library</p><h2 id="media-editor-title">Upload approved media</h2></div></div>
-      <AdminMediaUploader @uploaded="value => { uploaded = value; mediaRefreshKey++ }" />
-      <AdminMediaLibrary :refresh-key="mediaRefreshKey" @selected="value => uploaded = value" />
-      <div v-if="uploaded" class="admin-alert admin-alert--success"><p><strong>Uploaded key:</strong> <code>{{ uploaded.key }}</code></p><div class="editor-actions"><button type="button" @click="useUploadedMedia('news')">Use for new news item</button><button type="button" @click="useUploadedMedia('event')">Use for new event</button><button type="button" @click="useUploadedMedia('carousel')">Use for new carousel item</button></div></div>
+      <div class="editor-heading"><div><p class="eyebrow">Reusable files</p><h2 id="media-editor-title">Images & PDFs</h2></div></div>
+      <p>Uploads are saved in this library. To put a file on the website, open a news item, event, homepage slide, research story or Nuclear Horizons issue and choose the file there. Uploading alone does not add it to a page.</p>
+      <details class="editor-guide"><summary>Upload an image for later use</summary><AdminMediaUploader @uploaded="mediaRefreshKey++" /></details>
+      <details class="editor-guide"><summary>Upload a PDF for later use</summary><AdminMediaUploader accept="pdf" @uploaded="mediaRefreshKey++" /></details>
+      <AdminMediaLibrary :refresh-key="mediaRefreshKey" :selectable="false" />
     </section>
   </div>
 </template>
+
+<style scoped>
+.editor-task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); gap: 1rem; margin: 1.5rem 0; }
+.editor-task-grid button { padding: 1.4rem; border: 1px solid #cedbe5; text-align: left; background: white; color: var(--color-text); display: grid; gap: .8rem; cursor: pointer; }
+.editor-task-grid strong { font-size: 1.2rem; color: var(--color-navy-950); }
+.editor-task-grid button:hover { background: #f1f6fa; }
+.editor-guide { padding: 1.4rem; background: #f1f6fa; margin: 1.5rem 0; }
+.editor-guide li { margin: .6rem 0; }
+</style>

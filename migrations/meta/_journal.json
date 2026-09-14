@@ -15,6 +15,13 @@
       "when": 1788856835600,
       "tag": "0001_massive_adam_destine",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1789396703290,
+      "tag": "0002_awesome_red_hulk",
+      "breakpoints": true
     }
   ]
 }
