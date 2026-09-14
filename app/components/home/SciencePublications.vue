@@ -77,22 +77,38 @@ const featuredResearch = computed(() => researchResponse.value?.data.find(item =
 </template>
 
 <style scoped>
+.science-publications__bulletin {
+  container-type: inline-size;
+}
+
+.science-publications__research,
+.science-publications__bulletin {
+  overflow-wrap: anywhere;
+}
+
 .science-publications__issue {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   align-items: start;
   gap: 1.25rem;
 }
 
+.science-publications__issue > div {
+  min-width: 0;
+}
+
 .science-publications__issue img {
   display: block;
-  width: min(8.5rem, 100%);
+  width: 8.5rem;
+  max-width: 100%;
   height: auto;
   border: 1px solid var(--color-border);
 }
 
-@media (min-width: 34rem) {
+/* Use the card's available width, not the viewport shared with research. */
+@container (min-width: 28rem) {
   .science-publications__issue {
-    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-columns: 8.5rem minmax(0, 1fr);
   }
 }
 </style>
