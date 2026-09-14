@@ -180,7 +180,7 @@ defineExpose({ canLeave })
         <article v-for="item in records" :key="item.id" class="science-record">
           <p class="status-chip">{{ item.status }}</p><h3>{{ 'issueLabel' in item ? item.issueLabel : item.title }}</h3>
           <p v-if="'isFeatured' in item && item.isFeatured" class="meta">Selected for homepage spotlight</p>
-          <p class="meta">{{ 'publicationDate' in item ? item.publicationDate : item.publishedAt.slice(0, 10) }}</p>
+          <p class="meta">{{ 'publicationDate' in item ? item.publicationDate : item.publishedAt.slice(0, 10) }} · Added by {{ item.createdBy }}</p>
           <p>{{ item.summary }}</p><div class="editor-row-actions"><button type="button" @click="edit(item)">Edit {{ isPublication ? 'issue' : 'research' }}</button><button class="danger-button" type="button" :disabled="busy" @click="remove(item)">Remove</button></div>
         </article>
       </div>

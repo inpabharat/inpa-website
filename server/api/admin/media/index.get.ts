@@ -28,6 +28,7 @@ export default defineEventHandler(async (event) => {
       url: `/media/${object.key}`,
       size: object.size,
       uploadedAt: object.uploaded.toISOString(),
+      uploadedBy: object.customMetadata?.uploadedBy ?? '',
       contentType: object.httpMetadata?.contentType ?? 'application/octet-stream',
       alt: object.customMetadata?.alt ?? '',
       credit: object.customMetadata?.credit ?? '',

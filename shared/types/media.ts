@@ -18,6 +18,7 @@ export interface MediaSelection {
 export interface MediaItem extends MediaSelection {
   size: number
   uploadedAt: string
+  uploadedBy?: string
   credit: string
   licence: string
   usages?: MediaUsage[]

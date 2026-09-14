@@ -101,7 +101,7 @@ onMounted(load)
         </a>
         <div class="media-library__body">
           <h4>{{ displayName(item) }}</h4>
-          <p class="media-library__meta">{{ Math.max(1, Math.ceil(item.size / 1024)) }} KB · {{ new Date(item.uploadedAt).toLocaleString('en-IN') }}</p>
+          <p class="media-library__meta">{{ Math.max(1, Math.ceil(item.size / 1024)) }} KB · {{ new Date(item.uploadedAt).toLocaleString('en-IN') }}<span v-if="item.uploadedBy"> · Added by {{ item.uploadedBy }}</span></p>
           <p v-if="item.alt"><strong>Image description:</strong> {{ item.alt }}</p>
           <p v-if="item.credit"><strong>Credit:</strong> {{ item.credit }}</p>
           <div v-if="item.usages?.length" class="media-library__usage">
