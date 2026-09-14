@@ -65,7 +65,10 @@ export class PublicContentRepository {
       .where(
         and(
           inArray(events.status, ['scheduled', 'published', 'postponed', 'cancelled']),
-          or(isNull(events.publishAt), lte(events.publishAt, now)),
+          or(
+            inArray(events.status, ['published', 'postponed', 'cancelled']),
+            and(eq(events.status, 'scheduled'), or(isNull(events.publishAt), lte(events.publishAt, now))),
+          ),
           gte(events.startAt, now),
         ),
       )
@@ -93,7 +96,10 @@ export class PublicContentRepository {
       .where(
         and(
           inArray(events.status, ['scheduled', 'published', 'postponed', 'cancelled', 'completed']),
-          or(isNull(events.publishAt), lte(events.publishAt, now)),
+          or(
+            inArray(events.status, ['published', 'postponed', 'cancelled', 'completed']),
+            and(eq(events.status, 'scheduled'), or(isNull(events.publishAt), lte(events.publishAt, now))),
+          ),
           lt(events.startAt, now),
         ),
       )
@@ -106,7 +112,10 @@ export class PublicContentRepository {
       where: and(
         eq(events.slug, slug),
         inArray(events.status, ['scheduled', 'published', 'postponed', 'cancelled', 'completed']),
-        or(isNull(events.publishAt), lte(events.publishAt, now)),
+        or(
+          inArray(events.status, ['published', 'postponed', 'cancelled', 'completed']),
+          and(eq(events.status, 'scheduled'), or(isNull(events.publishAt), lte(events.publishAt, now))),
+        ),
       ),
     })
   }

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { PublicEventItem, PublicNewsItem } from '../../../shared/types/content'
-import { formatIndiaDate } from '~/utils/date'
+import { formatEventDate, formatIndiaDate } from '~/utils/date'
 
 const props = defineProps<{
   news: PublicNewsItem[]
@@ -54,7 +54,7 @@ const visibleEvents = computed(() => props.events.slice(0, 2))
           </div>
           <ol v-if="visibleEvents.length" class="updates-list updates-list--events">
             <li v-for="item in visibleEvents" :key="item.slug">
-              <time :datetime="item.startAt">{{ formatIndiaDate(item.startAt) }}</time>
+              <time :datetime="item.startAt">{{ formatEventDate(item.startAt, item.timezone) }}</time>
               <div>
                 <p v-if="item.status !== 'published'" class="status-chip">{{ item.status }}</p>
                 <h4>{{ item.title }}</h4>

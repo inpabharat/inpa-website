@@ -13,7 +13,7 @@ The bypass works only with the local environment marker. Preview and production 
 ## Editorial workflow
 
 - Create records as **draft** and use the adjacent preview before publication.
-- Use **scheduled** with a publication time to make a record public automatically after that time.
+- Use **scheduled** with a publication time to make a record public automatically after that time. **Published** events are visible immediately when their event start date is upcoming; the publication schedule is ignored for them.
 - Use **published** for immediate publication. News receives a publication timestamp automatically if none is supplied.
 - Use **archived** to remove news from public listings without deleting its record.
 - Events may additionally be postponed, cancelled, or completed. Past public events appear in the event archive.

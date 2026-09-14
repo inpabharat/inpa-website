@@ -21,6 +21,7 @@ const formOpen = ref(false)
 const savedForm = ref('')
 const scienceEditor = ref<{ canLeave: () => boolean } | null>(null)
 const mediaRefreshKey = ref(0)
+const editorTimeZone = ref('your computer’s local timezone')
 const panels: { id: Panel, label: string, description: string }[] = [
   { id: 'overview', label: 'Overview', description: '' },
   { id: 'news', label: 'News', description: 'Post an announcement on the homepage and News page.' },
@@ -61,6 +62,10 @@ const counts = computed(() => ({
 
 watch(() => props.initialSnapshot, value => snapshot.value = structuredClone(value), { deep: true })
 
+onMounted(() => {
+  editorTimeZone.value = Intl.DateTimeFormat().resolvedOptions().timeZone || editorTimeZone.value
+})
+
 function nullable(value: string | null): string | null {
   const cleaned = value?.trim() ?? ''
   return cleaned || null
@@ -77,6 +82,13 @@ function toDateTimeLocal(value: string | null): string | null {
   if (!Number.isFinite(date.getTime())) return null
   const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
   return local.toISOString().slice(0, 16)
+}
+
+function localDateTimeToIso(value: string | null): string | null {
+  if (!value) return null
+  const date = new Date(value)
+  if (!Number.isFinite(date.getTime())) return null
+  return date.toISOString()
 }
 
 function canLeave(): boolean {
@@ -143,11 +155,11 @@ function fillSlug(kind: 'news' | 'events'): void {
 }
 
 function normaliseNews(): AdminNewsInput {
-  return { ...newsForm, slug: makeSlug(newsForm.slug), coverImageKey: nullable(newsForm.coverImageKey), coverImageAlt: nullable(newsForm.coverImageAlt), category: nullable(newsForm.category), publishAt: nullable(newsForm.publishAt), publishedAt: nullable(newsForm.publishedAt), expiresAt: nullable(newsForm.expiresAt), externalUrl: nullable(newsForm.externalUrl) }
+  return { ...newsForm, slug: makeSlug(newsForm.slug), coverImageKey: nullable(newsForm.coverImageKey), coverImageAlt: nullable(newsForm.coverImageAlt), category: nullable(newsForm.category), publishAt: localDateTimeToIso(newsForm.publishAt), publishedAt: localDateTimeToIso(newsForm.publishedAt), expiresAt: localDateTimeToIso(newsForm.expiresAt), externalUrl: nullable(newsForm.externalUrl) }
 }
 
 function normaliseEvent(): AdminEventInput {
-  return { ...eventForm, slug: makeSlug(eventForm.slug), endAt: nullable(eventForm.endAt), locationName: nullable(eventForm.locationName), externalUrl: nullable(eventForm.externalUrl), coverImageKey: nullable(eventForm.coverImageKey), coverImageAlt: nullable(eventForm.coverImageAlt), publishAt: nullable(eventForm.publishAt) }
+  return { ...eventForm, slug: makeSlug(eventForm.slug), startAt: localDateTimeToIso(eventForm.startAt) as string, endAt: localDateTimeToIso(eventForm.endAt), locationName: nullable(eventForm.locationName), externalUrl: nullable(eventForm.externalUrl), coverImageKey: nullable(eventForm.coverImageKey), coverImageAlt: nullable(eventForm.coverImageAlt), publishAt: localDateTimeToIso(eventForm.publishAt) }
 }
 
 function normaliseCarousel(): AdminCarouselInput {
@@ -254,7 +266,7 @@ onBeforeRouteLeave(() => !dirty.value || window.confirm('Discard the changes you
 
     <section v-else-if="panel === 'events'" aria-labelledby="event-editor-title">
       <div class="editor-heading"><div><p class="eyebrow">Events</p><h2 id="event-editor-title">{{ formOpen ? (editingId ? 'Edit event' : 'Create event') : 'Events' }}</h2></div><button v-if="!formOpen" type="button" class="button button--navy" @click="startEvent()">Add event</button><button v-else type="button" class="text-button" @click="closeForm()">Back to all events</button></div>
-      <p>Published upcoming events appear on the homepage. Past events remain available in the event archive.</p>
+      <p>Published upcoming events appear on the homepage. Past events remain available in the event archive. Start and end fields use your computer’s local time (<strong>{{ editorTimeZone }}</strong>); the separate event timezone tells visitors how to interpret the published time.</p>
       <div v-if="formOpen" class="editor-workspace">
         <form class="editor-form" @submit.prevent="save('events', normaliseEvent())">
           <label>Title <input v-model="eventForm.title" required maxlength="180" @blur="fillSlug('events')"></label>
@@ -262,8 +274,8 @@ onBeforeRouteLeave(() => !dirty.value || window.confirm('Discard the changes you
           <label>Summary <textarea v-model="eventForm.summary" required maxlength="500" rows="3" /></label>
           <label>Body <textarea v-model="eventForm.body" required maxlength="50000" rows="8" /></label>
           <div class="editor-form__row"><label>Starts <input v-model="eventForm.startAt" type="datetime-local" required></label><label>Ends <input v-model="eventForm.endAt" type="datetime-local"></label></div>
-          <div class="editor-form__row"><label>Timezone <input v-model="eventForm.timezone" required maxlength="80"></label><label>Status <select v-model="eventForm.status"><option v-for="status in eventStatuses" :key="status" :value="status">{{ status }}</option></select></label></div>
-          <label>Publication schedule <input v-model="eventForm.publishAt" type="datetime-local"></label>
+          <div class="editor-form__row"><label>Event timezone (IANA) <input v-model="eventForm.timezone" required maxlength="80" placeholder="Asia/Kolkata or Europe/Brussels"></label><label>Status <select v-model="eventForm.status"><option v-for="status in eventStatuses" :key="status" :value="status">{{ status }}</option></select></label></div>
+          <label>Publication schedule (only used when status is Scheduled) <input v-model="eventForm.publishAt" type="datetime-local"></label>
           <label>Location <input v-model="eventForm.locationName" maxlength="180"></label>
           <label>External URL <input v-model="eventForm.externalUrl" maxlength="500" placeholder="https://… or /route"></label>
           <AdminMediaField v-model="eventForm.coverImageKey" v-model:alt="eventForm.coverImageAlt" label="Event image or poster" accept="image" />

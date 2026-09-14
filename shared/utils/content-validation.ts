@@ -94,6 +94,15 @@ function validateOrder(first: string | null, second: string | null, message: str
   }
 }
 
+function isValidTimeZone(value: string): boolean {
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone: value }).format()
+    return true
+  } catch {
+    return false
+  }
+}
+
 export function makeSlug(value: string): string {
   return value
     .normalize('NFKD')
@@ -149,6 +158,11 @@ export function parseEventInput(input: unknown): AdminEventInput {
     throw new ContentValidationError(['A scheduled event requires a publication time.'])
   }
 
+  const timezone = requiredText(record, 'timezone', 'Timezone', 80)
+  if (!isValidTimeZone(timezone)) {
+    throw new ContentValidationError(['Timezone must be a valid IANA timezone, such as Asia/Kolkata or Europe/Brussels.'])
+  }
+
   return {
     slug: slugValue(record),
     title: requiredText(record, 'title', 'Title', 180),
@@ -156,7 +170,7 @@ export function parseEventInput(input: unknown): AdminEventInput {
     body: requiredText(record, 'body', 'Body', 50_000),
     startAt,
     endAt,
-    timezone: requiredText(record, 'timezone', 'Timezone', 80),
+    timezone,
     locationName: optionalText(record, 'locationName', 'Location', 180),
     isOnline: booleanValue(record, 'isOnline'),
     externalUrl: urlValue(record, 'externalUrl', 'External URL'),

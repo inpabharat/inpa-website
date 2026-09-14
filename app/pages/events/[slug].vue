@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { formatEventDate } from '~/utils/date'
 interface EventDetail {
   slug: string
   title: string
@@ -39,7 +40,8 @@ useSeoMeta({
       <div class="container container--reading prose">
         <template v-if="item">
           <img v-if="item.coverImageKey" class="detail-cover" :src="publicMediaUrl(item.coverImageKey) ?? undefined" :alt="item.coverImageAlt ?? ''" width="960" height="540">
-          <p><strong>Timezone:</strong> {{ item.timezone }}</p>
+          <p><strong>When:</strong> <time :datetime="item.startAt">{{ formatEventDate(item.startAt, item.timezone) }}</time></p>
+          <p><strong>Event timezone:</strong> {{ item.timezone }}</p>
           <p>{{ item.body }}</p>
         </template>
         <NuxtLink class="text-link" to="/events">Return to events <span aria-hidden="true">→</span></NuxtLink>

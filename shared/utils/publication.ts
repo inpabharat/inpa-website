@@ -25,8 +25,8 @@ export function isNewsPublic(item: NewsPublicationInput, now = new Date()): bool
 }
 
 export function isEventPublic(item: EventPublicationInput, now = new Date()): boolean {
-  if (!['published', 'postponed', 'cancelled'].includes(item.status)) return false
-  return item.publishAt === null || isAtOrBefore(item.publishAt, now)
+  if (item.status === 'scheduled') return item.publishAt !== null && isAtOrBefore(item.publishAt, now)
+  return ['published', 'postponed', 'cancelled'].includes(item.status)
 }
 
 export function isUpcomingEvent(startAt: string, now = new Date()): boolean {
