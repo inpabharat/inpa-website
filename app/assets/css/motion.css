@@ -1,0 +1,53 @@
+/* A small, deliberate movement vocabulary shared by navigation and the homepage. */
+.navigation-panel-enter-active {
+  transition: opacity 220ms ease, transform 280ms cubic-bezier(.2, .7, .2, 1);
+}
+.navigation-panel-leave-active {
+  transition: opacity 130ms ease, transform 160ms ease;
+  pointer-events: none;
+}
+.navigation-panel-enter-from,
+.navigation-panel-leave-to {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.desktop-nav__links a {
+  transition: background-color 180ms ease;
+}
+.desktop-nav__links a > span:last-child {
+  transition: transform 180ms ease;
+}
+.desktop-nav__links a:hover > span:last-child {
+  transform: translateX(3px);
+}
+.mobile-nav[open] > .mobile-nav__panel,
+.mobile-nav__group[open] > div {
+  animation: navigation-arrive 220ms ease both;
+}
+@keyframes navigation-arrive {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+  .scroll-reveal {
+    transition: opacity 600ms ease, transform 700ms cubic-bezier(.2, .7, .2, 1);
+  }
+  .scroll-reveal.reveal-pending {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  .scroll-reveal:focus-within {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .navigation-panel-enter-active,
+  .navigation-panel-leave-active,
+  .desktop-nav__links a,
+  .desktop-nav__links a > span:last-child { transition: none; }
+  .navigation-panel-enter-from,
+  .navigation-panel-leave-to { transform: none; }
+  .mobile-nav[open] > .mobile-nav__panel,
+  .mobile-nav__group[open] > div { animation: none; }
+}

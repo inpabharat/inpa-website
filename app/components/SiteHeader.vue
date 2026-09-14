@@ -153,9 +153,11 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
           >
             {{ group.label }} <span aria-hidden="true">⌄</span>
           </button>
+          <Transition name="navigation-panel">
           <div
             v-show="activeDesktopMenu === group.id"
             :id="desktopPanelId(group.id)"
+            :inert="activeDesktopMenu !== group.id"
             class="desktop-nav__panel"
             @keydown="handleDesktopPanelKeydown($event, group.id)"
           >
@@ -179,6 +181,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
               </NuxtLink>
             </div>
           </div>
+          </Transition>
         </div>
         <NuxtLink class="desktop-nav__membership" to="/membership">Join INPA</NuxtLink>
       </nav>
