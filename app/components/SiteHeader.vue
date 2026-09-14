@@ -151,7 +151,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
             @click="toggleDesktopMenu(group.id)"
             @keydown="handleDesktopTriggerKeydown($event, group.id)"
           >
-            {{ group.label }} <span aria-hidden="true">⌄</span>
+            {{ group.label }}
           </button>
           <Transition name="navigation-panel">
           <div
@@ -200,7 +200,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
             <NuxtLink class="mobile-nav__home" to="/">Home</NuxtLink>
             <details v-for="group in navigationGroups" :key="group.id" class="mobile-nav__group">
               <summary :class="{ 'mobile-nav__group--active': groupIsActive(group) }">
-                {{ group.label }} <span aria-hidden="true">+</span>
+                {{ group.label }}
               </summary>
               <div>
                 <NuxtLink
