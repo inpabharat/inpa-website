@@ -1,21 +1,8 @@
 <script setup lang="ts">
 import type { PublicCarouselItem } from '../../../shared/types/content'
 import { heroContent } from '~~/content/site/home'
-import { publicMediaUrl } from '~/utils/media'
 
-const props = defineProps<{ carousel: PublicCarouselItem[] }>()
-const activeIndex = ref(0)
-const activeSlide = computed(() => props.carousel[activeIndex.value] ?? null)
-
-function showPrevious(): void {
-  if (props.carousel.length === 0) return
-  activeIndex.value = (activeIndex.value - 1 + props.carousel.length) % props.carousel.length
-}
-
-function showNext(): void {
-  if (props.carousel.length === 0) return
-  activeIndex.value = (activeIndex.value + 1) % props.carousel.length
-}
+defineProps<{ carousel: PublicCarouselItem[] }>()
 </script>
 
 <template>
@@ -40,30 +27,61 @@ function showNext(): void {
         </div>
       </div>
 
-      <aside class="hero__feature" aria-label="INPA focus and featured update">
-        <p class="eyebrow eyebrow--light">Science · community · future</p>
-        <ul class="hero__focus-list">
-          <li v-for="(item, index) in heroContent.focusAreas" :key="item">
-            <span aria-hidden="true">0{{ index + 1 }}</span>
-            {{ item }}
-          </li>
-        </ul>
-
-        <div v-if="activeSlide" class="hero__carousel" aria-live="polite">
-          <img class="hero__carousel-image" :src="publicMediaUrl(activeSlide.imageKey) ?? undefined" :alt="activeSlide.imageAlt" width="720" height="405">
-          <div>
-            <p class="eyebrow eyebrow--light">{{ activeSlide.eyebrow }}</p>
-            <p class="hero__carousel-title">{{ activeSlide.title }}</p>
-            <p v-if="activeSlide.summary">{{ activeSlide.summary }}</p>
-            <NuxtLink v-if="activeSlide.ctaLabel && activeSlide.ctaUrl" class="text-link text-link--light" :to="activeSlide.ctaUrl">{{ activeSlide.ctaLabel }} <span aria-hidden="true">→</span></NuxtLink>
-          </div>
-          <div v-if="carousel.length > 1" class="hero__carousel-controls" aria-label="Carousel controls">
-            <button type="button" aria-label="Show previous carousel item" @click="showPrevious">Previous</button>
-            <span aria-live="off">{{ activeIndex + 1 }} / {{ carousel.length }}</span>
-            <button type="button" aria-label="Show next carousel item" @click="showNext">Next</button>
-          </div>
+      <aside class="hero__feature" :aria-label="carousel.length ? 'Featured updates' : 'INPA focus'">
+        <HomeHeroSlideshow v-if="carousel.length" :items="carousel" />
+        <div v-else class="hero__focus">
+          <p class="eyebrow eyebrow--light">Science · community · future</p>
+          <ul class="hero__focus-list">
+            <li v-for="(item, index) in heroContent.focusAreas" :key="item">
+              <span aria-hidden="true">0{{ index + 1 }}</span>
+              {{ item }}
+            </li>
+          </ul>
         </div>
       </aside>
     </div>
   </section>
 </template>
+
+<style scoped>
+.hero__feature {
+  overflow: hidden;
+  padding: 0;
+  border-color: rgb(255 255 255 / 28%);
+  background: rgb(4 19 33 / 72%);
+  box-shadow: 0 1.75rem 5rem rgb(0 0 0 / 24%);
+  backdrop-filter: blur(10px);
+}
+
+.hero__focus {
+  padding: clamp(1.35rem, 3vw, 2rem);
+}
+
+@media (min-width: 60rem) {
+  .hero__content {
+    padding-block: clamp(3rem, 5vw, 4.5rem);
+    grid-template-columns: minmax(0, 1.05fr) minmax(25rem, 0.95fr);
+    gap: clamp(2.5rem, 4vw, 4.5rem);
+  }
+
+  .hero__copy h1 {
+    max-width: 16ch;
+    font-size: clamp(3.25rem, 4.5vw, 4.8rem);
+  }
+}
+
+@media (min-width: 60rem) and (max-height: 60rem) {
+  .hero__content {
+    padding-block: 2.5rem;
+  }
+
+  .hero__copy h1 {
+    margin-bottom: 1rem;
+    font-size: clamp(3rem, 4vw, 4.25rem);
+  }
+
+  .hero__mission {
+    font-size: clamp(1.65rem, 2.5vw, 2.45rem);
+  }
+}
+</style>

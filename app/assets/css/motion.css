@@ -1,0 +1,99 @@
+/* A small, deliberate movement vocabulary shared by navigation and the homepage. */
+.navigation-panel-enter-active {
+  z-index: 2;
+  transition: opacity 260ms ease, clip-path 380ms cubic-bezier(.2, .7, .2, 1), transform 380ms cubic-bezier(.2, .7, .2, 1);
+}
+.navigation-panel-leave-active {
+  transition: opacity 160ms ease, clip-path 200ms ease, transform 200ms ease;
+  pointer-events: none;
+}
+.navigation-panel-enter-from,
+.navigation-panel-leave-to {
+  opacity: 0;
+  clip-path: inset(0 0 100% 0);
+  transform: translateY(-8px);
+}
+.navigation-panel-enter-to,
+.navigation-panel-leave-from {
+  clip-path: inset(0 0 -4rem 0);
+  transform: translateY(0);
+}
+.navigation-panel-enter-active .desktop-nav__introduction,
+.navigation-panel-enter-active .desktop-nav__links a {
+  animation: navigation-content-arrive 360ms cubic-bezier(.2, .7, .2, 1) both;
+}
+.navigation-panel-enter-active .desktop-nav__links a:nth-child(n + 3) { animation-delay: 45ms; }
+.navigation-panel-enter-active .desktop-nav__links a:nth-child(n + 5) { animation-delay: 90ms; }
+@keyframes navigation-content-arrive {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.desktop-nav__trigger {
+  position: relative;
+  transition: background-color 220ms ease, color 220ms ease;
+}
+.desktop-nav__trigger::after {
+  position: absolute;
+  right: 0.58rem;
+  bottom: -2px;
+  left: 0.58rem;
+  height: 2px;
+  background: var(--color-navy-800);
+  content: '';
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 260ms cubic-bezier(.2, .7, .2, 1);
+}
+.desktop-nav__trigger[aria-expanded="true"] {
+  border-bottom-color: transparent;
+  background: #edf4f9;
+}
+.desktop-nav__trigger[aria-expanded="true"]::after { transform: scaleX(1); }
+/* The disclosure marker stays quiet; the panel and active tab carry the motion. */
+.desktop-nav__trigger[aria-expanded="true"] span {
+  transform: none;
+}
+.desktop-nav__links a {
+  transition: background-color 180ms ease;
+}
+.desktop-nav__links a > span:last-child {
+  transition: transform 180ms ease;
+}
+.desktop-nav__links a:hover > span:last-child {
+  transform: translateX(3px);
+}
+.mobile-nav[open] > .mobile-nav__panel,
+.mobile-nav__group[open] > div {
+  animation: navigation-arrive 220ms ease both;
+}
+@keyframes navigation-arrive {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
+  .scroll-reveal {
+    transition: opacity 600ms ease, transform 700ms cubic-bezier(.2, .7, .2, 1);
+  }
+  .scroll-reveal.reveal-pending {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  .scroll-reveal:focus-within {
+    opacity: 1;
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .navigation-panel-enter-active,
+  .navigation-panel-leave-active,
+  .desktop-nav__trigger,
+  .desktop-nav__trigger::after,
+  .desktop-nav__links a,
+  .desktop-nav__links a > span:last-child { transition: none; }
+  .navigation-panel-enter-from,
+  .navigation-panel-leave-to { transform: none; }
+  .navigation-panel-enter-active .desktop-nav__introduction,
+  .navigation-panel-enter-active .desktop-nav__links a,
+  .mobile-nav[open] > .mobile-nav__panel,
+  .mobile-nav__group[open] > div { animation: none; }
+}

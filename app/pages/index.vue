@@ -5,6 +5,8 @@ const emptyHome: PublicHomeData = { news: [], events: [], carousel: [] }
 const { data: response } = await useFetch<ApiResponse<PublicHomeData>>('/api/public/home')
 
 const home = computed(() => response.value?.data ?? emptyHome)
+const homepage = ref<HTMLElement | null>(null)
+useScrollReveal(homepage)
 const requestUrl = useRequestURL()
 const socialImageUrl = `${requestUrl.origin}/og.png`
 
@@ -22,7 +24,7 @@ useSeoMeta({
 </script>
 
 <template>
-  <div id="digital-hub">
+  <div id="digital-hub" ref="homepage">
     <HomeSiteHero :carousel="home.carousel" />
     <HomeNnpiFront />
     <HomeExploreGateway />
