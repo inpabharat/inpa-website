@@ -13,9 +13,14 @@ useSeoMeta({ title: 'INPA editor', robots: 'noindex, nofollow, noarchive' })
   <div>
     <section class="page-hero admin-hero">
       <div class="container">
-        <p class="eyebrow eyebrow--light">Website editor</p>
-        <h1>Manage the INPA website</h1>
-        <p v-if="session">Signed in as {{ session.data.email }}.</p>
+        <div class="admin-hero__header">
+          <div>
+            <p class="eyebrow eyebrow--light">Website editor</p>
+            <h1>Manage the INPA website</h1>
+            <p v-if="session">Signed in as {{ session.data.email }}.</p>
+          </div>
+          <a class="button button--outline-light" href="/cdn-cgi/access/logout">Sign out</a>
+        </div>
       </div>
     </section>
     <section class="section admin-shell">
