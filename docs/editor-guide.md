@@ -1,6 +1,6 @@
 # INPA editor guide
 
-The editor manages news, events, homepage slides, Nuclear Horizons and featured research. Open `/admin` and sign in with the existing email verification flow. Institutional pages remain repository-managed.
+The editor manages news, events, homepage slides, Nuclear Horizons and featured research. Open `/admin` and sign in with the existing email verification flow. Access is restricted to authorised INPA editors; Cloudflare may show a generic “code sent” message even when an email is not allowed, and will not send a code in that case. Institutional pages remain repository-managed.
 
 ## Local access
 

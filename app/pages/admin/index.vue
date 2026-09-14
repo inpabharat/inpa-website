@@ -18,6 +18,7 @@ useSeoMeta({ title: 'INPA editor', robots: 'noindex, nofollow, noarchive' })
             <p class="eyebrow eyebrow--light">Website editor</p>
             <h1>Manage the INPA website</h1>
             <p v-if="session">Signed in as {{ session.data.email }}.</p>
+            <p class="admin-hero__help">Access is restricted to authorised INPA editors. If you do not receive a verification code, contact the website administrator.</p>
           </div>
           <a class="button button--outline-light" href="/cdn-cgi/access/logout">Sign out</a>
         </div>
