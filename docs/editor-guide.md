@@ -32,6 +32,10 @@ Select **Nuclear Horizons → Add an issue**. Enter the volume, issue number, is
 
 The newest published issue appears on the homepage and Nuclear Horizons page; every published issue appears in the archive. To replace a corrected PDF, edit the existing issue and choose a new file, avoiding a duplicate issue. The two original issues remain editable. For month-only publication dates use the first day; public issue cards display month and year.
 
+## Homepage slides
+
+Select **Homepage slides → Add slide**. Enabling a slide makes it eligible for the homepage. Leave **Show from** and **Hide after** blank to display it immediately and continuously. Add either time only when a scheduled start or end is intentional; the form reads and displays these values in the editor’s computer timezone while storing them unambiguously in UTC. The slide list reports **Live now**, **Scheduled**, **Ended**, or **Inactive**, includes the reason, and shows the effective schedule in local time.
+
 ## Featured research
 
 Select **Featured research → Add research**. Enter a title, summary, full story, authors, institutions, journal, DOI and story publication date. Optionally choose an image with description and caption/credit. Select **Feature on the homepage** for the spotlight. If several stories are selected, the most recently dated one appears first. Every published story has a detail page and appears in the Research list.

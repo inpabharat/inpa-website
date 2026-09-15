@@ -4,7 +4,9 @@ import type {
   AdminEventInput, AdminEventRecord, AdminNewsInput, AdminNewsRecord,
 } from '../../../shared/types/admin'
 import { eventStatuses, newsStatuses } from '~~/shared/types/content'
+import { getCarouselVisibility } from '~~/shared/utils/carousel-visibility'
 import { makeSlug } from '~~/shared/utils/content-validation'
+import { localDateTimeToIso, toDateTimeLocal } from '~~/shared/utils/editor-date'
 
 type Panel = 'overview' | 'news' | 'events' | 'carousel' | 'publications' | 'research' | 'media'
 type EntityKind = 'news' | 'events' | 'carousel'
@@ -57,7 +59,8 @@ const counts = computed(() => ({
   scheduled: snapshot.value.news.filter(item => item.status === 'scheduled').length + snapshot.value.events.filter(item => item.status === 'scheduled').length,
   publishedNews: snapshot.value.news.filter(item => item.status === 'published').length,
   upcomingEvents: snapshot.value.events.filter(item => ['published', 'postponed'].includes(item.status) && Date.parse(item.startAt) >= Date.now()).length,
-  activeSlides: snapshot.value.carousel.filter(item => item.isActive).length,
+  liveSlides: snapshot.value.carousel.filter(item => getCarouselVisibility(item).state === 'live').length,
+  scheduledSlides: snapshot.value.carousel.filter(item => getCarouselVisibility(item).state === 'scheduled').length,
 }))
 
 watch(() => props.initialSnapshot, value => snapshot.value = structuredClone(value), { deep: true })
@@ -74,21 +77,6 @@ function nullable(value: string | null): string | null {
 function resetFeedback(): void {
   message.value = ''
   errorMessage.value = ''
-}
-
-function toDateTimeLocal(value: string | null): string | null {
-  if (!value) return null
-  const date = new Date(value)
-  if (!Number.isFinite(date.getTime())) return null
-  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
-  return local.toISOString().slice(0, 16)
-}
-
-function localDateTimeToIso(value: string | null): string | null {
-  if (!value) return null
-  const date = new Date(value)
-  if (!Number.isFinite(date.getTime())) return null
-  return date.toISOString()
 }
 
 function canLeave(): boolean {
@@ -163,8 +151,14 @@ function normaliseEvent(): AdminEventInput {
 }
 
 function normaliseCarousel(): AdminCarouselInput {
-  return { ...carouselForm, eyebrow: nullable(carouselForm.eyebrow), summary: nullable(carouselForm.summary), ctaLabel: nullable(carouselForm.ctaLabel), ctaUrl: nullable(carouselForm.ctaUrl), linkedContentId: nullable(carouselForm.linkedContentId), startsAt: nullable(carouselForm.startsAt), endsAt: nullable(carouselForm.endsAt) }
+  return { ...carouselForm, eyebrow: nullable(carouselForm.eyebrow), summary: nullable(carouselForm.summary), ctaLabel: nullable(carouselForm.ctaLabel), ctaUrl: nullable(carouselForm.ctaUrl), linkedContentId: nullable(carouselForm.linkedContentId), startsAt: localDateTimeToIso(carouselForm.startsAt), endsAt: localDateTimeToIso(carouselForm.endsAt) }
 }
+
+const carouselPreviewVisibility = computed(() => getCarouselVisibility({
+  isActive: carouselForm.isActive,
+  startsAt: localDateTimeToIso(carouselForm.startsAt),
+  endsAt: localDateTimeToIso(carouselForm.endsAt),
+}))
 
 function describeError(error: unknown): string {
   if (!error || typeof error !== 'object') return 'The request could not be completed.'
@@ -235,7 +229,7 @@ onBeforeRouteLeave(() => !dirty.value || window.confirm('Discard the changes you
     <section v-if="panel === 'overview'" aria-labelledby="editor-overview-title">
       <div class="editor-heading"><div><p class="eyebrow">Dashboard</p><h2 id="editor-overview-title">Publishing overview</h2></div><p>Administrative actions are recorded under {{ editorEmail }}.</p></div>
       <dl class="editor-stats">
-        <div><dt>Drafts</dt><dd>{{ counts.drafts }}</dd></div><div><dt>Scheduled</dt><dd>{{ counts.scheduled }}</dd></div><div><dt>Published news</dt><dd>{{ counts.publishedNews }}</dd></div><div><dt>Upcoming events</dt><dd>{{ counts.upcomingEvents }}</dd></div><div><dt>Active slides</dt><dd>{{ counts.activeSlides }}</dd></div>
+        <div><dt>Drafts</dt><dd>{{ counts.drafts }}</dd></div><div><dt>Scheduled content</dt><dd>{{ counts.scheduled }}</dd></div><div><dt>Published news</dt><dd>{{ counts.publishedNews }}</dd></div><div><dt>Upcoming events</dt><dd>{{ counts.upcomingEvents }}</dd></div><div><dt>Slides live now</dt><dd>{{ counts.liveSlides }}</dd></div><div><dt>Slides waiting</dt><dd>{{ counts.scheduledSlides }}</dd></div>
       </dl>
       <h3>What would you like to update?</h3>
       <div class="editor-task-grid"><button v-for="item in panels.filter(item => item.id !== 'overview')" :key="item.id" type="button" @click="selectPanel(item.id)"><strong>{{ item.label }}</strong><span>{{ item.description }}</span><span class="text-link">Manage →</span></button></div>
@@ -289,17 +283,17 @@ onBeforeRouteLeave(() => !dirty.value || window.confirm('Discard the changes you
 
     <section v-else-if="panel === 'carousel'" aria-labelledby="carousel-editor-title">
       <div class="editor-heading"><div><p class="eyebrow">Homepage</p><h2 id="carousel-editor-title">{{ formOpen ? (editingId ? 'Edit homepage slide' : 'Create homepage slide') : 'Homepage slides' }}</h2></div><button v-if="!formOpen" type="button" class="button button--navy" @click="startCarousel()">Add slide</button><button v-else type="button" class="text-button" @click="closeForm()">Back to all slides</button></div>
-      <p>Active slides appear in the homepage banner. A lower position number appears first.</p>
+      <p>Enable a slide to show it on the homepage. Leave both schedule fields blank for immediate, continuous display; use them only when the slide should appear or disappear at a particular time. Times use your computer’s local timezone (<strong>{{ editorTimeZone }}</strong>). A lower position number appears first.</p>
       <div v-if="formOpen" class="editor-workspace">
         <form class="editor-form" @submit.prevent="save('carousel', normaliseCarousel())">
           <label>Small heading above title <input v-model="carouselForm.eyebrow" maxlength="80"></label><label>Title <input v-model="carouselForm.title" required maxlength="180"></label><label>Summary <textarea v-model="carouselForm.summary" maxlength="500" rows="3" /></label>
           <AdminMediaField v-model="carouselForm.imageKey" v-model:alt="carouselForm.imageAlt" label="Homepage slide image" accept="image" />
           <div class="editor-form__row"><label>Action label <input v-model="carouselForm.ctaLabel" maxlength="80"></label><label>Action URL <input v-model="carouselForm.ctaUrl" maxlength="500"></label></div>
-          <div class="editor-form__row"><label>Starts <input v-model="carouselForm.startsAt" type="datetime-local"></label><label>Ends <input v-model="carouselForm.endsAt" type="datetime-local"></label></div>
-          <label>Sort order <input v-model.number="carouselForm.sortOrder" type="number" min="0" max="10000" step="1" required></label><label class="editor-check"><input v-model="carouselForm.isActive" type="checkbox"> Active on the homepage</label>
+          <div class="editor-form__row"><label>Show from (optional) <input v-model="carouselForm.startsAt" type="datetime-local"></label><label>Hide after (optional) <input v-model="carouselForm.endsAt" type="datetime-local"></label></div>
+          <label>Sort order <input v-model.number="carouselForm.sortOrder" type="number" min="0" max="10000" step="1" required></label><label class="editor-check"><input v-model="carouselForm.isActive" type="checkbox"> Show on homepage</label>
           <button class="button button--gold" type="submit" :disabled="busy">{{ busy ? 'Saving…' : (editingId ? 'Save changes' : 'Create item') }}</button>
         </form>
-        <aside class="editor-preview editor-preview--dark" aria-label="Carousel preview"><p class="eyebrow eyebrow--light">{{ carouselForm.eyebrow || 'Featured update' }}</p><h3>{{ carouselForm.title || 'Untitled carousel item' }}</h3><p>{{ carouselForm.summary || 'Optional summary text will appear here.' }}</p><p class="meta meta--light">{{ carouselForm.isActive ? 'Active' : 'Inactive' }} · position {{ carouselForm.sortOrder }}</p></aside>
+        <aside class="editor-preview editor-preview--dark" aria-label="Carousel preview"><p class="eyebrow eyebrow--light">{{ carouselForm.eyebrow || 'Featured update' }}</p><h3>{{ carouselForm.title || 'Untitled carousel item' }}</h3><p>{{ carouselForm.summary || 'Optional summary text will appear here.' }}</p><p class="meta meta--light"><strong>{{ carouselPreviewVisibility.label }}</strong> — {{ carouselPreviewVisibility.detail }} Position {{ carouselForm.sortOrder }}.</p></aside>
       </div>
       <AdminRecordList v-if="!formOpen" :items="snapshot.carousel" kind="carousel" @edit="item => startCarousel(item as AdminCarouselRecord)" @remove="(id, title) => remove('carousel', id, title)" />
     </section>

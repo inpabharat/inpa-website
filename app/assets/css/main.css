@@ -2588,6 +2588,7 @@ a.future-card:hover {
 .admin-session-timer { color: #dce7ed; font-variant-numeric: tabular-nums; }
 .admin-session-timer time { color: white; font-weight: 700; }
 .admin-session-timer--expired { color: #fff0c7; font-weight: 700; }
+.editor-state-detail { display: block; max-width: 18rem; margin-top: 0.25rem; color: var(--color-text-muted); font-weight: 400; line-height: 1.35; }
 .admin-hero__help { max-width: 42rem; margin-top: 0.75rem; color: #dce7ed; font-size: 0.95rem; }
 @media (max-width: 40rem) {
   .admin-hero__header { align-items: start; flex-direction: column; }
