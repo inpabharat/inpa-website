@@ -32,6 +32,22 @@ describe('content validation', () => {
     })).toThrow(/after the start/i)
   })
 
+  it('rejects equal event start and end times', () => {
+    expect(() => parseEventInput({
+      ...news,
+      startAt: '2026-09-03T10:00:00Z', endAt: '2026-09-03T10:00:00Z', timezone: 'Asia/Kolkata',
+      locationName: null, isOnline: true,
+    })).toThrow(/after the start/i)
+  })
+
+  it('rejects ambiguous timestamps without a timezone', () => {
+    expect(() => parseCarouselInput({
+      eyebrow: null, title: 'Slide', summary: null, imageKey: 'uploads/2026/09/file.jpg', imageAlt: 'Approved image.',
+      ctaLabel: null, ctaUrl: null, linkedContentType: null, linkedContentId: null,
+      sortOrder: 0, isActive: true, startsAt: '2026-09-15T17:40', endsAt: null,
+    })).toThrow(/explicit timezone/i)
+  })
+
   it('requires complete carousel action pairs', () => {
     expect(() => parseCarouselInput({
       eyebrow: null, title: 'Slide', summary: null, imageKey: 'uploads/2026/09/file.jpg', imageAlt: 'Approved image.',

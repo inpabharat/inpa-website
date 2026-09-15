@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PublicationInput, PublicationRecord, ResearchInput, ResearchRecord, ScienceStatus } from '~~/shared/types/science'
 import { makeSlug } from '~~/shared/utils/content-validation'
+import { localCalendarDate } from '~~/shared/utils/editor-date'
 
 const props = defineProps<{ kind: 'publications' | 'research' }>()
 const records = ref<(PublicationRecord | ResearchRecord)[]>([])
@@ -23,7 +24,7 @@ function blankPublication(): PublicationInput {
   return { slug: '', title: 'Nuclear Horizons', volume: 1, issueNumber: 1, issueLabel: '', publicationDate: '', summary: '', editorial: '', featuredReview: '', pdfKey: '', coverImageKey: '', coverImageAlt: '', pageCount: 1, status: 'draft' }
 }
 function blankResearch(): ResearchInput {
-  return { slug: '', title: '', summary: '', body: '', authors: '', institutions: '', journal: '', doi: '', imageKey: null, imageAlt: null, imageCredit: null, status: 'draft', isFeatured: false, publishedAt: new Date().toISOString().slice(0, 10) }
+  return { slug: '', title: '', summary: '', body: '', authors: '', institutions: '', journal: '', doi: '', imageKey: null, imageAlt: null, imageCredit: null, status: 'draft', isFeatured: false, publishedAt: localCalendarDate() }
 }
 function describeError(error: unknown): string {
   const value = error as { data?: { statusMessage?: string, data?: { issues?: string[] } }, message?: string }

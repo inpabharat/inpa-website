@@ -43,6 +43,9 @@ function isoDate(record: Record<string, unknown>, key: string, label: string, re
     if (required) throw new ContentValidationError([`${label} is required.`])
     return null
   }
+  if (!/^\d{4}-\d{2}-\d{2}T.*(?:Z|[+-]\d{2}:\d{2})$/i.test(value)) {
+    throw new ContentValidationError([`${label} must include an explicit timezone.`])
+  }
   const timestamp = Date.parse(value)
   if (!Number.isFinite(timestamp)) throw new ContentValidationError([`${label} must be a valid date and time.`])
   return new Date(timestamp).toISOString()
@@ -89,7 +92,7 @@ function validateImagePair(key: string | null, alt: string | null): void {
 }
 
 function validateOrder(first: string | null, second: string | null, message: string): void {
-  if (first && second && Date.parse(second) < Date.parse(first)) {
+  if (first && second && Date.parse(second) <= Date.parse(first)) {
     throw new ContentValidationError([message])
   }
 }

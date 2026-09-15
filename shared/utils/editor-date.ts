@@ -12,3 +12,8 @@ export function localDateTimeToIso(value: string | null): string | null {
   if (!Number.isFinite(date.getTime())) return null
   return date.toISOString()
 }
+
+export function localCalendarDate(date = new Date()): string {
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000)
+  return local.toISOString().slice(0, 10)
+}
