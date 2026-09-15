@@ -50,7 +50,7 @@ export const publicContact = {
 } as const
 
 export const currentLeadership = {
-  asOf: 'June 2026',
+  asOf: 'September 2026',
   president: {
     name: 'Prof. A. K. Jain',
     affiliation: 'Indian Institute of Technology Roorkee',
@@ -59,8 +59,11 @@ export const currentLeadership = {
     name: 'Prof. Manoj Kumar Sharma',
     affiliation: 'University of Lucknow',
   },
-  chiefEditor: {
-    name: 'Dr. Soumya Bagchi',
-    affiliation: 'IIT (ISM) Dhanbad',
+  editorInChief: {
+    name: 'Prof. Dr. M. Balasubramaniam',
+    title: 'Professor',
+    department: 'Department of Physics',
+    affiliation: 'Bharathiar University',
+    address: 'Coimbatore - 641046, Tamil Nadu',
   },
 } as const

@@ -70,7 +70,7 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
         items: [
           'President: ' + currentLeadership.president.name + ' — ' + currentLeadership.president.affiliation,
           'Executive Secretary: ' + currentLeadership.executiveSecretary.name + ' — ' + currentLeadership.executiveSecretary.affiliation,
-          'Chief Editor, Nuclear Horizons: ' + currentLeadership.chiefEditor.name + ' — ' + currentLeadership.chiefEditor.affiliation,
+          'Editor-in-Chief, Nuclear Horizons: ' + currentLeadership.editorInChief.name + ' — ' + currentLeadership.editorInChief.affiliation,
         ],
       },
     ],
@@ -87,7 +87,7 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
         items: [
           'President: ' + currentLeadership.president.name + ' — ' + currentLeadership.president.affiliation,
           'Executive Secretary: ' + currentLeadership.executiveSecretary.name + ' — ' + currentLeadership.executiveSecretary.affiliation,
-          'Chief Editor, Nuclear Horizons: ' + currentLeadership.chiefEditor.name + ' — ' + currentLeadership.chiefEditor.affiliation,
+          'Editor-in-Chief, Nuclear Horizons: ' + currentLeadership.editorInChief.name + ' — ' + currentLeadership.editorInChief.affiliation,
         ],
       },
       {
@@ -156,7 +156,7 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
       {
         heading: 'Publication information',
         items: [
-          'Chief Editor as published in Issue 2: ' + currentLeadership.chiefEditor.name + ', ' + currentLeadership.chiefEditor.affiliation + '.',
+          'Editor-in-Chief: ' + currentLeadership.editorInChief.name + ', ' + currentLeadership.editorInChief.title + ', ' + currentLeadership.editorInChief.department + ', ' + currentLeadership.editorInChief.affiliation + ', ' + currentLeadership.editorInChief.address + '.',
           'Publication contact: ' + publicContact.email + '.',
           'Tagline: Advancing Fundamental and Applied Nuclear Science for a Self-Reliant India.',
         ],

@@ -29,7 +29,16 @@ useSeoMeta({
           <h2>Ideas, research and community news</h2>
           <p class="lead">Nuclear Horizons is a bulletin of the Indian Nuclear Physics Association.</p>
           <dl class="publication-facts">
-            <div><dt>Chief Editor</dt><dd>{{ currentLeadership.chiefEditor.name }}, {{ currentLeadership.chiefEditor.affiliation }}</dd></div>
+            <div>
+              <dt>Editor-in-Chief</dt>
+              <dd>
+                {{ currentLeadership.editorInChief.name }}<br>
+                {{ currentLeadership.editorInChief.title }}<br>
+                {{ currentLeadership.editorInChief.department }}<br>
+                {{ currentLeadership.editorInChief.affiliation }}<br>
+                {{ currentLeadership.editorInChief.address }}
+              </dd>
+            </div>
             <div><dt>Publication contact</dt><dd><a :href="`mailto:${publicContact.email}`">{{ publicContact.email }}</a></dd></div>
           </dl>
           <div class="publication-actions">

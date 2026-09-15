@@ -21,7 +21,7 @@ const latestIssue = computed(() => response.value?.data[0] ?? null)
         <p class="eyebrow">Official INPA bulletin</p>
         <h2 id="horizons-title">{{ latestIssue.title }}</h2>
         <p class="lead">{{ latestIssue.summary }}</p>
-        <p><strong>Chief Editor:</strong> {{ currentLeadership.chiefEditor.name }}, {{ currentLeadership.chiefEditor.affiliation }}</p>
+        <p><strong>Editor-in-Chief:</strong> {{ currentLeadership.editorInChief.name }}, {{ currentLeadership.editorInChief.affiliation }}</p>
         <p><strong>Latest issue:</strong> {{ latestIssue.issueLabel }} · {{ formatIssueMonth(latestIssue.publicationDate) }}</p>
         <div class="science-publications__actions">
           <a class="button button--navy" :href="publicMediaUrl(latestIssue.pdfKey) ?? undefined" download>Download latest issue</a>
