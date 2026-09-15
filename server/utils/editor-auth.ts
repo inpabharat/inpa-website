@@ -8,6 +8,7 @@ export interface EditorIdentity {
   email: string
   subject: string
   source: 'cloudflare-access' | 'development-bypass'
+  expiresAt: string | null
 }
 
 interface EditorAuthConfig {
@@ -45,6 +46,7 @@ export async function requireEditor(event: H3Event): Promise<EditorIdentity> {
       email: 'local-editor@example.invalid',
       subject: 'local-development-only',
       source: 'development-bypass',
+      expiresAt: null,
     }
   }
 
@@ -71,6 +73,7 @@ export async function requireEditor(event: H3Event): Promise<EditorIdentity> {
       email: payload.email,
       subject: payload.sub,
       source: 'cloudflare-access',
+      expiresAt: typeof payload.exp === 'number' ? new Date(payload.exp * 1000).toISOString() : null,
     }
   } catch {
     throw createError({

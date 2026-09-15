@@ -9,6 +9,7 @@ export default defineEventHandler((event) => {
     data: {
       email: event.context.editor.email,
       source: event.context.editor.source,
+      expiresAt: event.context.editor.expiresAt,
     },
   }
 })

@@ -218,7 +218,7 @@ export const nuclearHorizonsContent = {
   title: 'Nuclear Horizons',
   descriptor: 'A Bulletin of the Indian Nuclear Physics Association',
   summary: 'Nuclear Horizons is INPA’s official bulletin and a platform for communication, collaboration and knowledge exchange across the nuclear-physics community.',
-  editorInChief: 'Prof. Dr. M. Balasubramaniam, Professor, Department of Physics, Bharathiar University, Coimbatore - 641046, Tamil Nadu',
+  editorInChief: 'Prof. Dr. M. Balasubramaniam, Professor, Department of Physics, Bharathiar University, Coimbatore - 641046, Tamil Nadu; m.balou@buc.edu.in',
   issues: [
     { label: 'Volume 1, Issue 2', date: 'June 2026', downloadPath: '/publications/nuclear-horizons-volume-1-issue-2.pdf' },
     { label: 'Volume 1, Issue 1 — Inaugural Issue', date: 'January 2026', downloadPath: '/publications/nuclear-horizons-volume-1-issue-1.pdf' },

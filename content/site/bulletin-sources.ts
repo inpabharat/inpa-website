@@ -65,5 +65,6 @@ export const currentLeadership = {
     department: 'Department of Physics',
     affiliation: 'Bharathiar University',
     address: 'Coimbatore - 641046, Tamil Nadu',
+    email: 'm.balou@buc.edu.in',
   },
 } as const

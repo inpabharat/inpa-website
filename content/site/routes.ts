@@ -156,7 +156,7 @@ export const pendingRoutes: Record<string, PendingRouteContent> = {
       {
         heading: 'Publication information',
         items: [
-          'Editor-in-Chief: ' + currentLeadership.editorInChief.name + ', ' + currentLeadership.editorInChief.title + ', ' + currentLeadership.editorInChief.department + ', ' + currentLeadership.editorInChief.affiliation + ', ' + currentLeadership.editorInChief.address + '.',
+          'Editor-in-Chief: ' + currentLeadership.editorInChief.name + ', ' + currentLeadership.editorInChief.title + ', ' + currentLeadership.editorInChief.department + ', ' + currentLeadership.editorInChief.affiliation + ', ' + currentLeadership.editorInChief.address + '. Email: ' + currentLeadership.editorInChief.email + '.',
           'Publication contact: ' + publicContact.email + '.',
           'Tagline: Advancing Fundamental and Applied Nuclear Science for a Self-Reliant India.',
         ],

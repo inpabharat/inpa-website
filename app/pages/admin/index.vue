@@ -3,7 +3,7 @@ import type { AdminApiResponse, AdminContentSnapshot } from '../../../shared/typ
 
 definePageMeta({ layout: 'default' })
 
-const { data: session } = await useFetch<{ data: { email: string, source: string } }>('/api/admin/session')
+const { data: session } = await useFetch<{ data: { email: string, source: string, expiresAt: string | null } }>('/api/admin/session')
 const { data: content, error, refresh } = await useFetch<AdminApiResponse<AdminContentSnapshot>>('/api/admin/content')
 
 useSeoMeta({ title: 'INPA editor', robots: 'noindex, nofollow, noarchive' })
@@ -17,7 +17,10 @@ useSeoMeta({ title: 'INPA editor', robots: 'noindex, nofollow, noarchive' })
           <div>
             <p class="eyebrow eyebrow--light">Website editor</p>
             <h1>Manage the INPA website</h1>
-            <p v-if="session">Signed in as {{ session.data.email }}.</p>
+            <div v-if="session" class="admin-hero__session">
+              <p>Signed in as {{ session.data.email }}.</p>
+              <AdminSessionTimer :expires-at="session.data.expiresAt" :is-development="session.data.source === 'development-bypass'" />
+            </div>
             <p class="admin-hero__help">Access is restricted to authorised INPA editors. If you do not receive a verification code, contact the website administrator.</p>
           </div>
           <a class="button button--outline-light" href="/cdn-cgi/access/logout">Sign out</a>

@@ -36,7 +36,8 @@ useSeoMeta({
                 {{ currentLeadership.editorInChief.title }}<br>
                 {{ currentLeadership.editorInChief.department }}<br>
                 {{ currentLeadership.editorInChief.affiliation }}<br>
-                {{ currentLeadership.editorInChief.address }}
+                {{ currentLeadership.editorInChief.address }}<br>
+                <a :href="`mailto:${currentLeadership.editorInChief.email}`">{{ currentLeadership.editorInChief.email }}</a>
               </dd>
             </div>
             <div><dt>Publication contact</dt><dd><a :href="`mailto:${publicContact.email}`">{{ publicContact.email }}</a></dd></div>
