@@ -50,8 +50,8 @@
 }
 .desktop-nav__trigger[aria-expanded="true"]::after { transform: scaleX(1); }
 /* The disclosure marker stays quiet; the panel and active tab carry the motion. */
-.desktop-nav__trigger[aria-expanded="true"] span {
-  transform: none;
+.desktop-nav__trigger[aria-expanded="true"] .navigation-chevron {
+  transform: rotate(225deg);
 }
 .desktop-nav__links a {
   transition: background-color 180ms ease;

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { ApiResponse, PublicHomeData } from '../../shared/types/content'
+import { getCanonicalUrl } from '~~/shared/utils/public-seo'
+import { heroContent } from '~~/content/site/home'
 
 const emptyHome: PublicHomeData = { news: [], events: [], carousel: [] }
 const { data: response } = await useFetch<ApiResponse<PublicHomeData>>('/api/public/home')
@@ -7,8 +9,24 @@ const { data: response } = await useFetch<ApiResponse<PublicHomeData>>('/api/pub
 const home = computed(() => response.value?.data ?? emptyHome)
 const homepage = ref<HTMLElement | null>(null)
 useScrollReveal(homepage)
-const requestUrl = useRequestURL()
-const socialImageUrl = `${requestUrl.origin}/og.png`
+const config = useRuntimeConfig()
+const siteUrl = getCanonicalUrl(config.public.siteUrl, '/')!
+const socialImageUrl = new URL('/og.png', siteUrl).href
+
+useHead({
+  script: [{
+    key: 'inpa-organization',
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'Organization',
+      name: heroContent.title,
+      alternateName: 'INPA',
+      url: siteUrl,
+      logo: new URL('/images/inpa-logo.jpg', siteUrl).href,
+    }),
+  }],
+})
 
 useSeoMeta({
   title: 'Home',

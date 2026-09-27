@@ -7,8 +7,6 @@ import { strategicVision } from '~~/content/site/home'
     <div class="container nnpi-front__layout">
       <div class="nnpi-front__identity" aria-hidden="true">
         <span class="nnpi-front__monogram">NNPI</span>
-        <span class="nnpi-front__line" />
-        <span class="nnpi-front__direction">Vision → coordinated action</span>
       </div>
 
       <div class="nnpi-front__content">
@@ -23,8 +21,7 @@ import { strategicVision } from '~~/content/site/home'
         <p class="nnpi-front__summary">{{ strategicVision.nnpi.summary }}</p>
 
         <ol class="nnpi-front__pillars" aria-label="NNPI pathway from science to action">
-          <li v-for="(pillar, index) in strategicVision.nnpi.pillars" :key="pillar">
-            <span aria-hidden="true">0{{ index + 1 }}</span>
+          <li v-for="pillar in strategicVision.nnpi.pillars" :key="pillar">
             <strong>{{ pillar }}</strong>
           </li>
         </ol>
@@ -33,7 +30,6 @@ import { strategicVision } from '~~/content/site/home'
           <NuxtLink class="button button--gold" :to="strategicVision.nnpi.to">
             Explore NNPI <span aria-hidden="true">→</span>
           </NuxtLink>
-          <p>Science → Capability → Community → Action</p>
         </div>
       </div>
     </div>

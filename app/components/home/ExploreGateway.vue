@@ -6,7 +6,6 @@ import { dedicatedSections } from '~~/content/site/home'
   <section id="explore" class="section explore-gateway" aria-labelledby="explore-inpa-title">
     <div class="container explore-gateway__layout">
       <header>
-        <p class="eyebrow">National discovery gateway</p>
         <h2 id="explore-inpa-title">Explore Nuclear Physics in India</h2>
         <p class="section-heading__intro">Find the scientific people, places and possibilities that can turn a question into an experiment, opportunity or collaboration.</p>
       </header>

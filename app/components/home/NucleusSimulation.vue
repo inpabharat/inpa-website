@@ -32,6 +32,7 @@ interface ImpactRipple {
 }
 
 const canvas = ref<HTMLCanvasElement | null>(null)
+const props = withDefaults(defineProps<{ paused?: boolean }>(), { paused: false })
 
 let context: CanvasRenderingContext2D | null = null
 let animationFrame: number | undefined
@@ -450,7 +451,7 @@ function drawSimulation(): void {
 }
 
 function runFrame(timestamp: number): void {
-  if (!isVisible || prefersReducedMotion) {
+  if (!isVisible || prefersReducedMotion || props.paused || document.hidden) {
     animationFrame = undefined
     return
   }
@@ -462,7 +463,7 @@ function runFrame(timestamp: number): void {
 }
 
 function startAnimation(): void {
-  if (animationFrame !== undefined || !isVisible || prefersReducedMotion) return
+  if (animationFrame !== undefined || !isVisible || prefersReducedMotion || props.paused || document.hidden) return
   lastTimestamp = 0
   animationFrame = requestAnimationFrame(runFrame)
 }
@@ -508,6 +509,11 @@ function handleVisibilityChange(): void {
   if (document.hidden) stopAnimation()
   else startAnimation()
 }
+
+watch(() => props.paused, (paused) => {
+  if (paused) stopAnimation()
+  else startAnimation()
+})
 
 onMounted(() => {
   const activeCanvas = canvas.value

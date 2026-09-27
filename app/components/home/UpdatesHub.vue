@@ -17,7 +17,6 @@ const visibleEvents = computed(() => props.events.slice(0, 2))
       <div class="section-heading-row updates-heading">
         <SectionHeading
           id="updates-title"
-          eyebrow="Current activity"
           title="News and upcoming events"
           intro="A concise view of verified announcements and the next dates in the INPA calendar."
         />
@@ -28,8 +27,7 @@ const visibleEvents = computed(() => props.events.slice(0, 2))
         <section class="updates-panel" aria-labelledby="latest-news-title">
           <div class="updates-panel__heading">
             <div>
-              <p class="eyebrow">Latest news</p>
-              <h3 id="latest-news-title">From the community</h3>
+              <h3 id="latest-news-title">Latest news</h3>
             </div>
             <NuxtLink to="/news" aria-label="View the news archive">View all <span aria-hidden="true">→</span></NuxtLink>
           </div>
@@ -47,8 +45,7 @@ const visibleEvents = computed(() => props.events.slice(0, 2))
         <section class="updates-panel" aria-labelledby="upcoming-events-title">
           <div class="updates-panel__heading">
             <div>
-              <p class="eyebrow">Upcoming events</p>
-              <h3 id="upcoming-events-title">Dates to follow</h3>
+              <h3 id="upcoming-events-title">Upcoming events</h3>
             </div>
             <NuxtLink to="/events" aria-label="View the events archive">View all <span aria-hidden="true">→</span></NuxtLink>
           </div>

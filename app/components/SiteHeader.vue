@@ -152,6 +152,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
             @keydown="handleDesktopTriggerKeydown($event, group.id)"
           >
             {{ group.label }}
+            <span class="navigation-chevron" aria-hidden="true" />
           </button>
           <Transition name="navigation-panel">
           <div
@@ -201,6 +202,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
             <details v-for="group in navigationGroups" :key="group.id" class="mobile-nav__group">
               <summary :class="{ 'mobile-nav__group--active': groupIsActive(group) }">
                 {{ group.label }}
+                <span class="navigation-chevron" aria-hidden="true" />
               </summary>
               <div>
                 <NuxtLink

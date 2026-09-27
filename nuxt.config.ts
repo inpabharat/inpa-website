@@ -12,7 +12,7 @@ export default defineNuxtConfig({
     cfAccessAud: '',
     devAuthBypass: false,
     public: {
-      siteUrl: 'http://localhost:3000',
+      siteUrl: 'https://inpa-website.inpa-website.workers.dev',
     },
   },
   app: {
