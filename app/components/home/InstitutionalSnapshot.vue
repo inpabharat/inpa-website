@@ -6,7 +6,6 @@ import { aboutContent, presidentContent } from '~~/content/site/home'
   <section class="section section--white institutional-snapshot" aria-labelledby="institutional-snapshot-title">
     <div class="container institutional-snapshot__layout">
       <div class="institutional-snapshot__about">
-        <p class="eyebrow">About the association</p>
         <h2 id="institutional-snapshot-title">A national community for nuclear physics</h2>
         <p class="lead">{{ aboutContent.summary }}</p>
         <p class="fact-line">{{ aboutContent.registration }}</p>

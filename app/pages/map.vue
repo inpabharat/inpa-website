@@ -7,10 +7,9 @@ useSeoMeta({
 </script>
 
 <template>
-  <main class="section map-section">
+  <section class="section map-section" aria-labelledby="landscape-title">
     <div class="container map-page-heading">
-      <p class="eyebrow">Nuclear Physics in India</p>
-      <h1>The Nuclear Physics Landscape of India</h1>
+      <h1 id="landscape-title">The Nuclear Physics Landscape of India</h1>
       <p class="landscape-subtitle">People · Research Groups · Institutions · Facilities</p>
       <p class="lead">A living national resource mapping nuclear-physics research and capability across India—from national laboratories and accelerator facilities to universities, IITs, NITs and colleges.</p>
     </div>
@@ -24,5 +23,5 @@ useSeoMeta({
       </div>
       <p class="map-scope-note"><strong>Coverage:</strong> The directory combines established national centres with the North India V1.0 academic dataset. Inclusion reflects current nuclear-physics research activity rather than institutional category. Other regions and detailed researcher profiles will be added progressively.</p>
     </div>
-  </main>
+  </section>
 </template>

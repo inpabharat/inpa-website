@@ -12,7 +12,7 @@ function move(direction: -1 | 1) {
 
   track.value.scrollBy({
     left: direction * track.value.clientWidth * 0.85,
-    behavior: 'smooth',
+    behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
   })
 }
 
@@ -40,7 +40,6 @@ onBeforeUnmount(() => window.removeEventListener('resize', updateScrollState))
       <div class="community-highlights__heading">
         <SectionHeading
           id="community-highlights-title"
-          eyebrow="Community highlights"
           title="INPA in action"
           :intro="communityHighlights.introduction"
         />

@@ -15,7 +15,6 @@ const featuredResearch = computed(() => researchResponse.value?.data.find(item =
     <div class="container">
       <SectionHeading
         id="science-publications-title"
-        eyebrow="Science and publications"
         title="Research at the centre of INPA"
         intro="Explore a selected Indian research achievement and the latest issue of INPA’s official bulletin."
       />
@@ -23,7 +22,6 @@ const featuredResearch = computed(() => researchResponse.value?.data.find(item =
       <div class="science-publications__grid">
         <article class="science-publications__research">
           <template v-if="featuredResearch">
-            <p class="eyebrow eyebrow--light">Featured research</p>
             <h3>{{ featuredResearch.title }}</h3>
             <p>{{ featuredResearch.summary }}</p>
             <dl class="science-publications__metadata">
@@ -34,7 +32,6 @@ const featuredResearch = computed(() => researchResponse.value?.data.find(item =
             <NuxtLink class="text-link text-link--light" :to="`/research/${featuredResearch.slug}`">Read the research feature <span aria-hidden="true">→</span></NuxtLink>
           </template>
           <template v-else>
-            <p class="eyebrow eyebrow--light">Featured research</p>
             <h3>Research spotlight</h3>
             <p>{{ researchError ? 'The research feature could not be loaded.' : 'No research feature is currently selected.' }}</p>
             <NuxtLink class="text-link text-link--light" to="/research">Browse published research features <span aria-hidden="true">→</span></NuxtLink>
