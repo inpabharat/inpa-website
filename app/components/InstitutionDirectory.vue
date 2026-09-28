@@ -89,6 +89,11 @@ function handleDirectoryKeydown(event: KeyboardEvent): void {
   }
 }
 
+function handleMapClick(event: MouseEvent): void {
+  if (!selectedGroupAnchorId.value || (event.target instanceof Element && event.target.closest('button'))) return
+  closeExpandedGroup()
+}
+
 function selectFilter(filter: FilterId) {
   activeFilter.value = filter
   selectedGroupAnchorId.value = null
@@ -149,7 +154,7 @@ onBeforeUnmount(() => mapResizeObserver?.disconnect())
 
     <p class="map-instruction">Numbered circles show crowded locations. Select a group to spread it out, then choose an institution to trace its approximate map location.</p>
 
-    <div ref="mapElement" class="nuclear-map" aria-label="Interactive geographic overview of major nuclear-science centres on an official outline map of India">
+    <div ref="mapElement" class="nuclear-map" aria-label="Interactive geographic overview of major nuclear-science centres on an official outline map of India" @click="handleMapClick">
       <img class="nuclear-map__outline" src="/images/india-outline.svg" alt="Outline map of India from Survey of India" width="700" height="725">
       <template v-if="!selectedGroup">
         <button
