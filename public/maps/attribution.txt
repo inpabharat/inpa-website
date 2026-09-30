@@ -1,0 +1,36 @@
+INPA regional reference map layers
+
+National outline: Survey of India, 1:16 million generalized vector outline.
+https://surveyofindia.gov.in/pages/outline-maps-of-india
+
+Administrative layers distributed by geoBoundaries, William & Mary geoLab.
+Runfola et al. (2020), geoBoundaries: A global database of political administrative boundaries. PLOS ONE 15(4), e0231866.
+https://doi.org/10.1371/journal.pone.0231866
+https://www.geoboundaries.org/
+Pinned source release: 9469f09592ced973a3448cf66b6100b741b64c0d.
+Source metadata retrieved 30 September 2026.
+
+State / Union Territory layer (36 features):
+Source: DataMeet India community, Election Commission of India.
+geoBoundaries ID: IND-ADM1-1811400. Metadata year represented: 2011.
+Source update: 19 January 2023. Release build: 12 December 2023.
+Source licence: Creative Commons Attribution 2.5 India (CC BY 2.5 IN).
+https://creativecommons.org/licenses/by/2.5/in/
+https://github.com/datameet/maps
+Original metadata: /maps/ADM1-source-metadata.json
+Modified geometry available: /maps/states.json
+
+District layer (735 features in the simplified source; metadata lists 736):
+Source: Pathways Data Pvt. Ltd., lgdirectory.gov.in.
+geoBoundaries ID: IND-ADM2-76128533. Metadata year represented: 2021.
+Source update: 19 January 2023. Release build: 12 December 2023.
+Source licence: Open Data Commons Open Database License 1.0 (ODbL).
+https://opendatacommons.org/licenses/odbl/1-0/
+https://geonode.pathwaysdata.com/layers/geonode
+Original metadata: /maps/ADM2-source-metadata.json
+The modified district database at /maps/districts.json is made available under ODbL 1.0. This licence applies to that boundary database, not the INPA application or institution directory.
+
+Modifications: The geoBoundaries simplified GeoJSON geometry is further simplified at a tolerance of 0.003 degrees, projected with the same generalized coordinate mapping as the institution markers, and clipped for display to the existing Survey of India national outline. Labels use the centroid of the largest polygon and are omitted where they would overlap markers or other labels.
+Generation script: scripts/prepare-map-boundaries.mjs in https://github.com/inpabharat/inpa-website
+
+These are generalized historical reference layers, not a current official administrative inventory or a precise geodetic map. No claim is made that every recent state or district reorganisation is represented. Source coordinates and institution markers are approximate.
