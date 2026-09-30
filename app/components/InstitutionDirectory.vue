@@ -11,6 +11,8 @@ const activeFilter = ref<FilterId>('all')
 const activeResearchArea = ref('all')
 const selectedId = ref(nuclearInstitutions[0]?.id ?? '')
 const hoveredId = ref<string | null>(null)
+const focusedId = ref<string | null>(null)
+const highlightedId = computed(() => hoveredId.value ?? focusedId.value)
 const mobileView = ref<'list' | 'map'>('list')
 const mapElement = ref<HTMLElement | null>(null)
 const detailElement = ref<HTMLElement | null>(null)
@@ -45,7 +47,7 @@ const regionInstitutions = computed(() => filteredInstitutions.value
   .filter(institution => !focusRegion.value || focusRegion.value.ids.includes(institution.id))
   .sort((a, b) => a.city.localeCompare(b.city) || a.shortName.localeCompare(b.shortName)))
 const selectedInstitution = computed(() => filteredInstitutions.value.find(institution => institution.id === selectedId.value) ?? filteredInstitutions.value[0])
-const previewInstitution = computed(() => regionInstitutions.value.find(institution => institution.id === hoveredId.value) ?? selectedInstitution.value)
+const previewInstitution = computed(() => regionInstitutions.value.find(institution => institution.id === highlightedId.value) ?? selectedInstitution.value)
 const regionMarkerLayout = computed(() => focusRegion.value?.separated ? separateInstitutionMarkers(regionInstitutions.value, mapWidth.value, focusRegion.value.layoutView, canvasHeight.value) : [])
 const separatedMarkers = computed(() => regionMarkerLayout.value.map(marker => {
   const anchor = pointInMapView(projectInstitutionPoint(marker.institution), mapView.value)
@@ -75,7 +77,7 @@ const regionLabel = computed(() => {
   const cities = [...new Set(regionInstitutions.value.map(institution => institution.city))]
   return cities.length === 1 ? cities[0] : cities.length === 2 ? cities.join(' / ') : `${cities[0]} and nearby centres`
 })
-const activeMarkerId = computed(() => hoveredId.value ?? selectedId.value)
+const activeMarkerId = computed(() => highlightedId.value ?? selectedId.value)
 const graticule = computed(() => mapGraticule(animatedMapView.value, heightRatio.value))
 const visibleStates = computed(() => animatedMapView.value.scale >= 1.5 ? visibleAdministrativeBoundaries(stateBoundaries.value, animatedMapView.value, heightRatio.value) : [])
 const visibleDistricts = computed(() => animatedMapView.value.scale >= 3 ? visibleAdministrativeBoundaries(districtBoundaries.value, animatedMapView.value, heightRatio.value) : [])
@@ -131,6 +133,20 @@ function getMarkerLabel(group: InstitutionMarkerGroup): string {
   if (group.institutions.length === 1) return `${group.institutions[0]!.name}, ${group.institutions[0]!.city}. Select institution`
   return `${group.institutions.length} nearby institutions. Zoom in to explore`
 }
+function markerNameStyle(group: InstitutionMarkerGroup): Record<string, string> {
+  const width = Math.min(288, mapWidth.value - 24)
+  const centre = group.x * mapWidth.value / 100
+  const left = Math.max(12, Math.min(mapWidth.value - width - 12, centre - width / 2))
+  return {
+    width: `${width}px`,
+    left: `${left - centre + 18}px`,
+    ...(group.y * canvasHeight.value / 100 < 150 ? { top: 'calc(100% + 10px)' } : { bottom: 'calc(100% + 10px)' }),
+  }
+}
+function focusInstitution(id: string | null): void {
+  hoveredId.value = null
+  focusedId.value = id
+}
 function selectInstitution(id: string, revealDetails = false): void {
   if (focusRegion.value && !focusRegion.value.ids.includes(id)) resetMap(false)
   selectedId.value = id
@@ -170,6 +186,7 @@ function resetMap(restoreFocus = true): void {
   focusRegions.value = []
   overviewView.value = { ...nationalMapView }
   hoveredId.value = null
+  focusedId.value = null
   if (restoreFocus) restoreMarkerFocus(triggerId)
 }
 function setMapView(view: MapView, keepSeparated = false): void {
@@ -316,11 +333,12 @@ onBeforeUnmount(() => {
         </div>
         <TransitionGroup name="map-point" tag="div" class="map-marker-layer">
           <button
-v-for="group in visibleMarkerGroups" :key="group.id" class="map-marker" :class="[group.institutions.length === 1 ? `map-marker--${group.institutions[0]!.category}` : 'map-marker--group', { 'map-marker--selected': group.institutions.length === 1 && group.institutions[0]!.id === selectedId, 'map-marker--hovered': group.institutions.length === 1 && group.institutions[0]!.id === hoveredId }]" type="button"
+v-for="group in visibleMarkerGroups" :key="group.id" class="map-marker" :class="[group.institutions.length === 1 ? `map-marker--${group.institutions[0]!.category}` : 'map-marker--group', { 'map-marker--selected': group.institutions.length === 1 && group.institutions[0]!.id === selectedId, 'map-marker--hovered': group.institutions.length === 1 && group.institutions[0]!.id === highlightedId }]" type="button"
             :style="{ left: `${group.x}%`, top: `${group.y}%` }" :data-group-id="group.institutions.length > 1 ? group.id : undefined" :aria-label="getMarkerLabel(group)"
             :aria-pressed="group.institutions.length === 1 ? selectedId === group.institutions[0]!.id : undefined" :aria-controls="group.institutions.length > 1 ? 'map-group-panel' : 'map-detail-title'"
-            @click="selectMarker(group)" @mouseenter="hoveredId = group.institutions.length === 1 ? group.institutions[0]!.id : null" @mouseleave="hoveredId = null" @focus="hoveredId = group.institutions.length === 1 ? group.institutions[0]!.id : null" @blur="hoveredId = null">
+            @click="selectMarker(group)" @mouseenter="hoveredId = group.institutions.length === 1 ? group.institutions[0]!.id : null" @mouseleave="hoveredId = null" @focus="focusInstitution(group.institutions.length === 1 ? group.institutions[0]!.id : null)" @blur="focusedId = null">
             <span aria-hidden="true">{{ group.institutions.length > 1 ? group.institutions.length : focusRegion ? institutionNumber(group.institutions[0]!) : '•' }}</span>
+            <span v-if="mapView.scale > 1 && group.institutions.length === 1" class="map-marker__name" :style="markerNameStyle(group)" aria-hidden="true">{{ group.institutions[0]!.name }}</span>
           </button>
         </TransitionGroup>
         <div class="map-zoom-controls" role="group" aria-label="Map zoom">
@@ -351,7 +369,7 @@ v-for="group in visibleMarkerGroups" :key="group.id" class="map-marker" :class="
         <div class="map-group-panel__heading"><h2 id="map-group-title">In this region</h2><span>{{ regionInstitutions.length }}</span></div>
         <ul>
           <li v-for="institution in regionInstitutions" :key="institution.id">
-            <button type="button" :aria-pressed="selectedId === institution.id" :class="{ 'map-group-panel__hovered': hoveredId === institution.id }" @click="selectInstitution(institution.id)" @mouseenter="hoveredId = institution.id" @mouseleave="hoveredId = null" @focus="hoveredId = institution.id" @blur="hoveredId = null">
+            <button type="button" :aria-pressed="selectedId === institution.id" :class="{ 'map-group-panel__hovered': highlightedId === institution.id }" @click="selectInstitution(institution.id)" @mouseenter="hoveredId = institution.id" @mouseleave="hoveredId = null" @focus="focusInstitution(institution.id)" @blur="focusedId = null">
               <span class="map-group-panel__number">{{ institutionNumber(institution) }}</span>
               <span class="map-group-panel__name"><strong>{{ institution.shortName }}</strong><span>{{ institution.city }}</span></span>
             </button>

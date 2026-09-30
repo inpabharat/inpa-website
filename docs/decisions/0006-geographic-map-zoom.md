@@ -10,6 +10,10 @@ Source coordinates determine positions. When targets still overlap after the sin
 
 Clicking a marker updates its named preview and profile without scrolling away from the map. The matching region list uses the same numbers. View profile explicitly reveals the profile. Dragging or arrow keys pan an enlarged map; plus/minus controls allow optional manual adjustment. Clear map space, All locations, India or Escape returns to the national view. Filters reset the view. All 44 institutions, their source coordinates, categories, profiles and official links are preserved.
 
+### Marker names
+
+In enlarged views, hovering or focusing an individual marker reveals its full institution name beside the circle while retaining the preview below the map. Region-list hover/focus highlights the same marker and name. Labels remain inside the map horizontally, open below markers near the heading, and are hidden during dragging. Accessible button names already contain the full institution name, so the visual label does not duplicate screen-reader announcements. This adds no dependency or recurring cost.
+
 ## Reference boundaries
 
 Locally hosted geoBoundaries layers add state/UT lines from scale 1.5 and district lines from scale 3. Only polygons intersecting the viewport are rendered; labels avoid targets and other labels. Latitude/longitude guides and an India overview provide geographic context. Layer requests occur only when zooming, are reused during the page session, and expose a retry message on failure. No paid map service, runtime map dependency or external browser request is introduced.
