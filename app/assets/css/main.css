@@ -2224,6 +2224,7 @@ a.future-card:hover {
 .nuclear-map--zoomed {
   cursor: grab;
   touch-action: none;
+  user-select: none;
 }
 
 .nuclear-map--panning { cursor: grabbing; }
@@ -2260,7 +2261,7 @@ a.future-card:hover {
 .map-coordinate { position: absolute; color: #526b79; font-size: 0.62rem; pointer-events: none; }
 .map-coordinate--longitude { top: 55px; transform: translateX(-50%); }
 .map-coordinate--latitude { right: 6px; transform: translateY(-50%); }
-.map-overview { position: absolute; z-index: 2; bottom: 12px; left: 12px; width: 82px; border: 1px solid #aebfc8; background: #f5f9fa; pointer-events: none; }
+.map-overview { position: absolute; z-index: 9; bottom: 12px; left: 12px; width: 82px; border: 1px solid #aebfc8; background: #f5f9fa; }
 .map-overview img { display: block; width: 100%; height: auto; }
 .map-overview svg { position: absolute; inset: 0; width: 100%; height: calc(100% - 18px); overflow: hidden; }
 .map-overview rect { fill: rgb(201 153 48 / 22%); stroke: #9a7018; stroke-width: 1.5; vector-effect: non-scaling-stroke; }

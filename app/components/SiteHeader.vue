@@ -196,7 +196,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
           aria-label="Close navigation"
           @click="closeMobileNavigation()"
         />
-        <div class="mobile-nav__panel">
+        <div class="mobile-nav__panel" @click.self="closeMobileNavigation(true)">
           <nav aria-label="Mobile navigation">
             <NuxtLink class="mobile-nav__home" to="/">Home</NuxtLink>
             <details v-for="group in navigationGroups" :key="group.id" class="mobile-nav__group">
