@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { PublicPublication } from '../../../shared/types/science'
 import { currentLeadership, publicContact } from '~~/content/site/bulletin-sources'
+import { editorialBoard } from '~~/content/site/editorial-board'
 
 const { data: response, error, status, refresh } = await useFetch<{ data: PublicPublication[] }>('/api/public/publications')
 const latestIssue = computed(() => response.value?.data[0] ?? null)
@@ -16,7 +17,6 @@ useSeoMeta({
   <div>
     <section class="page-hero">
       <div class="container container--reading">
-        <p class="eyebrow eyebrow--light">Official INPA publication</p>
         <h1>Nuclear Horizons</h1>
         <p>A platform for scientific ideas, research perspectives and news from India’s nuclear-physics community.</p>
       </div>
@@ -45,6 +45,7 @@ useSeoMeta({
           <div class="publication-actions">
             <NuxtLink class="text-link" to="/nuclear-horizons/archive">Browse the issue archive <span aria-hidden="true">→</span></NuxtLink>
             <NuxtLink class="text-link" to="/contact">Ask about submitting a manuscript <span aria-hidden="true">→</span></NuxtLink>
+            <a class="text-link" href="#editorial-board">Meet the editorial board <span aria-hidden="true">↓</span></a>
           </div>
         </div>
 
@@ -56,6 +57,22 @@ useSeoMeta({
         </div>
         <PublicationIssueCard v-else-if="latestIssue" :issue="latestIssue" />
         <PlaceholderNotice v-else message="No Nuclear Horizons issue is currently published." />
+      </div>
+    </section>
+
+    <section class="section section--subtle" aria-labelledby="editorial-board">
+      <div class="container">
+        <h2 id="editorial-board">Editorial Board</h2>
+
+        <ul class="editorial-members" role="list">
+          <li v-for="member in editorialBoard" :key="member.name">
+            <h3 class="editor-name">{{ member.name }}</h3>
+            <p class="editor-role">{{ member.role }}</p>
+            <p class="editor-affiliation">
+              <span v-for="line in member.affiliation" :key="line">{{ line }}</span>
+            </p>
+          </li>
+        </ul>
       </div>
     </section>
   </div>
@@ -72,5 +89,58 @@ useSeoMeta({
   padding: clamp(1.25rem, 4vw, 2.5rem);
   border: 1px solid var(--color-border);
   background: var(--color-surface-subtle);
+}
+
+.editor-name {
+  margin-bottom: 0.25rem;
+  color: var(--color-navy-950);
+  font-family: var(--font-sans);
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: normal;
+  line-height: 1.35;
+}
+
+.editor-role {
+  margin-bottom: 0.4rem;
+  color: var(--color-navy-700);
+  font-weight: 600;
+}
+
+.editor-affiliation {
+  margin-bottom: 0;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.editor-affiliation span {
+  display: block;
+}
+
+.editorial-members {
+  display: grid;
+  gap: 1.25rem 2rem;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.editorial-members li {
+  min-width: 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+@media (min-width: 40rem) {
+  .editorial-members {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 64rem) {
+  .editorial-members {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 </style>

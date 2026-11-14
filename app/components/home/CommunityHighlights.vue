@@ -81,12 +81,12 @@ onBeforeUnmount(() => window.removeEventListener('resize', updateScrollState))
             <img
               :src="item.image"
               :alt="item.alt"
-              width="1600"
+              width="1599"
               height="1066"
               loading="lazy"
             >
             <figcaption>
-              <p class="meta">{{ item.date }} · {{ item.location }}</p>
+              <p class="meta"><time :datetime="communityHighlights.inauguration.datetime">{{ communityHighlights.inauguration.date }}</time> · {{ communityHighlights.inauguration.location }}</p>
               <h3>{{ item.title }}</h3>
               <p>{{ item.caption }}</p>
             </figcaption>
@@ -95,7 +95,6 @@ onBeforeUnmount(() => window.removeEventListener('resize', updateScrollState))
       </div>
 
       <div class="community-highlights__footer">
-        <p class="source-note">{{ communityHighlights.credit }}</p>
         <NuxtLink class="text-link" to="/community">Explore community updates <span aria-hidden="true">→</span></NuxtLink>
       </div>
     </div>

@@ -14,6 +14,7 @@
   --content-width: 76rem;
   --reading-width: 48rem;
   --section-space: clamp(3rem, 6vw, 5rem);
+  --header-height: 4.25rem;
   --radius: 0.375rem;
   --focus: #134f79;
   --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
@@ -33,7 +34,7 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5.5rem;
+  scroll-padding-top: calc(var(--header-height) + 0.5rem);
 }
 
 body {
@@ -172,7 +173,7 @@ h4 {
 
 .site-header__inner {
   display: flex;
-  min-height: 5rem;
+  min-height: var(--header-height);
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
@@ -188,8 +189,8 @@ h4 {
 }
 
 .wordmark__logo {
-  width: 3.2rem;
-  height: 3.2rem;
+  width: 2.75rem;
+  height: 2.75rem;
   flex: 0 0 auto;
   border: 1px solid var(--color-gold-500);
   border-radius: 50%;
@@ -265,7 +266,7 @@ h4 {
 
 .desktop-nav__panel {
   position: fixed;
-  top: 5rem;
+  top: calc(var(--header-height) + 1px);
   right: 0;
   left: 0;
   display: grid;
@@ -374,7 +375,7 @@ h4 {
 
 .mobile-nav__backdrop {
   position: fixed;
-  inset: 5rem 0 0;
+  inset: calc(var(--header-height) + 1px) 0 0;
   z-index: 0;
   display: none;
   width: 100%;
@@ -390,7 +391,7 @@ h4 {
 
 .mobile-nav__panel {
   position: fixed;
-  top: 5rem;
+  top: calc(var(--header-height) + 1px);
   right: 0;
   bottom: 0;
   z-index: 1;
@@ -500,7 +501,7 @@ h4 {
   --focus: #e6c879;
   position: relative;
   display: grid;
-  min-height: calc(100svh - 5rem);
+  min-height: calc(100svh - var(--header-height));
   overflow: hidden;
   background:
     radial-gradient(circle at 82% 22%, rgb(200 155 60 / 18%), transparent 25rem),
@@ -543,16 +544,10 @@ h4 {
   max-width: 50rem;
 }
 
-.hero h1,
-.page-hero h1 {
-  max-width: 13ch;
-  margin-bottom: 1.5rem;
-  color: var(--color-surface);
-}
-
 .hero h1 {
   max-width: 18ch;
   margin-bottom: 1rem;
+  color: var(--color-surface);
   font-size: clamp(2rem, 6vw, 4.5rem);
   line-height: 1.08;
 }
@@ -958,7 +953,6 @@ h4 {
 
 .science-publications__grid {
   display: grid;
-  align-items: start;
   gap: 1rem;
 }
 
@@ -1341,6 +1335,10 @@ a.future-card:hover {
   padding-left: 1.25rem;
 }
 
+.route-section ol {
+  padding-inline-start: 1.75rem;
+}
+
 .route-section li {
   margin-block: 0.5rem;
 }
@@ -1537,8 +1535,7 @@ a.future-card:hover {
   padding-block: clamp(3rem, 6vw, 5rem);
 }
 
-.community-highlights__heading,
-.community-highlights__footer {
+.community-highlights__heading {
   display: flex;
   align-items: end;
   justify-content: space-between;
@@ -1632,12 +1629,7 @@ a.future-card:hover {
 }
 
 .community-highlights__footer {
-  align-items: center;
   margin-top: 0.75rem;
-}
-
-.community-highlights__footer p {
-  margin: 0;
 }
 
 .about-section {
@@ -2759,7 +2751,7 @@ a.future-card:hover {
 
 .page-hero {
   --focus: #e6c879;
-  padding-block: clamp(4.5rem, 10vw, 8rem);
+  padding-block: clamp(1.5rem, 3vw, 2.5rem);
   background:
     radial-gradient(circle at 85% 15%, rgb(200 155 60 / 16%), transparent 20rem),
     var(--color-navy-950);
@@ -2767,13 +2759,27 @@ a.future-card:hover {
 }
 
 .page-hero h1 {
-  margin-bottom: 1rem;
-  font-size: clamp(2.7rem, 7vw, 5rem);
+  margin-bottom: 0;
+  color: var(--color-surface);
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  overflow-wrap: anywhere;
 }
 
-.page-hero p:not(.eyebrow) {
-  max-width: 48rem;
-  font-size: 1.15rem;
+.page-hero h1 + p {
+  margin-top: 0.625rem;
+}
+
+.page-hero .container > p:not(.eyebrow) {
+  max-width: 65ch;
+  margin-bottom: 0;
+}
+
+.page-hero .container > .button {
+  margin-top: 1rem;
+}
+
+.page-hero + :where(.section) {
+  padding-top: clamp(1.5rem, 3vw, 2.5rem);
 }
 
 .prose {
@@ -2906,7 +2912,7 @@ a.future-card:hover {
 
 .admin-hero { padding-block: clamp(3rem, 7vw, 5rem); }
 .admin-hero__header { display: flex; align-items: end; justify-content: space-between; gap: 2rem; }
-.admin-hero__header h1 { margin-bottom: 1rem; }
+.admin-hero__header h1 { max-width: 13ch; margin-bottom: 1rem; font-size: clamp(2.7rem, 7vw, 5rem); }
 .admin-hero__session { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem 1.25rem; }
 .admin-hero__session p { margin: 0; }
 .admin-session-timer { color: #dce7ed; font-variant-numeric: tabular-nums; }

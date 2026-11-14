@@ -175,7 +175,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', handleOutsideP
               >
                 <span>
                   <strong>{{ link.label }}</strong>
-                  <small v-if="link.description">{{ link.description }}</small>
+                  <small>{{ link.description }}</small>
                 </span>
                 <em v-if="link.status">{{ link.status }}</em>
                 <span v-else aria-hidden="true">→</span>

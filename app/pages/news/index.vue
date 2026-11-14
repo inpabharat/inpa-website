@@ -15,9 +15,7 @@ useSeoMeta({
   <div>
     <section class="page-hero">
       <div class="container">
-        <p class="eyebrow eyebrow--light">News archive</p>
         <h1>Latest news</h1>
-        <p>Only verified, published and unexpired records appear here.</p>
       </div>
     </section>
     <HomeLatestNews :items="items" />

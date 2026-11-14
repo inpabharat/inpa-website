@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { studentResourceCategories } from '~~/content/site/home'
+import { isPublicPathVisible } from '~~/content/site/visibility'
 </script>
 
 <template>
-  <section class="section section--white" aria-labelledby="students-title">
+  <section v-if="isPublicPathVisible('/students')" class="section section--white" aria-labelledby="students-title">
     <div class="container">
       <SectionHeading id="students-title" eyebrow="Resources for students" title="A clear first connection to INPA" intro="Each resource will show its owner and review date; expired opportunities will move out of current listings." />
       <PlaceholderNotice message="Resources will be added here after their owners, destinations and review dates are confirmed." />

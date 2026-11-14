@@ -1,5 +1,9 @@
+<script setup lang="ts">
+import { isPublicPathVisible } from '~~/content/site/visibility'
+</script>
+
 <template>
-  <section class="section section--subtle" aria-labelledby="people-title">
+  <section v-if="isPublicPathVisible('/people')" class="section section--subtle" aria-labelledby="people-title">
     <div class="container">
       <div class="section-heading-row">
         <SectionHeading id="people-title" eyebrow="Distinguished scientists" title="Pioneers and contemporary leaders" intro="The gallery will support curated editorial series without turning unverified biographies into public claims." />

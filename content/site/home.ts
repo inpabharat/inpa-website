@@ -1,3 +1,5 @@
+import { isPublicPathVisible } from './visibility'
+
 export interface LinkItem {
   label: string
   to: string
@@ -21,8 +23,6 @@ export interface VisionItem {
 
 export interface CommunityHighlightItem {
   title: string
-  date: string
-  location: string
   image: string
   alt: string
   caption: string
@@ -81,7 +81,7 @@ export const strategicVision = {
   },
 } as const
 
-export const audiencePathways: readonly EditorialLinkItem[] = [
+export const audiencePathways: readonly EditorialLinkItem[] = ([
   {
     eyebrow: 'Students and early-career researchers',
     title: 'I am a Student',
@@ -106,9 +106,9 @@ export const audiencePathways: readonly EditorialLinkItem[] = [
     summary: 'Find institutional information, events, membership guidance and approved community updates.',
     to: '/about',
   },
-] as const
+] satisfies EditorialLinkItem[]).filter(item => isPublicPathVisible(item.to))
 
-export const scienceDestinations: readonly EditorialLinkItem[] = [
+export const scienceDestinations: readonly EditorialLinkItem[] = ([
   {
     eyebrow: 'Research spotlight',
     title: 'Curated Indian research',
@@ -133,7 +133,7 @@ export const scienceDestinations: readonly EditorialLinkItem[] = [
     summary: 'A structured destination ready for approved learning materials and opportunities.',
     to: '/students',
   },
-] as const
+] satisfies EditorialLinkItem[]).filter(item => isPublicPathVisible(item.to))
 
 export const presidentContent = {
   title: 'Prof. A. K. Jain',
@@ -145,48 +145,46 @@ export const presidentContent = {
 export const aboutContent = {
   status: 'Institutional profile',
   title: 'About INPA',
-  summary: 'INPA brings together India’s nuclear-physics community across universities, national laboratories, research facilities and emerging centres in colleges as well. It seeks to create connections across institutions and generations—enabling collaboration, strengthening scientific capability and helping young researchers participate in the future of nuclear science. Established as a society on 2 May 2026.',
+  summary: 'INPA brings together India’s nuclear-physics community across universities, national laboratories, research facilities and emerging centres in colleges as well. It seeks to create connections across institutions and generations to enable collaboration, strengthen scientific capability and help young researchers participate in the future of nuclear science. INPA was formed at the Department of Physics, Banaras Hindu University (BHU), and registered as a society on 2 May 2026.',
   registration: 'Registration No. VAR/00818/2026-27',
   to: '/about',
   image: {
     src: '/images/inpa-bhu-inauguration.jpg',
     alt: 'INPA members holding the inaugural issue of Nuclear Horizons at Banaras Hindu University',
-    caption: 'INPA inauguration and Nuclear Horizons release at Banaras Hindu University, 21 April 2026. Photograph supplied by INPA.',
+    caption: 'INPA inauguration and Nuclear Horizons release at Banaras Hindu University, 21 April 2026.',
   },
 } as const
 
 export const communityHighlights = {
-  introduction: 'Photographs from verified INPA activities and community occasions.',
-  credit: 'Photographs supplied by INPA.',
+  introduction: 'Photographs from INPA activities and community occasions.',
+  inauguration: {
+    title: 'INPA inauguration and Nuclear Horizons launch',
+    date: '21 April 2026',
+    datetime: '2026-04-21',
+    location: 'Banaras Hindu University, Varanasi',
+    summary: 'Members of India’s nuclear-physics community gathered at Banaras Hindu University to mark INPA’s inauguration. The gathering also marked the release of the inaugural issue of Nuclear Horizons, INPA’s official bulletin.',
+  },
   items: [
     {
       title: 'Nuclear Horizons inaugural issue',
-      date: '21 April 2026',
-      location: 'Banaras Hindu University, Varanasi',
       image: '/images/community-bhu-bulletin-release.jpg',
       alt: 'Participants displaying copies of the inaugural issue of Nuclear Horizons at Banaras Hindu University',
       caption: 'Participants with the inaugural issue of Nuclear Horizons at its release.',
     },
     {
       title: 'The community comes together',
-      date: '21 April 2026',
-      location: 'Banaras Hindu University, Varanasi',
       image: '/images/community-bhu-gathering.jpg',
       alt: 'INPA participants seated around a conference table during the inaugural gathering at Banaras Hindu University',
       caption: 'Members of the nuclear-physics community meet during INPA’s inaugural gathering.',
     },
     {
       title: 'A welcome at the inaugural gathering',
-      date: '21 April 2026',
-      location: 'Banaras Hindu University, Varanasi',
       image: '/images/community-bhu-welcome.jpg',
       alt: 'Two participants exchanging a bouquet during the INPA inaugural gathering at Banaras Hindu University',
       caption: 'A welcome during the gathering marking INPA’s inauguration at Banaras Hindu University.',
     },
     {
       title: 'Discussion at the inauguration',
-      date: '21 April 2026',
-      location: 'Banaras Hindu University, Varanasi',
       image: '/images/community-bhu-discussion.jpg',
       alt: 'Participants in discussion around a conference table during the INPA inaugural gathering',
       caption: 'A discussion during the gathering that formally introduced INPA and Nuclear Horizons.',
@@ -236,7 +234,7 @@ export const studentResourceCategories = [
   'Frequently asked questions',
 ] as const
 
-export const dedicatedSections = [
+export const dedicatedSections = ([
   {
     mark: 'F',
     title: 'Find a Facility',
@@ -261,18 +259,17 @@ export const dedicatedSections = [
     summary: 'Connect scientific questions with people and capabilities.',
     to: '/map',
   },
-] as const
+] as const).filter(item => isPublicPathVisible(item.to))
 
-export const quickLinks: LinkItem[] = [
+export const quickLinks: LinkItem[] = ([
   { label: 'Membership', to: '/membership', icon: 'M' },
-  { label: 'Constitution', to: '/about/constitution', icon: '§' },
   { label: 'Executive Council', to: '/about/executive-council', icon: 'EC' },
   { label: 'Newsletter', to: '/nuclear-horizons', icon: 'NH' },
   { label: 'Awards', to: '/awards', icon: 'A' },
   { label: 'Jobs', to: '/jobs', icon: 'J' },
   { label: 'Contact', to: '/contact', icon: '@' },
   { label: 'Donations', to: '/membership#donations', icon: 'D' },
-]
+] satisfies LinkItem[]).filter(item => isPublicPathVisible(item.to))
 
 export const footerLinks = [
   { label: 'Young Scientist Colloquium', to: '/activities/young-scientist-colloquium' },
