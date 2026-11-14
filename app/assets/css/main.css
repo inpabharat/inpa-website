@@ -3204,7 +3204,9 @@ a.future-card:hover {
   }
 
   .institution-directory {
-    grid-template-columns: minmax(0, 1.4fr) minmax(18rem, 0.6fr);
+    --map-height-limit: calc(100dvh - var(--header-height) - 1rem);
+
+    grid-template-columns: min(48%, calc(var(--map-height-limit) * 700 / 725 + 2px)) minmax(0, 1fr);
     grid-template-areas: "type science" "instruction instruction" "map detail" "list list" "attribution attribution";
     align-items: start;
   }
@@ -3219,6 +3221,14 @@ a.future-card:hover {
 
   .map-stage {
     display: block;
+  }
+
+  .nuclear-map {
+    max-height: var(--map-height-limit);
+  }
+
+  .nuclear-map--focused {
+    min-height: min(30rem, var(--map-height-limit));
   }
 
   .map-view-switch {

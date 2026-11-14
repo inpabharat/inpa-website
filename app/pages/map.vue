@@ -21,7 +21,7 @@ useSeoMeta({
         <p><strong>Who?</strong><span>Who are the active researchers and groups?</span></p>
         <p><strong>With what?</strong><span>What facilities and capabilities are available?</span></p>
       </div>
-      <p class="map-scope-note"><strong>Coverage:</strong> The directory combines established national centres with the North India V1.0 academic dataset. Inclusion reflects current nuclear-physics research activity rather than institutional category. Other regions and detailed researcher profiles will be added progressively.</p>
+      <p class="map-scope-note"><strong>Coverage</strong> The directory brings together national centres, the North India V1.0 academic dataset, and institutions in other regions with research documented by their physics departments. It covers selected institutions across India.</p>
     </div>
   </section>
 </template>

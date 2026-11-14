@@ -18,9 +18,9 @@ const mapElement = ref<HTMLElement | null>(null)
 const detailElement = ref<HTMLElement | null>(null)
 const closeGroupButton = ref<HTMLButtonElement | null>(null)
 const mapWidth = ref(700)
-const mapHeight = ref(725)
+const mapHeightLimit = ref(Infinity)
 const naturalMapHeight = computed(() => mapWidth.value * 725 / 700)
-const canvasHeight = computed(() => focusRegion.value ? institutionRegionCanvasHeight(focusRegion.value.ids.length, mapWidth.value) : naturalMapHeight.value)
+const canvasHeight = computed(() => focusRegion.value ? focusedCanvasHeight(focusRegion.value.ids.length) : naturalMapHeight.value)
 const heightRatio = computed(() => canvasHeight.value / naturalMapHeight.value)
 const overviewView = ref<MapView>({ ...nationalMapView })
 const focusRegions = ref<FocusRegion[]>([])
@@ -111,7 +111,7 @@ watch(mapView, (target) => {
   mapAnimationFrame = requestAnimationFrame(animate)
 }, { deep: true })
 
-watch([mapWidth, mapHeight], () => {
+watch([mapWidth, mapHeightLimit], () => {
   if (focusRegion.value) {
     const view = fitInstitutionMapView(regionInstitutions.value, mapWidth.value, canvasHeight.value)
     focusRegion.value.view = view
@@ -130,7 +130,10 @@ function screenPoint(point: { x: number, y: number }): { x: number, y: number } 
   return { x: projected.x, y: projected.y / heightRatio.value }
 }
 function getMarkerLabel(group: InstitutionMarkerGroup): string {
-  if (group.institutions.length === 1) return `${group.institutions[0]!.name}, ${group.institutions[0]!.city}. Select institution`
+  if (group.institutions.length === 1) {
+    const institution = group.institutions[0]!
+    return `${institution.name}, ${institution.city}. ${focusRegion.value ? 'Select institution' : 'Zoom in to location'}`
+  }
   return `${group.institutions.length} nearby institutions. Zoom in to explore`
 }
 function markerNameStyle(group: InstitutionMarkerGroup): Record<string, string> {
@@ -157,21 +160,50 @@ function selectInstitution(id: string, revealDetails = false): void {
   })
 }
 function selectMarker(group: InstitutionMarkerGroup): void {
-  if (group.institutions.length === 1) {
+  if (focusRegion.value && group.institutions.length === 1) {
     selectInstitution(group.institutions[0]!.id)
     return
   }
-  const targetView = fitInstitutionMapView(group.institutions, mapWidth.value, institutionRegionCanvasHeight(group.institutions.length, mapWidth.value))
+  zoomToInstitutions(group.institutions, group.id)
+}
+function focusedCanvasHeight(count: number): number {
+  return Math.min(institutionRegionCanvasHeight(count, mapWidth.value), mapHeightLimit.value)
+}
+function updateMapSize(map: HTMLElement): void {
+  const width = map.getBoundingClientRect().width
+  if (!width) return
+  mapWidth.value = width
+  mapHeightLimit.value = Number.parseFloat(getComputedStyle(map).maxHeight) || Infinity
+}
+async function zoomToInstitutions(institutions: NuclearInstitution[], triggerId: string): Promise<void> {
+  if (!mapElement.value?.getClientRects().length) {
+    mobileView.value = 'map'
+    await nextTick()
+  }
+  if (mapElement.value) updateMapSize(mapElement.value)
+  const ids = institutions.map(institution => institution.id)
+  const targetView = fitInstitutionMapView(institutions, mapWidth.value, focusedCanvasHeight(ids.length))
   focusRegions.value = [{
-    ids: group.institutions.map(institution => institution.id),
+    ids,
     view: targetView,
     layoutView: { ...targetView },
     separated: true,
-    triggerId: group.id,
+    triggerId,
   }]
-  if (!group.institutions.some(institution => institution.id === selectedId.value)) selectedId.value = group.institutions[0]!.id
+  if (!ids.includes(selectedId.value)) selectedId.value = ids[0]!
   hoveredId.value = null
   nextTick(() => closeGroupButton.value?.focus({ preventScroll: true }))
+  centerMapOnScreen()
+}
+function centerMapOnScreen(): void {
+  nextTick(() => {
+    const map = mapElement.value
+    if (!map?.getClientRects().length) return
+    const { top, height } = map.getBoundingClientRect()
+    const headerBottom = document.querySelector('.site-header')?.getBoundingClientRect().bottom ?? 0
+    const offset = top + height / 2 - (window.innerHeight + Math.max(0, headerBottom)) / 2
+    if (Math.abs(offset) > 1) window.scrollBy({ top: offset, behavior: reduceMapMotion ? 'instant' : 'smooth' })
+  })
 }
 function restoreMarkerFocus(groupId?: string): void {
   nextTick(() => {
@@ -183,11 +215,15 @@ function restoreMarkerFocus(groupId?: string): void {
 }
 function resetMap(restoreFocus = true): void {
   const triggerId = focusRegions.value[0]?.triggerId
+  const wasZoomed = mapView.value.scale > 1
   focusRegions.value = []
   overviewView.value = { ...nationalMapView }
   hoveredId.value = null
   focusedId.value = null
-  if (restoreFocus) restoreMarkerFocus(triggerId)
+  if (restoreFocus) {
+    restoreMarkerFocus(triggerId)
+    if (wasZoomed) centerMapOnScreen()
+  }
 }
 function setMapView(view: MapView, keepSeparated = false): void {
   if (focusRegion.value) {
@@ -199,6 +235,7 @@ function changeZoom(factor: number): void {
   const view = zoomInstitutionMapView(mapView.value, factor, heightRatio.value)
   setMapView(view, true)
   if (focusRegion.value) focusRegion.value.layoutView = { ...view }
+  centerMapOnScreen()
 }
 function handleDirectoryKeydown(event: KeyboardEvent): void {
   if (event.key === 'Escape' && (focusRegion.value || mapView.value.scale > 1)) {
@@ -255,11 +292,10 @@ function selectResearchArea(area: string): void {
 }
 onMounted(() => {
   reduceMapMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  if (!mapElement.value) return
-  mapResizeObserver = new ResizeObserver(([entry]) => {
-    if (entry && entry.contentRect.width > 0) { mapWidth.value = entry.contentRect.width; mapHeight.value = entry.contentRect.height }
-  })
-  mapResizeObserver.observe(mapElement.value)
+  const map = mapElement.value
+  if (!map) return
+  mapResizeObserver = new ResizeObserver(() => updateMapSize(map))
+  mapResizeObserver.observe(map)
 })
 onBeforeUnmount(() => {
   mapResizeObserver?.disconnect()
@@ -299,7 +335,7 @@ onBeforeUnmount(() => {
       <button type="button" :aria-pressed="mobileView === 'map'" @click="mobileView = 'map'">Map view</button>
     </div>
 
-    <p id="map-guidance" class="map-instruction">Select a numbered group to see all its institutions in one regional view. Short lines connect overlapping markers to their locations. Drag to move; click clear map space or press Escape to return to India.</p>
+    <p id="map-guidance" class="map-instruction">Select a dot to zoom to an institution or a numbered group to see its institutions in one regional view. Short lines connect overlapping markers to their locations. Drag to move; click clear map space or press Escape to return to India.</p>
 
     <div class="map-stage">
       <div ref="mapElement" class="nuclear-map" :style="focusRegion ? { height: `${canvasHeight}px` } : undefined" :class="{ 'nuclear-map--zoomed': mapView.scale > 1, 'nuclear-map--focused': focusRegion, 'nuclear-map--panning': isPanning }" tabindex="0" role="group" aria-label="Institution map of India" aria-describedby="map-guidance" @click="handleMapClick" @pointerdown="startPan" @pointermove="movePan" @pointerup="endPan" @pointercancel="endPan" @keydown="panWithKeyboard">
@@ -329,12 +365,12 @@ onBeforeUnmount(() => {
         </svg>
         <div class="map-region-heading">
           <button v-if="focusRegion" ref="closeGroupButton" class="map-return" type="button" @click="resetMap()"><span aria-hidden="true">←</span> All locations</button>
-          <div><strong>{{ regionLabel }}</strong><span role="status">{{ regionInstitutions.length }} institutions</span></div>
+          <div><strong>{{ regionLabel }}</strong><span role="status">{{ regionInstitutions.length }} {{ regionInstitutions.length === 1 ? 'institution' : 'institutions' }}</span></div>
         </div>
         <TransitionGroup name="map-point" tag="div" class="map-marker-layer">
           <button
 v-for="group in visibleMarkerGroups" :key="group.id" class="map-marker" :class="[group.institutions.length === 1 ? `map-marker--${group.institutions[0]!.category}` : 'map-marker--group', { 'map-marker--selected': group.institutions.length === 1 && group.institutions[0]!.id === selectedId, 'map-marker--hovered': group.institutions.length === 1 && group.institutions[0]!.id === highlightedId }]" type="button"
-            :style="{ left: `${group.x}%`, top: `${group.y}%` }" :data-group-id="group.institutions.length > 1 ? group.id : undefined" :aria-label="getMarkerLabel(group)"
+            :style="{ left: `${group.x}%`, top: `${group.y}%` }" :data-group-id="group.id" :aria-label="getMarkerLabel(group)"
             :aria-pressed="group.institutions.length === 1 ? selectedId === group.institutions[0]!.id : undefined" :aria-controls="group.institutions.length > 1 ? 'map-group-panel' : 'map-detail-title'"
             @click="selectMarker(group)" @mouseenter="hoveredId = group.institutions.length === 1 ? group.institutions[0]!.id : null" @mouseleave="hoveredId = null" @focus="focusInstitution(group.institutions.length === 1 ? group.institutions[0]!.id : null)" @blur="focusedId = null">
             <span aria-hidden="true">{{ group.institutions.length > 1 ? group.institutions.length : focusRegion ? institutionNumber(group.institutions[0]!) : '•' }}</span>
@@ -408,7 +444,7 @@ v-for="group in visibleMarkerGroups" :key="group.id" class="map-marker" :class="
       </div>
       <ul class="institution-list">
         <li v-for="institution in filteredInstitutions" :key="institution.id">
-          <button type="button" :aria-pressed="selectedId === institution.id" @click="selectInstitution(institution.id, true)">
+          <button type="button" :aria-pressed="selectedId === institution.id" @click="zoomToInstitutions([institution], institution.id)">
             <strong>{{ institution.shortName }}</strong>
             <span>{{ institution.city }}, {{ institution.state }}</span>
           </button>
