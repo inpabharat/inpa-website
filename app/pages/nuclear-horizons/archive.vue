@@ -15,7 +15,6 @@ useSeoMeta({
   <div>
     <section class="page-hero">
       <div class="container container--reading">
-        <p class="eyebrow eyebrow--light">Publication archive</p>
         <h1>Nuclear Horizons archive</h1>
         <p>Browse published issues and download each complete bulletin as a PDF.</p>
       </div>

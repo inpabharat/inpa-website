@@ -15,7 +15,6 @@ useSeoMeta({
   <div>
     <section class="page-hero">
       <div class="container container--reading">
-        <p class="eyebrow eyebrow--light">Scientific highlights</p>
         <h1>Featured research</h1>
         <p>Selected achievements from India’s nuclear-physics community, presented with links to the published research.</p>
       </div>

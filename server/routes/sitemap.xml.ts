@@ -18,6 +18,7 @@ export default defineEventHandler(async (event) => {
   const paths = [
     '/',
     '/activities/young-scientist-colloquium',
+    '/community',
     '/map',
     '/nuclear-horizons',
     '/nuclear-horizons/archive',

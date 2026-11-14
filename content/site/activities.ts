@@ -17,7 +17,6 @@ export const youngScientistColloquium = {
   email: 'inpa.bharat@gmail.com',
   speakerForm: 'https://forms.gle/8WmLZqho3MWCpVCa9',
   programmePoster: '/documents/inpa-young-scientist-colloquium.pdf',
-  sourceNote: 'Programme and seminar details are taken from materials supplied directly by INPA in August 2026. The listed seminars are past events, not upcoming announcements.',
   seminars: [
     {
       sequence: 'Inaugural seminar',

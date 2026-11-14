@@ -18,7 +18,6 @@ const visibleEvents = computed(() => props.events.slice(0, 2))
         <SectionHeading
           id="updates-title"
           title="News and upcoming events"
-          intro="A concise view of verified announcements and the next dates in the INPA calendar."
         />
         <NuxtLink class="text-link" to="/news">View all updates <span aria-hidden="true">→</span></NuxtLink>
       </div>

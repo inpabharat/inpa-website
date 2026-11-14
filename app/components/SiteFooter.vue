@@ -16,7 +16,7 @@ const footerExploreLinks = navigationGroups.map(group => ({
         <p class="eyebrow eyebrow--light">Indian Nuclear Physics Association</p>
         <h2>Connecting People and Enabling Discovery</h2>
         <address class="site-footer__contact">
-          <span>{{ publicContact.address }}</span>
+          <span><strong>{{ publicContact.address.department }}</strong>, {{ publicContact.address.location }}</span>
           <a :href="`tel:${publicContact.phoneHref}`">{{ publicContact.secretary }}, Secretary — {{ publicContact.phoneDisplay }}</a>
           <a :href="`mailto:${publicContact.email}`">{{ publicContact.email }}</a>
         </address>

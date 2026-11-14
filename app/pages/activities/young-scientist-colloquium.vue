@@ -12,13 +12,12 @@ useSeoMeta({
   <div>
     <section class="page-hero">
       <div class="container container--reading">
-        <p class="eyebrow eyebrow--light">Scientific programme</p>
         <h1>{{ youngScientistColloquium.title }}</h1>
         <p>{{ youngScientistColloquium.description }}</p>
       </div>
     </section>
 
-    <main class="section section--white">
+    <div class="section section--white">
       <div class="container colloquium-layout">
         <section aria-labelledby="colloquium-participate-title">
           <p class="eyebrow">Participate</p>
@@ -50,8 +49,7 @@ useSeoMeta({
             <a class="text-link" :href="seminar.poster" target="_blank">View seminar poster <span aria-hidden="true">↗</span></a>
           </article>
         </div>
-        <p class="source-note">{{ youngScientistColloquium.sourceNote }}</p>
       </div>
-    </main>
+    </div>
   </div>
 </template>

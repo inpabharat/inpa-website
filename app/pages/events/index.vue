@@ -18,15 +18,13 @@ useSeoMeta({
   <div>
     <section class="page-hero">
       <div class="container">
-        <p class="eyebrow eyebrow--light">Events archive</p>
         <h1>Events</h1>
-        <p>Upcoming notices are chronological; past verified records will remain available through the archive.</p>
       </div>
     </section>
     <HomeUpcomingEvents :items="items" />
     <section class="section section--subtle" aria-labelledby="past-events-title">
       <div class="container">
-        <SectionHeading id="past-events-title" eyebrow="Archive" title="Past events" intro="Verified past events remain available for the scientific record." />
+        <SectionHeading id="past-events-title" eyebrow="Archive" title="Past events" />
         <ol v-if="archivedItems.length" class="timeline timeline--light">
           <li v-for="item in archivedItems" :key="item.slug" class="timeline__item">
             <time :datetime="item.startAt">{{ formatEventDate(item.startAt, item.timezone) }}</time>

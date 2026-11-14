@@ -10,15 +10,16 @@ The website publishes only information supported by supplied INPA material or ex
 - [x] Prof. A. K. Jain confirmed as INPA President; portrait and website message summary supplied.
 - [ ] Optional longer President's message and named portrait credit.
 - [ ] Approved About copy.
-- [ ] Current Executive Council roster, roles, terms and affiliations.
-- [ ] Current Constitution file and publication status.
+- [x] Executive Council and Advisory Committee rosters, roles and affiliations supplied.
+- [ ] Executive Council and Advisory Committee terms of office.
 - [x] Office address, Secretary's telephone number and public email address (approved by the INPA President on 10 August 2026).
 - [x] Shared mission and high-level relationship between NNPI, the website and Nuclear Horizons (approved as strategic direction on 10 August 2026).
 - [x] Proposed NNPI framing, three-element structure and homepage wording supplied in website comments in August 2026.
 - [ ] Formal NNPI public-launch approval, framework figure, final document, owners and publication date.
 - [ ] Owners, scope, launch status and approved destination content for the five proposed future initiatives.
 - [ ] Official social-media URLs.
-- [x] Membership amounts supplied: annual ₹1,000; life ₹6,000 or above; donor above ₹21,000; institutional amount undecided.
+- [x] Membership fees supplied for founding (₹21,000), life (₹11,000), annual (₹1,000), and institutional / corporate (₹51,000) membership.
+- [x] Membership bank transfer details and the association’s UPI QR code supplied.
 - [ ] Membership eligibility, duration, renewal, application process, approval process and destination.
 - [ ] Donations information or approved destination, if shown.
 - [x] Nuclear Horizons Volume 1, Issues 1 and 2, their covers and public PDF downloads.
@@ -56,7 +57,7 @@ The website publishes only information supported by supplied INPA material or ex
 1. Confirm the primary domain and connect it to the production Worker.
 2. Supply the three authorised editor email addresses and configure Cloudflare Access.
 3. Configure Cloudflare Access and complete the production editor acceptance test.
-4. Supply the current Executive Council, committees and Constitution.
+4. Confirm Executive Council and Advisory Committee terms of office.
 5. Supply an optional longer President’s message and named portrait credit.
 6. Confirm membership application instructions and eligibility rules.
 7. Provide at least one current news item and one upcoming event, or explicitly approve launching with empty archives.

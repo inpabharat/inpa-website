@@ -1,7 +1,9 @@
+import { isPublicPathVisible } from './visibility'
+
 export interface NavigationLink {
   label: string
   to: string
-  description?: string
+  description: string
   status?: string
 }
 
@@ -12,18 +14,17 @@ export interface NavigationGroup {
   links: readonly NavigationLink[]
 }
 
-export const navigationGroups: readonly NavigationGroup[] = [
+const allNavigationGroups: readonly NavigationGroup[] = [
   {
     id: 'about',
     label: 'About',
     description: 'INPA’s purpose, leadership and governance.',
     links: [
       { label: 'About INPA', to: '/about', description: 'Formation, registration and published objectives.' },
-      { label: 'President’s Message', to: '/about/presidents-message' },
-      { label: 'Executive Council', to: '/about/executive-council' },
-      { label: 'Committees and Governance', to: '/about/committees' },
-      { label: 'Constitution', to: '/about/constitution' },
-      { label: 'Contact INPA', to: '/contact' },
+      { label: 'President’s Message', to: '/about/presidents-message', description: 'Prof. A. K. Jain on INPA’s priorities.' },
+      { label: 'Executive Council', to: '/about/executive-council', description: 'Office bearers and council members.' },
+      { label: 'Advisory Committee', to: '/about/committees', description: 'Committee members and their role in guiding INPA.' },
+      { label: 'Contact INPA', to: '/contact', description: 'Office address, phone and email.' },
     ],
   },
   {
@@ -34,7 +35,7 @@ export const navigationGroups: readonly NavigationGroup[] = [
       { label: 'NNPI Framework', to: '/nnpi', description: 'From vision to coordinated national action.' },
       { label: 'Featured Research', to: '/research', description: 'Curated Indian nuclear-physics research.' },
       { label: 'Nuclear Physics in India', to: '/map', description: 'Explore India’s nuclear-physics institutions, research groups, people and experimental facilities.' },
-      { label: 'Distinguished Scientists', to: '/people' },
+      { label: 'Distinguished Scientists', to: '/people', description: 'Profiles of pioneers and contemporary researchers.' },
     ],
   },
   {
@@ -42,9 +43,9 @@ export const navigationGroups: readonly NavigationGroup[] = [
     label: 'News & Events',
     description: 'Announcements, dates and established scientific programmes.',
     links: [
-      { label: 'News Archive', to: '/news', description: 'Verified announcements from across INPA.' },
-      { label: 'Events Archive', to: '/events' },
-      { label: 'Young Scientist Colloquium', to: '/activities/young-scientist-colloquium' },
+      { label: 'News Archive', to: '/news', description: 'Announcements from across INPA.' },
+      { label: 'Events Archive', to: '/events', description: 'Upcoming events and records of past programmes.' },
+      { label: 'Young Scientist Colloquium', to: '/activities/young-scientist-colloquium', description: 'Seminar records and how to apply to speak.' },
     ],
   },
   {
@@ -53,7 +54,7 @@ export const navigationGroups: readonly NavigationGroup[] = [
     description: 'INPA publications and verified issue records.',
     links: [
       { label: 'Nuclear Horizons', to: '/nuclear-horizons', description: 'The official bulletin of INPA.' },
-      { label: 'Issue Archive', to: '/nuclear-horizons/archive' },
+      { label: 'Issue Archive', to: '/nuclear-horizons/archive', description: 'Browse and download issues of Nuclear Horizons.' },
     ],
   },
   {
@@ -61,9 +62,8 @@ export const navigationGroups: readonly NavigationGroup[] = [
     label: 'Students',
     description: 'Learning resources and verified opportunities.',
     links: [
-      { label: 'Student Resources', to: '/students', description: 'Prepared routes for lectures, schools and guidance.' },
-      { label: 'Student Opportunities', to: '/students/opportunities' },
-      { label: 'Jobs', to: '/jobs' },
+      { label: 'Student Resources', to: '/students', description: 'Lectures, schools and career guidance.' },
+      { label: 'Student Opportunities', to: '/students/opportunities', description: 'Opportunities for students and early-career researchers.' },
     ],
   },
   {
@@ -71,14 +71,19 @@ export const navigationGroups: readonly NavigationGroup[] = [
     label: 'Community',
     description: 'Participation, recognition and community activity.',
     links: [
-      { label: 'Community Highlights', to: '/community', description: 'Approved community records and recognition.' },
-      { label: 'Membership', to: '/membership' },
-      { label: 'Awards and Recognition', to: '/awards' },
+      { label: 'Community Highlights', to: '/community', description: 'Stories and photographs from INPA gatherings.' },
+      { label: 'Membership', to: '/membership', description: 'Membership categories, fees and payment details.' },
+      { label: 'Awards and Recognition', to: '/awards', description: 'INPA award announcements.' },
+      { label: 'Jobs', to: '/jobs', description: 'Employment listings in nuclear physics.' },
     ],
   },
 ] as const
 
-export const utilityNavigation: readonly NavigationLink[] = [
+export const navigationGroups = allNavigationGroups
+  .map(group => ({ ...group, links: group.links.filter(link => isPublicPathVisible(link.to)) }))
+  .filter(group => group.links.length > 0)
+
+export const utilityNavigation: readonly Pick<NavigationLink, 'label' | 'to'>[] = [
   { label: 'Contact', to: '/contact' },
   { label: 'Privacy', to: '/privacy' },
   { label: 'Accessibility', to: '/contact#accessibility' },

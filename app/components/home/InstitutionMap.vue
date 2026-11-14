@@ -7,7 +7,6 @@
       </div>
       <div>
         <p class="lead">Explore a curated directory of major Indian institutions supporting nuclear science, accelerator research, atomic-mineral research and plasma science.</p>
-        <p class="source-note">Institution identities and classifications were checked against current DAE, UGC and official institution sources. The boundary is the Survey of India’s official generalized vector outline; markers use campus-area coordinates for national-scale orientation.</p>
       </div>
     </div>
     <div class="container">

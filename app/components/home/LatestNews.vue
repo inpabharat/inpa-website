@@ -10,7 +10,7 @@ defineProps<{ items: PublicNewsItem[] }>()
   <section class="section section--subtle" aria-labelledby="news-title">
     <div class="container">
       <div class="section-heading-row">
-        <SectionHeading id="news-title" eyebrow="Latest news" title="News from the INPA community" intro="Only published, unexpired records are eligible for this section." />
+        <SectionHeading id="news-title" eyebrow="Latest news" title="News from the INPA community" />
         <NuxtLink class="text-link" to="/news">View news archive <span aria-hidden="true">→</span></NuxtLink>
       </div>
       <div v-if="items.length" class="card-grid card-grid--three">
