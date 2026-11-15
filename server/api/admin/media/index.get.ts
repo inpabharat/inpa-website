@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
   const [snapshot, issues, research] = await Promise.all([new AdminContentRepository(database).snapshot(), science.listPublications(), science.listResearch()])
   const references = [
     ...snapshot.news.map(item => ({ key: item.coverImageKey, kind: 'news', id: item.id, title: item.title, status: item.status })),
-    ...snapshot.events.map(item => ({ key: item.coverImageKey, kind: 'event', id: item.id, title: item.title, status: item.status })),
+    ...snapshot.events.flatMap(item => [item.coverImageKey, item.posterPdfKey].map(key => ({ key, kind: 'event', id: item.id, title: item.title, status: item.status }))),
     ...snapshot.carousel.map(item => ({ key: item.imageKey, kind: 'homepage slide', id: item.id, title: item.title, status: item.isActive ? 'active' : 'inactive' })),
     ...issues.flatMap(item => [item.pdfKey, item.coverImageKey].map(key => ({ key, kind: 'publication', id: item.id, title: item.issueLabel, status: item.status }))),
     ...research.map(item => ({ key: item.imageKey, kind: 'research', id: item.id, title: item.title, status: item.status })),

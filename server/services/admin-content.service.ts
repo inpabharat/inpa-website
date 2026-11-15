@@ -1,14 +1,25 @@
 import type { H3Event } from 'h3'
 import { createError } from 'h3'
+import { youngScientistColloquium } from '../../content/site/activities'
 import { parseCarouselInput, parseEventInput, parseNewsInput } from '../../shared/utils/content-validation'
 import { AdminContentRepository } from '../repositories/admin-content.repository'
 import { adminResponse, assertSameOrigin, prepareAdminResponse, readAdminJson, requireAdminDatabase, requireAdminIdentity, validationError } from '../utils/admin-api'
+import { requireUploadedMedia } from '../utils/uploaded-media'
 
 type ContentKind = 'news' | 'events' | 'carousel'
 
 function repository(event: H3Event) {
   prepareAdminResponse(event)
   return new AdminContentRepository(requireAdminDatabase(event))
+}
+
+async function eventInput(event: H3Event, body: unknown) {
+  const input = parseEventInput(body)
+  const posterKey = input.posterPdfKey
+  if (posterKey && !youngScientistColloquium.seminars.some(seminar => seminar.poster === posterKey)) {
+    await requireUploadedMedia(event, posterKey, 'pdf')
+  }
+  return input
 }
 
 export async function getAdminSnapshot(event: H3Event) {
@@ -22,7 +33,7 @@ export async function createAdminContent(event: H3Event, kind: ContentKind) {
   const store = repository(event)
   try {
     if (kind === 'news') return adminResponse(await store.createNews(parseNewsInput(body), editor), 'News item created.')
-    if (kind === 'events') return adminResponse(await store.createEvent(parseEventInput(body), editor), 'Event created.')
+    if (kind === 'events') return adminResponse(await store.createEvent(await eventInput(event, body), editor), 'Event created.')
     return adminResponse(await store.createCarousel(parseCarouselInput(body), editor), 'Carousel item created.')
   } catch (error) {
     validationError(error)
@@ -37,7 +48,7 @@ export async function updateAdminContent(event: H3Event, kind: ContentKind, id: 
     const updated = kind === 'news'
       ? await store.updateNews(id, parseNewsInput(body), editor)
       : kind === 'events'
-        ? await store.updateEvent(id, parseEventInput(body), editor)
+        ? await store.updateEvent(id, await eventInput(event, body), editor)
         : await store.updateCarousel(id, parseCarouselInput(body), editor)
     if (!updated) throw createError({ statusCode: 404, statusMessage: 'Content item not found.' })
     return adminResponse(updated, 'Changes saved.')

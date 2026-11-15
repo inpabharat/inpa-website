@@ -1,6 +1,18 @@
-import { and, asc, desc, eq, gt, gte, inArray, isNull, lt, lte, or } from 'drizzle-orm'
+import { and, asc, desc, eq, gt, gte, inArray, isNull, lt, lte, or, sql } from 'drizzle-orm'
 import type { InpaDatabase } from '../database/client'
 import { carouselItems, events, news } from '../database/schema'
+
+function publicEvent(now: string, includeCompleted = true) {
+  return or(
+    inArray(events.status, includeCompleted
+      ? ['published', 'postponed', 'cancelled', 'completed']
+      : ['published', 'postponed', 'cancelled']),
+    and(eq(events.status, 'scheduled'), or(isNull(events.publishAt), lte(events.publishAt, now))),
+  )
+}
+
+const eventArchiveAt = sql<string>`case when ${events.eventType} = 'colloquium'
+  then coalesce(${events.endAt}, ${events.startAt}) else ${events.startAt} end`
 
 export class PublicContentRepository {
   constructor(private readonly database: InpaDatabase) {}
@@ -62,16 +74,7 @@ export class PublicContentRepository {
         coverImageAlt: events.coverImageAlt,
       })
       .from(events)
-      .where(
-        and(
-          inArray(events.status, ['scheduled', 'published', 'postponed', 'cancelled']),
-          or(
-            inArray(events.status, ['published', 'postponed', 'cancelled']),
-            and(eq(events.status, 'scheduled'), or(isNull(events.publishAt), lte(events.publishAt, now))),
-          ),
-          gte(events.startAt, now),
-        ),
-      )
+      .where(and(publicEvent(now, false), gte(eventArchiveAt, now)))
       .orderBy(asc(events.startAt))
       .limit(limit)
   }
@@ -93,31 +96,37 @@ export class PublicContentRepository {
         coverImageAlt: events.coverImageAlt,
       })
       .from(events)
-      .where(
-        and(
-          inArray(events.status, ['scheduled', 'published', 'postponed', 'cancelled', 'completed']),
-          or(
-            inArray(events.status, ['published', 'postponed', 'cancelled', 'completed']),
-            and(eq(events.status, 'scheduled'), or(isNull(events.publishAt), lte(events.publishAt, now))),
-          ),
-          lt(events.startAt, now),
-        ),
-      )
+      .where(and(publicEvent(now), or(
+        lt(eventArchiveAt, now),
+        and(eq(events.eventType, 'colloquium'), eq(events.status, 'completed')),
+      )))
       .orderBy(desc(events.startAt))
       .limit(limit)
   }
 
   getEventBySlug(slug: string, now: string) {
     return this.database.query.events.findFirst({
-      where: and(
-        eq(events.slug, slug),
-        inArray(events.status, ['scheduled', 'published', 'postponed', 'cancelled', 'completed']),
-        or(
-          inArray(events.status, ['published', 'postponed', 'cancelled', 'completed']),
-          and(eq(events.status, 'scheduled'), or(isNull(events.publishAt), lte(events.publishAt, now))),
-        ),
-      ),
+      where: and(eq(events.slug, slug), publicEvent(now)),
     })
+  }
+
+  listColloquiumEvents(now: string) {
+    return this.database
+      .select({
+        slug: events.slug,
+        title: events.title,
+        startAt: events.startAt,
+        endAt: events.endAt,
+        timezone: events.timezone,
+        speaker: events.speaker,
+        speakerAffiliation: events.speakerAffiliation,
+        seminarLabel: events.seminarLabel,
+        posterPdfKey: events.posterPdfKey,
+        status: events.status,
+      })
+      .from(events)
+      .where(and(eq(events.eventType, 'colloquium'), publicEvent(now)))
+      .orderBy(asc(events.startAt), asc(events.slug))
   }
 
   listActiveCarouselItems(now: string) {

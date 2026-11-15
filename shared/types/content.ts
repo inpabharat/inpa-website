@@ -12,6 +12,9 @@ export const eventStatuses = [
 ] as const
 export type EventStatus = (typeof eventStatuses)[number]
 
+export const eventTypes = ['general', 'colloquium'] as const
+export type EventType = (typeof eventTypes)[number]
+
 export const linkedContentTypes = ['news', 'event', 'custom'] as const
 export type LinkedContentType = (typeof linkedContentTypes)[number]
 
@@ -39,6 +42,23 @@ export interface PublicEventItem {
   externalUrl: string | null
   coverImageKey: string | null
   coverImageAlt: string | null
+}
+
+export interface PublicColloquiumSeminar {
+  slug: string
+  title: string
+  startAt: string
+  timezone: string
+  speaker: string | null
+  speakerAffiliation: string | null
+  seminarLabel: string | null
+  posterPdfKey: string | null
+  status: EventStatus
+}
+
+export interface PublicColloquiumProgramme {
+  upcoming: PublicColloquiumSeminar[]
+  archive: PublicColloquiumSeminar[]
 }
 
 export interface PublicCarouselItem {

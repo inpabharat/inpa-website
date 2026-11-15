@@ -51,6 +51,7 @@ export default defineNuxtConfig({
     '/nuclear-horizons/**': { headers: { 'Cache-Control': 'public, max-age=0, must-revalidate' } },
     '/research': { headers: { 'Cache-Control': 'public, max-age=0, must-revalidate' } },
     '/research/**': { headers: { 'Cache-Control': 'public, max-age=0, must-revalidate' } },
+    '/activities/young-scientist-colloquium': { headers: { 'Cache-Control': 'public, max-age=0, must-revalidate' } },
     '/community': { prerender: true },
     '/membership': { prerender: true },
     '/privacy': { prerender: true },

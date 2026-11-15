@@ -8,6 +8,9 @@ interface EventDetail {
   status: string
   startAt: string
   timezone: string
+  speaker: string | null
+  speakerAffiliation: string | null
+  posterPdfKey: string | null
   coverImageKey: string | null
   coverImageAlt: string | null
 }
@@ -42,7 +45,9 @@ useSeoMeta({
           <img v-if="item.coverImageKey" class="detail-cover" :src="publicMediaUrl(item.coverImageKey) ?? undefined" :alt="item.coverImageAlt ?? ''" width="960" height="540">
           <p><strong>When:</strong> <time :datetime="item.startAt">{{ formatEventDate(item.startAt, item.timezone) }}</time></p>
           <p><strong>Event timezone:</strong> {{ item.timezone }}</p>
+          <p v-if="item.speaker || item.speakerAffiliation"><strong>Speaker:</strong> {{ [item.speaker, item.speakerAffiliation].filter(Boolean).join(' · ') }}</p>
           <p>{{ item.body }}</p>
+          <p v-if="item.posterPdfKey"><a class="text-link" :href="publicMediaUrl(item.posterPdfKey) ?? undefined" target="_blank" rel="noopener noreferrer">View seminar PDF <span aria-hidden="true">↗</span></a></p>
         </template>
         <NuxtLink class="text-link" to="/events">Return to events <span aria-hidden="true">→</span></NuxtLink>
       </div>

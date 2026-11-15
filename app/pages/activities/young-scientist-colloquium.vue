@@ -1,5 +1,13 @@
 <script setup lang="ts">
 import { youngScientistColloquium } from '~~/content/site/activities'
+import type { ApiResponse, PublicColloquiumProgramme } from '~~/shared/types/content'
+import { formatEventDate } from '~/utils/date'
+
+const { data: response, error } = await useFetch<ApiResponse<PublicColloquiumProgramme>>('/api/public/colloquium')
+const sections = computed(() => [
+  { id: 'colloquium-upcoming-title', title: 'Upcoming seminars', seminars: response.value?.data.upcoming ?? [] },
+  { id: 'colloquium-archive-title', title: 'Programme archive', seminars: response.value?.data.archive ?? [] },
+].filter(section => section.seminars.length))
 
 useSeoMeta({
   title: youngScientistColloquium.title,
@@ -32,24 +40,31 @@ useSeoMeta({
         </section>
 
         <aside class="colloquium-note" aria-label="Programme status">
-          <strong>Programme record</strong>
-          <p>Past seminars are listed below. The next seminar will be added when its date and programme poster are announced.</p>
+          <strong>Seminar schedule</strong>
+          <p v-if="error">The seminar schedule is temporarily unavailable.</p>
+          <p v-else-if="response?.data.upcoming.length">Upcoming seminars and past records are listed below.</p>
+          <p v-else>No upcoming seminar has been announced.</p>
         </aside>
       </div>
 
-      <div class="container colloquium-archive" aria-labelledby="colloquium-archive-title">
-        <p class="eyebrow">Past seminars</p>
-        <h2 id="colloquium-archive-title">Programme archive</h2>
+      <section v-for="section in sections" :key="section.id" class="container colloquium-archive" :aria-labelledby="section.id">
+        <h2 :id="section.id">{{ section.title }}</h2>
         <div class="colloquium-seminars">
-          <article v-for="seminar in youngScientistColloquium.seminars" :key="seminar.datetime">
-            <p class="eyebrow">{{ seminar.sequence }}</p>
-            <time :datetime="seminar.datetime">{{ seminar.date }}</time>
+          <article v-for="seminar in section.seminars" :key="seminar.slug">
+            <p v-if="seminar.seminarLabel" class="eyebrow">{{ seminar.seminarLabel }}</p>
+            <p v-if="seminar.status === 'postponed' || seminar.status === 'cancelled'" class="status-chip">{{ seminar.status }}</p>
+            <time :datetime="seminar.startAt">{{ formatEventDate(seminar.startAt, seminar.timezone) }} {{ seminar.timezone === 'Asia/Kolkata' ? 'IST' : seminar.timezone }}</time>
             <h3>{{ seminar.title }}</h3>
-            <p><strong>{{ seminar.speaker }}</strong><br>{{ seminar.affiliation }}</p>
-            <a class="text-link" :href="seminar.poster" target="_blank">View seminar poster <span aria-hidden="true">↗</span></a>
+            <p v-if="seminar.speaker || seminar.speakerAffiliation">
+              <strong v-if="seminar.speaker">{{ seminar.speaker }}</strong><br v-if="seminar.speaker && seminar.speakerAffiliation">{{ seminar.speakerAffiliation }}
+            </p>
+            <div class="colloquium-actions">
+              <NuxtLink v-if="response?.meta.source === 'd1'" class="text-link" :to="`/events/${seminar.slug}`">Event details <span aria-hidden="true">→</span></NuxtLink>
+              <a v-if="seminar.posterPdfKey" class="text-link" :href="publicMediaUrl(seminar.posterPdfKey) ?? undefined" target="_blank" rel="noopener noreferrer">View seminar PDF <span aria-hidden="true">↗</span></a>
+            </div>
           </article>
         </div>
-      </div>
+      </section>
     </div>
   </div>
 </template>

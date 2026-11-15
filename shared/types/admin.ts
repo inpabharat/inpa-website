@@ -1,4 +1,4 @@
-import type { EventStatus, LinkedContentType, NewsStatus } from './content'
+import type { EventStatus, EventType, LinkedContentType, NewsStatus } from './content'
 
 export interface AdminNewsInput {
   slug: string
@@ -17,6 +17,11 @@ export interface AdminNewsInput {
 }
 
 export interface AdminEventInput {
+  eventType: EventType
+  speaker: string | null
+  speakerAffiliation: string | null
+  seminarLabel: string | null
+  posterPdfKey: string | null
   slug: string
   title: string
   summary: string

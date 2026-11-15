@@ -51,6 +51,52 @@ try {
   await request('/api/admin/research', 'POST', r, 403, { Origin: 'https://other.invalid' })
   await request('/api/admin/publications', 'POST', issue, 409)
   console.log('PASS: draft privacy, validation, media upload, reference protection, replacement PDF, publish/read, metadata privacy, future dates, archive, duplicate prevention and cross-origin rejection')
+
+  const { data: existingProgramme } = await request('/api/public/colloquium')
+  for (const slug of ['inpa-colloquium-01-subhendu-rajbanshi', 'inpa-colloquium-02-neelam-upadhyay']) {
+    assert.ok(existingProgramme.archive.some(item => item.slug === slug && item.posterPdfKey.endsWith('.pdf')))
+    assert.ok((await request('/api/admin/content')).data.events.some(item => item.slug === slug))
+  }
+
+  const colloquium = {
+    eventType: 'colloquium', slug: `local-colloquium-${stamp}`, title: 'Local colloquium fixture',
+    summary: 'LOCAL TEST ONLY', body: 'Local seminar for testing the publication flow.',
+    startAt: new Date(stamp - 120_000).toISOString(), endAt: new Date(stamp + 3_600_000).toISOString(),
+    timezone: 'Asia/Kolkata', isOnline: true, isFeatured: false, status: 'draft',
+    speaker: 'Local test speaker', speakerAffiliation: 'Local test affiliation', seminarLabel: 'Test seminar',
+    posterPdfKey: pdf.key,
+  }
+  await request('/api/admin/events', 'POST', { ...colloquium, posterPdfKey: '/other.pdf' }, 422)
+  const seminar = (await request('/api/admin/events', 'POST', colloquium)).data
+  created.push(['events', seminar.id])
+  const { data: draftProgramme } = await request('/api/public/colloquium')
+  assert.ok(![...draftProgramme.upcoming, ...draftProgramme.archive].some(item => item.slug === seminar.slug))
+  assert.ok((await request('/api/admin/media')).data.find(item => item.key === pdf.key).usages.some(item => item.id === seminar.id))
+  await request(`/api/admin/media?key=${encodeURIComponent(pdf.key)}`, 'DELETE', null, 409)
+
+  const eventPath = `/api/admin/events/${seminar.id}`
+  await request(eventPath, 'PUT', { ...colloquium, status: 'published' })
+  assert.ok((await request('/api/public/events')).data.some(item => item.slug === seminar.slug))
+  const { data: liveProgramme } = await request('/api/public/colloquium')
+  const liveSeminar = liveProgramme.upcoming.find(item => item.slug === seminar.slug)
+  assert.equal(liveSeminar?.speaker, colloquium.speaker)
+  assert.equal(liveSeminar?.posterPdfKey, pdf.key)
+
+  await request(eventPath, 'PUT', { ...colloquium, status: 'published', endAt: new Date(stamp - 60_000).toISOString() })
+  const { data: pastProgramme } = await request('/api/public/colloquium')
+  assert.ok(!pastProgramme.upcoming.some(item => item.slug === seminar.slug))
+  assert.equal(pastProgramme.archive.find(item => item.slug === seminar.slug)?.posterPdfKey, pdf.key)
+  assert.ok(!(await request('/api/public/events')).data.some(item => item.slug === seminar.slug))
+  assert.ok((await request('/api/public/events/archive')).data.some(item => item.slug === seminar.slug))
+  const programmeHtml = await (await fetch(`${base}/activities/young-scientist-colloquium`)).text()
+  assert.ok(programmeHtml.includes(`href="/media/${pdf.key}"`))
+  const eventHtml = await (await fetch(`${base}/events/${seminar.slug}`)).text()
+  assert.ok(eventHtml.includes(`href="/media/${pdf.key}"`))
+
+  await request(eventPath, 'PUT', { ...colloquium, eventType: 'general', status: 'published' })
+  const { data: generalProgramme } = await request('/api/public/colloquium')
+  assert.ok(![...generalProgramme.upcoming, ...generalProgramme.archive].some(item => item.slug === seminar.slug))
+  console.log('PASS: colloquium migration, automatic listing and archive, PDF links and reference protection')
 } finally {
   for (const [kind, id] of created.reverse()) await request(`/api/admin/${kind}/${id}`, 'DELETE')
   for (const key of media) await request(`/api/admin/media?key=${encodeURIComponent(key)}`, 'DELETE')

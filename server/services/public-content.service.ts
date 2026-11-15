@@ -1,7 +1,9 @@
 import type { H3Event } from 'h3'
+import { youngScientistColloquium } from '../../content/site/activities'
 import type {
   ApiResponse,
   PublicCarouselItem,
+  PublicColloquiumProgramme,
   PublicEventItem,
   PublicHomeData,
   PublicNewsItem,
@@ -73,6 +75,34 @@ export async function getPastPublicEvents(event: H3Event): Promise<ApiResponse<P
   if (!repository) return response([], 'unavailable')
   const data = await repository.listPastEvents(new Date().toISOString(), 50)
   return response(data as PublicEventItem[], 'd1')
+}
+
+export async function getPublicColloquium(event: H3Event): Promise<ApiResponse<PublicColloquiumProgramme>> {
+  const repository = repositoryFor(event)
+  if (!repository) {
+    return response({
+      upcoming: [],
+      archive: youngScientistColloquium.seminars.map(seminar => ({
+        slug: seminar.slug,
+        title: seminar.title,
+        startAt: seminar.datetime,
+        timezone: 'Asia/Kolkata',
+        speaker: seminar.speaker,
+        speakerAffiliation: seminar.affiliation,
+        seminarLabel: seminar.sequence,
+        posterPdfKey: seminar.poster,
+        status: 'completed',
+      })),
+    }, 'development-placeholder')
+  }
+
+  const now = new Date().toISOString()
+  const programme: PublicColloquiumProgramme = { upcoming: [], archive: [] }
+  for (const { endAt, ...seminar } of await repository.listColloquiumEvents(now)) {
+    const hasPassed = seminar.status === 'completed' || (endAt ?? seminar.startAt) < now
+    programme[hasPassed ? 'archive' : 'upcoming'].push(seminar)
+  }
+  return response(programme, 'd1')
 }
 
 export async function getPublicCarousel(event: H3Event): Promise<ApiResponse<PublicCarouselItem[]>> {

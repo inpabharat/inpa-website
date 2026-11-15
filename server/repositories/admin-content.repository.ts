@@ -1,4 +1,4 @@
-import { asc, count, desc, eq } from 'drizzle-orm'
+import { asc, count, desc, eq, or } from 'drizzle-orm'
 import type { AdminCarouselInput, AdminContentSnapshot, AdminEventInput, AdminNewsInput } from '../../shared/types/admin'
 import type { InpaDatabase } from '../database/client'
 import { carouselItems, contentRevisions, events, news } from '../database/schema'
@@ -171,7 +171,7 @@ export class AdminContentRepository {
   async mediaReferenceCount(key: string): Promise<number> {
     const [newsCount, eventCount, carouselCount] = await Promise.all([
       this.database.select({ value: count() }).from(news).where(eq(news.coverImageKey, key)),
-      this.database.select({ value: count() }).from(events).where(eq(events.coverImageKey, key)),
+      this.database.select({ value: count() }).from(events).where(or(eq(events.coverImageKey, key), eq(events.posterPdfKey, key))),
       this.database.select({ value: count() }).from(carouselItems).where(eq(carouselItems.imageKey, key)),
     ])
     return (newsCount[0]?.value ?? 0) + (eventCount[0]?.value ?? 0) + (carouselCount[0]?.value ?? 0)

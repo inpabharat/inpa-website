@@ -1,5 +1,5 @@
 import type { AdminCarouselInput, AdminEventInput, AdminNewsInput } from '../types/admin'
-import { eventStatuses, linkedContentTypes, newsStatuses } from '../types/content'
+import { eventStatuses, eventTypes, linkedContentTypes, newsStatuses } from '../types/content'
 
 export class ContentValidationError extends Error {
   constructor(readonly issues: string[]) {
@@ -149,6 +149,8 @@ export function parseNewsInput(input: unknown): AdminNewsInput {
 
 export function parseEventInput(input: unknown): AdminEventInput {
   const record = recordOf(input)
+  const eventType = record.eventType === undefined ? 'general' : enumValue(record, 'eventType', 'Event type', eventTypes)
+  const colloquium = eventType === 'colloquium'
   const startAt = isoDate(record, 'startAt', 'Start date', true) as string
   const endAt = isoDate(record, 'endAt', 'End date')
   validateOrder(startAt, endAt, 'End date must be after the start date.')
@@ -167,6 +169,11 @@ export function parseEventInput(input: unknown): AdminEventInput {
   }
 
   return {
+    eventType,
+    speaker: colloquium ? optionalText(record, 'speaker', 'Speaker', 180) : null,
+    speakerAffiliation: colloquium ? optionalText(record, 'speakerAffiliation', 'Speaker affiliation', 200) : null,
+    seminarLabel: colloquium ? optionalText(record, 'seminarLabel', 'Seminar label', 80) : null,
+    posterPdfKey: colloquium ? optionalText(record, 'posterPdfKey', 'Seminar PDF', 500) : null,
     slug: slugValue(record),
     title: requiredText(record, 'title', 'Title', 180),
     summary: requiredText(record, 'summary', 'Summary', 500),

@@ -20,6 +20,10 @@ The bypass works only with the local environment marker. Preview and production 
 - Deletion requires confirmation and retains an audit revision, but is not a substitute for D1 backups.
 - Carousel items require an approved image and alternative text. Their start/end times and sort order control visibility and order.
 
+## Young Scientist Colloquium
+
+Under **Events → Add event**, choose **Young Scientist Colloquium** as the event type. Enter the seminar details and optionally select or upload a seminar PDF. Publishing the event adds it to the Events and Colloquium pages. It moves to the programme archive after its end time, or after its start time if the end time is blank. The PDF remains linked in the archive. Edit the same record under Events to update both pages.
+
 ## Media
 
 **Images & PDFs** is the reusable media library. Upload JPEG, PNG, WebP or PDF files up to 8 MB. The library shows filenames, previews, descriptions and which saved content uses a file. Uploading alone does not add a file to a page. Choose the image or PDF inside the relevant content form, then publish that item. Images require a description for visitors who cannot see them. Direct file links are public; do not upload confidential files.

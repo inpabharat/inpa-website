@@ -1,6 +1,6 @@
 export interface ColloquiumSeminar {
+  slug: string
   sequence: string
-  date: string
   datetime: string
   speaker: string
   affiliation: string
@@ -19,8 +19,8 @@ export const youngScientistColloquium = {
   programmePoster: '/documents/inpa-young-scientist-colloquium.pdf',
   seminars: [
     {
+      slug: 'inpa-colloquium-01-subhendu-rajbanshi',
       sequence: 'Inaugural seminar',
-      date: '26 June 2026 · 5:00 PM IST',
       datetime: '2026-06-26T17:00:00+05:30',
       speaker: 'Dr. Subhendu Rajbanshi',
       affiliation: 'Presidency University, Kolkata',
@@ -28,8 +28,8 @@ export const youngScientistColloquium = {
       poster: '/documents/inpa-colloquium-01-subhendu-rajbanshi.pdf',
     },
     {
+      slug: 'inpa-colloquium-02-neelam-upadhyay',
       sequence: 'Second seminar',
-      date: '25 July 2026 · 5:00 PM IST',
       datetime: '2026-07-25T17:00:00+05:30',
       speaker: 'Dr. Neelam J. Upadhyay',
       affiliation: 'Amity University Maharashtra',

@@ -1,6 +1,6 @@
 import { sql } from 'drizzle-orm'
 import { check, index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core'
-import { eventStatuses, linkedContentTypes, newsStatuses } from '../../shared/types/content'
+import { eventStatuses, eventTypes, linkedContentTypes, newsStatuses } from '../../shared/types/content'
 import { scienceStatuses } from '../../shared/types/science'
 
 const auditColumns = {
@@ -45,6 +45,11 @@ export const events = sqliteTable(
   'events',
   {
     id: text('id').primaryKey(),
+    eventType: text('event_type', { enum: eventTypes }).notNull().default('general'),
+    speaker: text('speaker'),
+    speakerAffiliation: text('speaker_affiliation'),
+    seminarLabel: text('seminar_label'),
+    posterPdfKey: text('poster_pdf_key'),
     slug: text('slug').notNull(),
     title: text('title').notNull(),
     summary: text('summary').notNull(),
@@ -66,6 +71,7 @@ export const events = sqliteTable(
     uniqueIndex('uq_events_slug').on(table.slug),
     index('idx_events_upcoming').on(table.status, table.startAt),
     index('idx_events_publication').on(table.status, table.publishAt),
+    index('idx_events_type_start').on(table.eventType, table.startAt),
     check(
       'ck_events_status',
       sql`${table.status} in ('draft','scheduled','published','postponed','cancelled','completed','archived')`,

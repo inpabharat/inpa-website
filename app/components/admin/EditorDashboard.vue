@@ -27,7 +27,7 @@ const editorTimeZone = ref('your computer’s local timezone')
 const panels: { id: Panel, label: string, description: string }[] = [
   { id: 'overview', label: 'Overview', description: '' },
   { id: 'news', label: 'News', description: 'Post an announcement on the homepage and News page.' },
-  { id: 'events', label: 'Events', description: 'Add a conference, lecture or school to Upcoming Events.' },
+  { id: 'events', label: 'Events', description: 'Publish events and Young Scientist Colloquium seminars.' },
   { id: 'publications', label: 'Nuclear Horizons', description: 'Upload an issue PDF and cover, add its editorial and publish it in the archive.' },
   { id: 'research', label: 'Featured research', description: 'Publish a research story and select it for the homepage spotlight.' },
   { id: 'carousel', label: 'Homepage slides', description: 'Add a featured image and link to the homepage banner.' },
@@ -40,6 +40,7 @@ const blankNews = (): AdminNewsInput => ({
   expiresAt: null, externalUrl: null,
 })
 const blankEvent = (): AdminEventInput => ({
+  eventType: 'general', speaker: null, speakerAffiliation: null, seminarLabel: null, posterPdfKey: null,
   slug: '', title: '', summary: '', body: '', startAt: '', endAt: null, timezone: 'Asia/Kolkata',
   locationName: null, isOnline: false, externalUrl: null, coverImageKey: null, coverImageAlt: null,
   status: 'draft', isFeatured: false, publishAt: null,
@@ -263,8 +264,22 @@ onBeforeRouteLeave(() => !dirty.value || window.confirm('Discard the changes you
       <p>Published upcoming events appear on the homepage. Past events remain available in the event archive. Start and end fields use your computer’s local time (<strong>{{ editorTimeZone }}</strong>); the separate event timezone tells visitors how to interpret the published time.</p>
       <div v-if="formOpen" class="editor-workspace">
         <form class="editor-form" @submit.prevent="save('events', normaliseEvent())">
+          <label>Event type
+            <select v-model="eventForm.eventType">
+              <option value="general">General event</option>
+              <option value="colloquium">Young Scientist Colloquium</option>
+            </select>
+          </label>
+          <p v-if="eventForm.eventType === 'colloquium'" class="meta">Published seminars also appear on the Young Scientist Colloquium page and move to its archive after the end time. If you leave the end time blank, the start time is used.</p>
           <label>Title <input v-model="eventForm.title" required maxlength="180" @blur="fillSlug('events')"></label>
           <details><summary>Page address (generated from the title)</summary><label>Address ending <input v-model="eventForm.slug" required maxlength="120" pattern="[a-z0-9]+(?:-[a-z0-9]+)*"></label></details>
+          <template v-if="eventForm.eventType === 'colloquium'">
+            <div class="editor-form__row">
+              <label>Speaker <input v-model="eventForm.speaker" maxlength="180"></label>
+              <label>Speaker affiliation <input v-model="eventForm.speakerAffiliation" maxlength="200"></label>
+            </div>
+            <label>Seminar label (optional) <input v-model="eventForm.seminarLabel" maxlength="80" placeholder="Third seminar"></label>
+          </template>
           <label>Summary <textarea v-model="eventForm.summary" required maxlength="500" rows="3" /></label>
           <label>Body <textarea v-model="eventForm.body" required maxlength="50000" rows="8" /></label>
           <div class="editor-form__row"><label>Starts <input v-model="eventForm.startAt" type="datetime-local" required></label><label>Ends <input v-model="eventForm.endAt" type="datetime-local"></label></div>
@@ -273,6 +288,7 @@ onBeforeRouteLeave(() => !dirty.value || window.confirm('Discard the changes you
           <label>Location <input v-model="eventForm.locationName" maxlength="180"></label>
           <label>External URL <input v-model="eventForm.externalUrl" maxlength="500" placeholder="https://… or /route"></label>
           <AdminMediaField v-model="eventForm.coverImageKey" v-model:alt="eventForm.coverImageAlt" label="Event image or poster" accept="image" />
+          <AdminMediaField v-if="eventForm.eventType === 'colloquium'" v-model="eventForm.posterPdfKey" label="Seminar PDF (optional)" accept="pdf" />
           <div class="editor-check-row"><label class="editor-check"><input v-model="eventForm.isOnline" type="checkbox"> Online event</label><label class="editor-check"><input v-model="eventForm.isFeatured" type="checkbox"> Feature this event</label></div>
           <button class="button button--gold" type="submit" :disabled="busy">{{ busy ? 'Saving…' : eventForm.status === 'published' ? 'Publish event' : eventForm.status === 'scheduled' ? 'Schedule event' : 'Save ' + eventForm.status }}</button>
         </form>

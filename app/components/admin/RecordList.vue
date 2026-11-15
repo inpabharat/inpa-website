@@ -28,7 +28,10 @@ function scheduleFor(item: RecordItem): string | null {
         <thead><tr><th scope="col">Title</th><th scope="col">State</th><th scope="col">Added by</th><th scope="col">Updated</th><th scope="col">Actions</th></tr></thead>
         <tbody>
           <tr v-for="item in items" :key="item.id">
-            <th scope="row">{{ item.title }}</th>
+            <th scope="row">
+              {{ item.title }}
+              <small v-if="'eventType' in item && item.eventType === 'colloquium'" class="editor-state-detail">Young Scientist Colloquium</small>
+            </th>
             <td><strong>{{ stateFor(item).label }}</strong><small v-if="stateFor(item).detail" class="editor-state-detail">{{ stateFor(item).detail }}</small><small v-if="scheduleFor(item)" class="editor-state-detail">{{ scheduleFor(item) }}</small></td>
             <td>{{ item.createdBy }}</td>
             <td><span :title="`Last updated by ${item.updatedBy}`">{{ new Date(item.updatedAt).toLocaleString('en-IN') }}</span></td>

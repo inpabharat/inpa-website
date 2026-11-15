@@ -2,8 +2,8 @@ import type { H3Event } from 'h3'
 import { createError, getRouterParam, setResponseHeader } from 'h3'
 import { parsePublicationInput, parseResearchInput, ScienceValidationError } from '../../shared/utils/science-validation'
 import { ScienceRepository, staticPublicationMedia } from '../repositories/science.repository'
-import { getR2Binding } from '../database/bindings'
 import { adminResponse, assertSameOrigin, prepareAdminResponse, readAdminJson, requireAdminDatabase, requireAdminIdentity, validationError } from '../utils/admin-api'
+import { requireUploadedMedia } from '../utils/uploaded-media'
 
 type Kind = 'publications' | 'research'
 function repository(event: H3Event) { return new ScienceRepository(requireAdminDatabase(event)) }
@@ -11,9 +11,7 @@ async function checkMedia(event: H3Event, key: string | null, type: 'image' | 'p
   if (!key) return
   const known = staticPublicationMedia.get(key as Parameters<typeof staticPublicationMedia.get>[0])
   if (known && (type === 'pdf' ? known === 'application/pdf' : known.startsWith('image/'))) return
-  if (!/^uploads\/\d{4}\/\d{2}\/[0-9a-f-]+\.(jpg|png|webp|pdf)$/i.test(key)) throw createError({ statusCode: 422, statusMessage: 'Choose a file from the media library.' })
-  const object = await getR2Binding(event)?.head(key)
-  if (!object || !(type === 'pdf' ? object.httpMetadata?.contentType === 'application/pdf' : object.httpMetadata?.contentType?.startsWith('image/'))) throw createError({ statusCode: 422, statusMessage: `The selected ${type} is unavailable. Please choose another file.` })
+  await requireUploadedMedia(event, key, type)
 }
 export async function adminScience(event: H3Event, kind: Kind, method: 'GET' | 'POST' | 'PUT' | 'DELETE') {
   prepareAdminResponse(event)
