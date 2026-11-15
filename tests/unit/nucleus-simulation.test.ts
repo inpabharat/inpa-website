@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
   aimAt,
-  calculateAbsorptionVisualState,
   calculateCentralForce,
   calculateCoulombRepulsion,
   calculateMeanFieldRestoringAcceleration,
@@ -61,16 +60,6 @@ describe('qualitative nucleus simulation helpers', () => {
     expect(isProjectileAbsorbed(settledProjectile, { x: 0, y: 0 }, 80, 50, 0.65)).toBe(true)
     expect(isProjectileAbsorbed({ ...settledProjectile, vx: 120 }, { x: 0, y: 0 }, 80, 50, 0.65)).toBe(false)
     expect(isProjectileAbsorbed({ ...settledProjectile, hasImpacted: false }, { x: 0, y: 0 }, 80, 50, 0.65)).toBe(false)
-  })
-
-  it('eases an absorbed projectile out over time', () => {
-    expect(calculateAbsorptionVisualState(0, 1.2)).toEqual({ opacity: 1, scale: 1 })
-
-    const halfway = calculateAbsorptionVisualState(0.6, 1.2)
-    expect(halfway.opacity).toBeCloseTo(0.5)
-    expect(halfway.scale).toBeGreaterThan(0.55)
-
-    expect(calculateAbsorptionVisualState(1.2, 1.2)).toEqual({ opacity: 0, scale: 0.55 })
   })
 
   it('aims a projectile at the requested speed', () => {

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
   aimAt,
-  calculateAbsorptionVisualState,
   calculateCentralForce,
   calculateCoulombRepulsion,
   calculateMeanFieldRestoringAcceleration,
@@ -12,24 +11,35 @@ import {
 } from '~~/shared/utils/nucleus-simulation'
 
 type NucleonType = 'proton' | 'neutron'
+type ParticlePhase = 'bound' | 'incoming' | 'emitted'
+
+interface TrailPoint {
+  x: number
+  y: number
+  time: number
+}
 
 interface SimulationParticle extends MotionBody {
   id: number
   type: NucleonType
-  isProjectile: boolean
+  phase: ParticlePhase
   hasImpacted: boolean
   timeSinceImpact: number
-  absorptionAge: number | null
-  absorptionDuration: number
+  trail: TrailPoint[] | null
 }
 
-interface ImpactRipple {
+interface NucleusPulse {
   x: number
   y: number
+  struckParticleId: number | null
   age: number
   duration: number
   energy: number
 }
+
+type TemporaryAbsorption =
+  | { stage: 'held', type: NucleonType, releaseTime: number }
+  | { stage: 'released', retryTime: number }
 
 const canvas = ref<HTMLCanvasElement | null>(null)
 const props = withDefaults(defineProps<{ paused?: boolean }>(), { paused: false })
@@ -40,19 +50,27 @@ let resizeObserver: ResizeObserver | undefined
 let intersectionObserver: IntersectionObserver | undefined
 let reducedMotionQuery: MediaQueryList | undefined
 let particles: SimulationParticle[] = []
-let ripples: ImpactRipple[] = []
+let pulses: NucleusPulse[] = []
+let temporaryAbsorption: TemporaryAbsorption | null = null
+let simulationTime = 0
 let width = 0
 let height = 0
 let nucleusX = 0
 let nucleusY = 0
 let nucleusRadius = 0
 let particleRadius = 9
+let clusterRadius = 0
 let nextParticleId = 0
 let nextProjectileIn = 1.25
 let lastTimestamp = 0
 let isVisible = true
 let prefersReducedMotion = false
 const maximumActiveProjectiles = 3
+const trailDuration = 0.42
+const trailDotInterval = 0.065
+const shortRangeRadiusMultiplier = 5.4
+const fieldRingPeriod = 3.4
+const fieldRingCount = 2
 
 function randomBetween(minimum: number, maximum: number): number {
   return minimum + Math.random() * (maximum - minimum)
@@ -71,9 +89,20 @@ function configureGeometry(): void {
   particleRadius = Math.max(6.5, Math.min(10.5, nucleusRadius / 14.5))
 }
 
+function measureClusterRadius(): number {
+  let radius = 0
+  for (const particle of particles) {
+    if (particle.phase !== 'bound') continue
+    radius = Math.max(radius, Math.hypot(particle.x - nucleusX, particle.y - nucleusY))
+  }
+  return radius
+}
+
 function seedNucleus(): void {
   particles = []
-  ripples = []
+  pulses = []
+  temporaryAbsorption = null
+  simulationTime = 0
   nextParticleId = 0
   const count = width < 720 ? 20 : 28
   const goldenAngle = Math.PI * (3 - Math.sqrt(5))
@@ -90,22 +119,22 @@ function seedNucleus(): void {
       vy: randomBetween(-3, 3),
       radius: particleRadius,
       mass: 1,
-      isProjectile: false,
+      phase: 'bound',
       hasImpacted: false,
       timeSinceImpact: 0,
-      absorptionAge: null,
-      absorptionDuration: 0,
+      trail: null,
     })
     nextParticleId += 1
   }
   resolveRigidCollisions(particles, 24, 0.35)
+  clusterRadius = measureClusterRadius()
   nextProjectileIn = prefersReducedMotion ? Number.POSITIVE_INFINITY : 0.85
 }
 
 function spawnProjectile(): void {
-  const activeProjectiles = particles.filter(
-    particle => particle.isProjectile && particle.absorptionAge === null,
-  ).length
+  // A particle held by the nucleus still occupies a slot until emission.
+  const activeProjectiles = particles.filter(particle => particle.phase !== 'bound').length
+    + Number(temporaryAbsorption?.stage === 'held')
   if (activeProjectiles >= maximumActiveProjectiles) {
     nextProjectileIn = 0.65
     return
@@ -132,11 +161,10 @@ function spawnProjectile(): void {
     vy: velocity.vy,
     radius: particleRadius * 0.78,
     mass: 0.9,
-    isProjectile: true,
+    phase: 'incoming',
     hasImpacted: false,
     timeSinceImpact: 0,
-    absorptionAge: null,
-    absorptionDuration: 0,
+    trail: [{ ...start, time: simulationTime }],
   })
   nextParticleId += 1
   nextProjectileIn = randomBetween(width < 720 ? 1.8 : 1.25, width < 720 ? 3 : 2.35)
@@ -148,16 +176,17 @@ function registerImpact(projectile: SimulationParticle, struckParticle: Simulati
   projectile.timeSinceImpact = 0
   const speed = Math.hypot(projectile.vx, projectile.vy)
   const energy = Math.min(1, speed / 340)
-  ripples.push({
+  pulses.push({
     x: struckParticle.x,
     y: struckParticle.y,
+    struckParticleId: struckParticle.id,
     age: 0,
-    duration: 1.1,
+    duration: 0.52,
     energy,
   })
 
   for (const particle of particles) {
-    if (particle.isProjectile) continue
+    if (particle.phase !== 'bound') continue
     const dx = particle.x - struckParticle.x
     const dy = particle.y - struckParticle.y
     const distance = Math.hypot(dx, dy) || 1
@@ -169,10 +198,10 @@ function registerImpact(projectile: SimulationParticle, struckParticle: Simulati
 
 function resolveParticleContacts(): void {
   for (const projectile of particles) {
-    if (!projectile.isProjectile || projectile.hasImpacted || projectile.absorptionAge !== null) continue
+    if (projectile.phase !== 'incoming' || projectile.hasImpacted) continue
 
     for (const target of particles) {
-      if (target.isProjectile) continue
+      if (target.phase !== 'bound') continue
       const separation = Math.hypot(target.x - projectile.x, target.y - projectile.y)
       if (separation >= target.radius + projectile.radius) continue
 
@@ -184,16 +213,65 @@ function resolveParticleContacts(): void {
   // Several passes are needed because separating one contact can compress a
   // neighbouring pair in a dense cluster. The final pass happens immediately
   // before drawing, so the visible discs never retain an overlap for a frame.
-  resolveRigidCollisions(
-    particles.filter(particle => particle.absorptionAge === null),
-    16,
-  )
+  resolveRigidCollisions(particles, 16)
+}
+
+function holdProjectile(particle: SimulationParticle): void {
+  const duration = randomBetween(0.9, 1.3)
+  temporaryAbsorption = { stage: 'held', type: particle.type, releaseTime: simulationTime + duration }
+  particle.phase = 'bound'
+  particle.vx *= 0.35
+  particle.vy *= 0.35
+  particle.radius = particleRadius
+  particle.mass = 1
+  resolveRigidCollisions(particles, 16)
+  pulses.push({
+    x: particle.x,
+    y: particle.y,
+    struckParticleId: null,
+    age: 0,
+    duration,
+    energy: 0.62,
+  })
+}
+
+function launchEjectedParticle(particle: SimulationParticle, vx: number, vy: number): void {
+  particle.phase = 'emitted'
+  particle.hasImpacted = true
+  particle.timeSinceImpact = 0
+  particle.vx = vx
+  particle.vy = vy
+  // Allow time to cross the canvas before recovering a stalled ejection.
+  const crossingTime = Math.hypot(width, height) / Math.hypot(vx, vy)
+  temporaryAbsorption = { stage: 'released', retryTime: simulationTime + crossingTime * 1.6 + 1 }
+}
+
+function releaseNucleon(type: NucleonType): void {
+  // Aim towards the open part of the canvas and emit from that side of the cluster.
+  const angle = Math.PI + randomBetween(-1.1, 1.1)
+  const directionX = Math.cos(angle)
+  const directionY = Math.sin(angle)
+  let outgoing: SimulationParticle | undefined
+  let furthestProjection = Number.NEGATIVE_INFINITY
+  for (const particle of particles) {
+    if (particle.phase !== 'bound' || particle.type !== type) continue
+    const projection = particle.x * directionX + particle.y * directionY
+    if (projection <= furthestProjection) continue
+    outgoing = particle
+    furthestProjection = projection
+  }
+  if (!outgoing) return
+
+  const speed = randomBetween(190, 265)
+  outgoing.trail = [{ x: outgoing.x, y: outgoing.y, time: simulationTime }]
+  launchEjectedParticle(outgoing, directionX * speed, directionY * speed)
 }
 
 function updateSimulation(deltaTime: number): void {
+  simulationTime += deltaTime
   resolveParticleContacts()
   const acceleration = particles.map(() => ({ x: 0, y: 0 }))
-  const interactionRange = particleRadius * 5.4
+  const interactionRange = particleRadius * shortRangeRadiusMultiplier
   const coreRadius = particleRadius * 2.05
   const coulombSofteningRadius = particleRadius * 1.25
   const coulombStrength = particleRadius * particleRadius * 115
@@ -207,7 +285,6 @@ function updateSimulation(deltaTime: number): void {
       const second = particles[secondIndex]
       const secondAcceleration = acceleration[secondIndex]
       if (!second || !secondAcceleration) continue
-      if (first.absorptionAge !== null || second.absorptionAge !== null) continue
 
       const dx = second.x - first.x
       const dy = second.y - first.y
@@ -235,18 +312,8 @@ function updateSimulation(deltaTime: number): void {
     const particleAcceleration = acceleration[index]
     if (!particle || !particleAcceleration) continue
 
-    if (particle.absorptionAge !== null) {
-      particle.absorptionAge += deltaTime
-      const settlingDamping = Math.pow(0.9, deltaTime * 60)
-      particle.vx *= settlingDamping
-      particle.vy *= settlingDamping
-      particle.x += particle.vx * deltaTime + (nucleusX - particle.x) * deltaTime * 0.28
-      particle.y += particle.vy * deltaTime + (nucleusY - particle.y) * deltaTime * 0.28
-      continue
-    }
-
-    if (particle.hasImpacted) particle.timeSinceImpact += deltaTime
-    if (!particle.isProjectile) {
+    if (particle.phase !== 'bound' && particle.hasImpacted) particle.timeSinceImpact += deltaTime
+    if (particle.phase === 'bound') {
       const dx = particle.x - nucleusX
       const dy = particle.y - nucleusY
       const distance = Math.hypot(dx, dy) || 1
@@ -266,7 +333,7 @@ function updateSimulation(deltaTime: number): void {
 
     particle.vx += particleAcceleration.x * deltaTime
     particle.vy += particleAcceleration.y * deltaTime
-    const damping = Math.pow(particle.isProjectile ? 0.999 : 0.986, deltaTime * 60)
+    const damping = Math.pow(particle.phase === 'bound' ? 0.986 : 0.999, deltaTime * 60)
     particle.vx *= damping
     particle.vy *= damping
     particle.x += particle.vx * deltaTime
@@ -275,46 +342,56 @@ function updateSimulation(deltaTime: number): void {
 
   resolveParticleContacts()
 
+  const nucleusCentre = { x: nucleusX, y: nucleusY }
+  const captureRadius = nucleusRadius * 0.82
   particles = particles.filter((particle) => {
-    if (!particle.isProjectile) return true
-    if (particle.absorptionAge !== null) {
-      return particle.absorptionAge < particle.absorptionDuration
+    const trail = particle.trail
+    if (!trail) return true
+    while (trail[0] && simulationTime - trail[0].time >= trailDuration) trail.shift()
+    if (particle.phase === 'bound') {
+      if (trail.length === 0) particle.trail = null
+      return true
     }
+    trail.push({ x: particle.x, y: particle.y, time: simulationTime })
 
-    const absorbed = isProjectileAbsorbed(
-      particle,
-      { x: nucleusX, y: nucleusY },
-      nucleusRadius * 0.82,
-      particleRadius * 5.5,
-      0.65,
-    )
-    if (absorbed) {
-      particle.absorptionAge = 0
-      particle.absorptionDuration = randomBetween(1.05, 1.55)
-      particle.vx *= 0.35
-      particle.vy *= 0.35
-      ripples.push({
-        x: particle.x,
-        y: particle.y,
-        age: 0,
-        duration: particle.absorptionDuration,
-        energy: 0.28,
-      })
+    const canSettle = temporaryAbsorption === null || particle.phase === 'emitted'
+    if (canSettle && isProjectileAbsorbed(particle, nucleusCentre, captureRadius, particleRadius * 5.5, 0.65)) {
+      holdProjectile(particle)
       return true
     }
 
-    // A scattered projectile has no arbitrary age limit. Keep it alive until
-    // the full disc and its visual trail have cleared whichever edge it exits.
-    if (isBodyOutsideViewport(particle, width, height, 90)) return false
-    return true
+    // Keep the particle until both the disc and its trail clear the canvas.
+    const onScreen = !isBodyOutsideViewport(particle, width, height, 90)
+      || trail.some(point => point.x >= -3 && point.x <= width + 3 && point.y >= -3 && point.y <= height + 3)
+    if (particle.phase === 'emitted') {
+      if (!onScreen) {
+        temporaryAbsorption = null
+      } else if (temporaryAbsorption?.stage === 'released' && simulationTime >= temporaryAbsorption.retryTime) {
+        if (Math.hypot(particle.x - nucleusX, particle.y - nucleusY) <= captureRadius) {
+          holdProjectile(particle)
+        } else {
+          // The particle is already outside the cluster. Resume its exit from
+          // its current position without creating or removing a nucleon.
+          const velocity = aimAt(nucleusCentre, particle, 230)
+          launchEjectedParticle(particle, velocity.vx, velocity.vy)
+        }
+      }
+    }
+    return onScreen
   })
+
+  if (temporaryAbsorption?.stage === 'held' && simulationTime >= temporaryAbsorption.releaseTime) {
+    releaseNucleon(temporaryAbsorption.type)
+  }
 
   nextProjectileIn -= deltaTime
   if (nextProjectileIn <= 0) spawnProjectile()
 
-  ripples = ripples
-    .map(ripple => ({ ...ripple, age: ripple.age + deltaTime }))
-    .filter(ripple => ripple.age < ripple.duration)
+  for (const pulse of pulses) pulse.age += deltaTime
+  pulses = pulses.filter(pulse => pulse.age < pulse.duration)
+
+  const radiusBlend = 1 - Math.exp(-deltaTime * 3)
+  clusterRadius += (measureClusterRadius() - clusterRadius) * radiusBlend
 
   if (particles.some(particle => !Number.isFinite(particle.x) || !Number.isFinite(particle.y))) {
     seedNucleus()
@@ -347,8 +424,29 @@ function drawConfinement(activeContext: CanvasRenderingContext2D): void {
   activeContext.setLineDash([])
 }
 
+function drawFieldRings(activeContext: CanvasRenderingContext2D): void {
+  const interactionRange = particleRadius * shortRangeRadiusMultiplier
+  const innerRadius = clusterRadius + particleRadius
+  const outerRadius = clusterRadius + interactionRange
+  activeContext.save()
+  activeContext.strokeStyle = '#a6ddf2'
+  activeContext.lineWidth = 1.3
+
+  for (let index = 0; index < fieldRingCount; index += 1) {
+    const progress = (simulationTime / fieldRingPeriod + index / fieldRingCount) % 1
+    const radius = outerRadius + (innerRadius - outerRadius) * progress
+    // These rings trace the reach of the short-range interaction. Their motion
+    // is illustrative, and the Coulomb term still acts beyond this region.
+    activeContext.globalAlpha = Math.sin(Math.PI * progress) * (0.18 + progress * 0.24)
+    activeContext.beginPath()
+    activeContext.arc(nucleusX, nucleusY, radius, 0, Math.PI * 2)
+    activeContext.stroke()
+  }
+  activeContext.restore()
+}
+
 function drawBonds(activeContext: CanvasRenderingContext2D): void {
-  const boundParticles = particles.filter(particle => !particle.isProjectile)
+  const boundParticles = particles.filter(particle => particle.phase === 'bound')
   for (let firstIndex = 0; firstIndex < boundParticles.length; firstIndex += 1) {
     const first = boundParticles[firstIndex]
     if (!first) continue
@@ -369,60 +467,86 @@ function drawBonds(activeContext: CanvasRenderingContext2D): void {
   }
 }
 
-function drawParticle(activeContext: CanvasRenderingContext2D, particle: SimulationParticle): void {
-  const colour = particle.type === 'proton' ? '#f0c75e' : '#79c7e6'
-  const absorptionVisual = particle.absorptionAge === null
-    ? { opacity: 1, scale: 1 }
-    : calculateAbsorptionVisualState(particle.absorptionAge, particle.absorptionDuration)
-  const displayRadius = particle.radius * absorptionVisual.scale
+function drawProjectileTrail(activeContext: CanvasRenderingContext2D, particle: SimulationParticle): void {
+  const trail = particle.trail
+  if (!trail || trail.length < 2) return
 
   activeContext.save()
-  activeContext.globalAlpha = absorptionVisual.opacity
+  activeContext.fillStyle = particle.type === 'proton' ? '#ffebad' : '#a6ddf2'
+  let sampleIndex = trail.length - 1
+  const firstTime = trail[0]!.time
+  const lastDot = Math.floor(trail[sampleIndex]!.time / trailDotInterval)
+  for (let dot = lastDot; dot * trailDotInterval >= firstTime; dot -= 1) {
+    const dotTime = dot * trailDotInterval
+    // Render at fixed simulation times, independent of the display refresh rate.
+    while (sampleIndex > 1 && trail[sampleIndex - 1]!.time > dotTime) sampleIndex -= 1
+    const previous = trail[sampleIndex - 1]!
+    const sample = trail[sampleIndex]!
+    if (sample.time === previous.time) continue
 
-  if (particle.isProjectile && particle.absorptionAge === null) {
-    const speed = Math.hypot(particle.vx, particle.vy) || 1
-    const trailLength = Math.min(72, speed * 0.18)
-    const gradient = activeContext.createLinearGradient(
-      particle.x - particle.vx / speed * trailLength,
-      particle.y - particle.vy / speed * trailLength,
-      particle.x,
-      particle.y,
-    )
-    gradient.addColorStop(0, 'rgba(230, 200, 121, 0)')
-    gradient.addColorStop(1, 'rgba(255, 239, 190, 0.92)')
-    activeContext.strokeStyle = gradient
-    activeContext.lineWidth = 2
+    const fraction = (dotTime - previous.time) / (sample.time - previous.time)
+    const x = previous.x + (sample.x - previous.x) * fraction
+    const y = previous.y + (sample.y - previous.y) * fraction
+    const remaining = 1 - (simulationTime - dotTime) / trailDuration
+    activeContext.globalAlpha = 0.82 * remaining ** 1.3
     activeContext.beginPath()
-    activeContext.moveTo(
-      particle.x - particle.vx / speed * trailLength,
-      particle.y - particle.vy / speed * trailLength,
-    )
-    activeContext.lineTo(particle.x, particle.y)
+    activeContext.arc(x, y, 1.65, 0, Math.PI * 2)
+    activeContext.fill()
+  }
+  activeContext.restore()
+}
+
+function drawNucleonPulse(activeContext: CanvasRenderingContext2D, particle: SimulationParticle): void {
+  for (const pulse of pulses) {
+    const isContact = pulse.struckParticleId !== null
+    const wasStruck = pulse.struckParticleId === particle.id
+    const distance = wasStruck ? 0 : Math.hypot(particle.x - pulse.x, particle.y - pulse.y)
+    const reach = particleRadius * (isContact ? 6 : 4)
+    if (distance >= reach) continue
+
+    // Delay the glow by distance so the disturbance reads as spreading from the hit.
+    const localAge = pulse.age - distance / (particleRadius * 24)
+    const duration = isContact ? 0.25 : pulse.duration * 0.8
+    if (localAge < 0 || localAge >= duration) continue
+
+    const progress = localAge / duration
+    const envelope = isContact ? (1 - progress) ** 2 : Math.sin(Math.PI * progress)
+    const strength = pulse.energy * envelope * (1 - distance / reach) * (wasStruck ? 1 : 0.7)
+    const colour = isContact ? '255, 235, 173' : '156, 214, 239'
+    activeContext.strokeStyle = `rgba(${colour}, ${strength})`
+    activeContext.lineWidth = wasStruck ? 2 : 1.1
+    activeContext.beginPath()
+    activeContext.arc(particle.x, particle.y, particle.radius + 2 + 2 * progress, 0, Math.PI * 2)
     activeContext.stroke()
   }
+}
+
+function drawParticle(activeContext: CanvasRenderingContext2D, particle: SimulationParticle): void {
+  const colour = particle.type === 'proton' ? '#f0c75e' : '#79c7e6'
+  activeContext.save()
 
   activeContext.shadowColor = colour
-  activeContext.shadowBlur = particle.isProjectile ? 9 : 2.5
+  activeContext.shadowBlur = particle.phase === 'bound' ? 2.5 : 9
   activeContext.fillStyle = colour
-  activeContext.globalAlpha = absorptionVisual.opacity * (particle.isProjectile ? 1 : 0.98)
+  activeContext.globalAlpha = particle.phase === 'bound' ? 0.98 : 1
   activeContext.beginPath()
-  activeContext.arc(particle.x, particle.y, displayRadius, 0, Math.PI * 2)
+  activeContext.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2)
   activeContext.fill()
   activeContext.shadowBlur = 0
-  activeContext.globalAlpha = absorptionVisual.opacity
+  activeContext.globalAlpha = 1
 
   activeContext.strokeStyle = 'rgba(4, 22, 38, 0.82)'
   activeContext.lineWidth = 1.35
   activeContext.beginPath()
-  activeContext.arc(particle.x, particle.y, displayRadius, 0, Math.PI * 2)
+  activeContext.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2)
   activeContext.stroke()
 
   activeContext.fillStyle = 'rgba(255, 255, 255, 0.46)'
   activeContext.beginPath()
   activeContext.arc(
-    particle.x - displayRadius * 0.24,
-    particle.y - displayRadius * 0.24,
-    displayRadius * 0.2,
+    particle.x - particle.radius * 0.24,
+    particle.y - particle.radius * 0.24,
+    particle.radius * 0.2,
     0,
     Math.PI * 2,
   )
@@ -430,23 +554,16 @@ function drawParticle(activeContext: CanvasRenderingContext2D, particle: Simulat
   activeContext.restore()
 }
 
-function drawRipples(activeContext: CanvasRenderingContext2D): void {
-  for (const ripple of ripples) {
-    const progress = ripple.age / ripple.duration
-    activeContext.strokeStyle = `rgba(230, 200, 121, ${(1 - progress) * 0.55 * ripple.energy})`
-    activeContext.lineWidth = 1.5
-    activeContext.beginPath()
-    activeContext.arc(ripple.x, ripple.y, particleRadius * 2 + nucleusRadius * 0.8 * progress, 0, Math.PI * 2)
-    activeContext.stroke()
-  }
-}
-
 function drawSimulation(): void {
   if (!context) return
   context.clearRect(0, 0, width, height)
   drawConfinement(context)
+  drawFieldRings(context)
   drawBonds(context)
-  drawRipples(context)
+  for (const particle of particles) drawProjectileTrail(context, particle)
+  for (const particle of particles) {
+    if (particle.phase === 'bound') drawNucleonPulse(context, particle)
+  }
   for (const particle of particles) drawParticle(context, particle)
 }
 

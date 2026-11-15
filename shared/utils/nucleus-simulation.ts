@@ -22,11 +22,6 @@ export interface ProjectileCaptureState {
   timeSinceImpact: number
 }
 
-export interface AbsorptionVisualState {
-  opacity: number
-  scale: number
-}
-
 export function calculateCentralForce(
   distance: number,
   coreRadius: number,
@@ -106,20 +101,6 @@ export function isProjectileAbsorbed(
   )
   const speed = Math.hypot(projectile.vx, projectile.vy)
   return distanceFromCentre <= captureRadius && speed <= maximumCaptureSpeed
-}
-
-export function calculateAbsorptionVisualState(
-  absorptionAge: number,
-  absorptionDuration: number,
-): AbsorptionVisualState {
-  if (absorptionDuration <= 0) return { opacity: 0, scale: 0.55 }
-
-  const progress = Math.min(1, Math.max(0, absorptionAge / absorptionDuration))
-  const easedProgress = progress * progress * (3 - 2 * progress)
-  return {
-    opacity: 1 - easedProgress,
-    scale: 1 - easedProgress * 0.45,
-  }
 }
 
 export function aimAt(start: Point, target: Point, speed: number): VelocityVector {
