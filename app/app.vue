@@ -10,6 +10,7 @@ useHead(() => {
 </script>
 
 <template>
+  <SiteLoadingIndicator />
   <NuxtLayout>
     <NuxtPage />
   </NuxtLayout>
