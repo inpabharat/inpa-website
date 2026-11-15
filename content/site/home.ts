@@ -32,7 +32,6 @@ export const heroContent = {
   title: 'Indian Nuclear Physics Association',
   tagline: 'Advancing Fundamental and Applied Nuclear Science for a Self-Reliant India',
   mission: 'Connecting People and Enabling Discovery',
-  source: 'Bringing together scientists, institutions, facilities and future generations to strengthen India\'s nuclear-physics ecosystem for growth and innovation.',
   focusAreas: [
     'Fundamental and applied nuclear science',
     'National scientific collaboration',
@@ -156,7 +155,6 @@ export const aboutContent = {
 } as const
 
 export const communityHighlights = {
-  introduction: 'Photographs from INPA activities and community occasions.',
   inauguration: {
     title: 'INPA inauguration and Nuclear Horizons launch',
     date: '21 April 2026',

@@ -60,8 +60,8 @@ function randomBetween(minimum: number, maximum: number): number {
 
 function configureGeometry(): void {
   const isNarrow = width < 720
-  nucleusX = width * (isNarrow ? 0.6 : 0.56)
-  nucleusY = height * (isNarrow ? 0.68 : 0.49)
+  nucleusX = width * (isNarrow ? 0.8 : 0.75)
+  nucleusY = height * (isNarrow ? 0.44 : 0.43)
   nucleusRadius = Math.min(
     isNarrow ? width * 0.34 : width * 0.145,
     height * (isNarrow ? 0.17 : 0.3),

@@ -34,61 +34,13 @@ const animationPaused = ref(false)
         </button>
       </div>
 
-      <aside class="hero__feature" :aria-label="carousel.length ? 'Featured updates' : 'INPA focus'">
-        <HomeHeroSlideshow v-if="carousel.length" :items="carousel" />
-        <div v-else class="hero__focus">
-          <ul class="hero__focus-list">
-            <li v-for="item in heroContent.focusAreas" :key="item">{{ item }}</li>
-          </ul>
-        </div>
-        <p class="hero__statement">{{ heroContent.source }}</p>
+      <aside v-if="carousel.length" class="hero__feature" aria-label="Featured updates">
+        <HomeHeroSlideshow :items="carousel" />
       </aside>
+
+      <ul class="hero__focus-list" aria-label="INPA priorities">
+        <li v-for="item in heroContent.focusAreas" :key="item">{{ item }}</li>
+      </ul>
     </div>
   </section>
 </template>
-
-<style scoped>
-.hero__feature {
-  overflow: hidden;
-  padding: 0;
-  border-color: rgb(255 255 255 / 28%);
-  background: rgb(4 19 33 / 72%);
-}
-
-.hero__focus {
-  padding: clamp(1.25rem, 3vw, 2rem);
-}
-
-.hero__statement {
-  margin: 0;
-  padding: 0 clamp(1.25rem, 3vw, 2rem) clamp(1.25rem, 3vw, 2rem);
-}
-
-@media (min-width: 60rem) {
-  .hero__content {
-    padding-block: clamp(2.5rem, 4vw, 3.5rem);
-    grid-template-columns: minmax(0, 1.05fr) minmax(25rem, 0.95fr);
-    gap: clamp(2.5rem, 4vw, 4.5rem);
-  }
-
-  .hero__copy h1 {
-    max-width: 16ch;
-    font-size: clamp(3rem, 4.2vw, 4.5rem);
-  }
-}
-
-@media (min-width: 60rem) and (max-height: 60rem) {
-  .hero__content {
-    padding-block: 2.5rem;
-  }
-
-  .hero__copy h1 {
-    margin-bottom: 1rem;
-    font-size: clamp(3rem, 4vw, 4.25rem);
-  }
-
-  .hero__mission {
-    font-size: clamp(1.15rem, 1.8vw, 1.5rem);
-  }
-}
-</style>
