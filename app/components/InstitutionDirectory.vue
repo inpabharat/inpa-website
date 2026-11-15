@@ -104,8 +104,8 @@ watch(mapView, (target) => {
   const start = { ...animatedMapView.value }
   const startedAt = performance.now()
   const animate = (time: number) => {
-    const progress = Math.min(1, (time - startedAt) / 380)
-    const eased = 1 - (1 - progress) ** 3
+    const progress = Math.max(0, Math.min(1, (time - startedAt) / 380))
+    const eased = progress * progress * (3 - 2 * progress)
     animatedMapView.value = { x: start.x + (target.x - start.x) * eased, y: start.y + (target.y - start.y) * eased, scale: start.scale + (target.scale - start.scale) * eased }
     if (progress < 1) mapAnimationFrame = requestAnimationFrame(animate)
   }

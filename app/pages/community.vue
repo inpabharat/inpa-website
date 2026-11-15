@@ -24,12 +24,22 @@ useSeoMeta({
         <h2 id="inauguration-title">{{ inauguration.title }}</h2>
         <p class="prose">{{ inauguration.summary }}</p>
 
-        <div class="community-photos">
-          <figure v-for="photo in photos" :key="photo.image">
-            <img :src="photo.image" :alt="photo.alt" width="1599" height="1066" loading="lazy">
-            <figcaption>{{ photo.caption }}</figcaption>
-          </figure>
-        </div>
+        <CommunityPhotoViewer v-slot="{ openPhoto }" :photos="photos">
+          <div class="community-photos">
+            <figure v-for="(photo, index) in photos" :key="photo.image">
+              <button
+                type="button"
+                class="community-photo-trigger"
+                :aria-label="`Enlarge photo: ${photo.title}`"
+                aria-haspopup="dialog"
+                @click="openPhoto(index, $event)"
+              >
+                <img :src="photo.image" :alt="photo.alt" width="1599" height="1066" loading="lazy">
+              </button>
+              <figcaption>{{ photo.caption }}</figcaption>
+            </figure>
+          </div>
+        </CommunityPhotoViewer>
       </div>
     </article>
   </div>

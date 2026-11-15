@@ -51,34 +51,44 @@ onBeforeUnmount(() => window.removeEventListener('resize', updateScrollState))
         </p>
       </header>
 
-      <div
-        ref="track"
-        class="community-highlights__track"
-        tabindex="0"
-        aria-label="Community highlight photographs. Swipe or use the arrow keys to explore."
-        @scroll.passive="updateScrollState"
-        @keydown.left.prevent="move(-1)"
-        @keydown.right.prevent="move(1)"
-      >
-        <article
-          v-for="item in communityHighlights.items"
-          :key="item.image"
-          class="community-highlight-card"
+      <CommunityPhotoViewer v-slot="{ openPhoto }" :photos="communityHighlights.items">
+        <div
+          ref="track"
+          class="community-highlights__track"
+          tabindex="0"
+          aria-label="Community highlight photographs. Swipe or use the arrow keys to explore."
+          @scroll.passive="updateScrollState"
+          @keydown.left.prevent="move(-1)"
+          @keydown.right.prevent="move(1)"
         >
-          <figure>
-            <img
-              :src="item.image"
-              :alt="item.alt"
-              width="1599"
-              height="1066"
-              loading="lazy"
-            >
-            <figcaption>
-              <h3>{{ item.title }}</h3>
-            </figcaption>
-          </figure>
-        </article>
-      </div>
+          <article
+            v-for="(item, index) in communityHighlights.items"
+            :key="item.image"
+            class="community-highlight-card"
+          >
+            <figure>
+              <button
+                type="button"
+                class="community-photo-trigger"
+                :aria-label="`Enlarge photo: ${item.title}`"
+                aria-haspopup="dialog"
+                @click="openPhoto(index, $event)"
+              >
+                <img
+                  :src="item.image"
+                  :alt="item.alt"
+                  width="1599"
+                  height="1066"
+                  loading="lazy"
+                >
+              </button>
+              <figcaption>
+                <h3>{{ item.title }}</h3>
+              </figcaption>
+            </figure>
+          </article>
+        </div>
+      </CommunityPhotoViewer>
 
       <div class="community-highlights__navigation">
         <div class="community-highlights__indicator" aria-hidden="true">

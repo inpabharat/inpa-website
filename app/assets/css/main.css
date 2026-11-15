@@ -1581,6 +1581,19 @@ a.future-card:hover {
   object-position: center 38%;
 }
 
+.community-photo-trigger {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+}
+
+.community-photo-trigger:focus-visible {
+  outline-offset: -3px;
+}
+
 .community-highlight-card figcaption {
   padding: 0.9rem 1rem;
 }
