@@ -229,7 +229,7 @@ const routeContent: Record<string, PendingRouteContent> = {
   '/privacy': {
     title: 'Privacy Policy',
     description: 'How the current INPA website handles information and third-party services.',
-    lastUpdated: '3 September 2026',
+    lastUpdated: '15 November 2026',
     sections: [
       {
         heading: 'Information collected through the public website',
@@ -247,6 +247,7 @@ const routeContent: Record<string, PendingRouteContent> = {
       {
         heading: 'External links and documents',
         paragraphs: [
+          'The Membership page links to a Google Form that collects your name, email address and transaction details. INPA uses those responses to verify membership payments and contact applicants about their membership.',
           'Links to external organisations, forms or publications are governed by those services’ own privacy practices. Visitors should review the destination before submitting personal information.',
         ],
       },

@@ -17,3 +17,5 @@ export const membershipUpi = {
   id: 'MSINDIANNUCLEARPHYSICSASSOCIATION.eazypay@icici',
   qrImage: '/images/membership-upi-qr.png',
 } as const
+
+export const membershipPaymentFormUrl = 'https://forms.gle/Qp47Xzymc1EsGJmX9'

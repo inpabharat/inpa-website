@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { membershipBankDetails, membershipFees, membershipUpi } from '~~/content/site/membership'
+import { membershipBankDetails, membershipFees, membershipPaymentFormUrl, membershipUpi } from '~~/content/site/membership'
 
 const rupees = new Intl.NumberFormat('en-IN', {
   style: 'currency',
@@ -52,14 +52,22 @@ useSeoMeta({
 
           <section class="upi-payment" aria-labelledby="membership-upi-heading">
             <h3 id="membership-upi-heading">Pay by UPI</h3>
-            <p>Scan the QR code with your UPI app.</p>
             <img :src="membershipUpi.qrImage" width="462" height="462" alt="UPI payment QR code for the Indian Nuclear Physics Association">
+            <p>Scan the QR code with your UPI app.</p>
             <dl>
               <dt>UPI ID</dt>
               <dd>{{ membershipUpi.id }}</dd>
             </dl>
           </section>
         </div>
+
+        <section class="payment-report" aria-labelledby="membership-report-heading">
+          <div>
+            <h3 id="membership-report-heading">After you pay</h3>
+            <p>Have your transaction reference or UTR ready. The Google Form opens in a new tab.</p>
+          </div>
+          <a class="button button--navy" :href="membershipPaymentFormUrl" target="_blank" rel="noopener noreferrer">Submit payment details</a>
+        </section>
 
         <p class="membership-contact">For application and eligibility details, <NuxtLink class="text-link" to="/contact">contact INPA</NuxtLink>.</p>
       </div>
@@ -144,15 +152,16 @@ useSeoMeta({
 }
 
 .upi-payment {
-  padding: clamp(1rem, 3vw, 1.75rem);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius);
-  background: var(--color-surface);
   text-align: center;
 }
 
-.upi-payment h3 {
-  margin-bottom: 0.5rem;
+@media (width < 45rem) {
+  .upi-payment {
+    padding: clamp(1rem, 3vw, 1.75rem);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+  }
 }
 
 .upi-payment p {
@@ -168,6 +177,27 @@ useSeoMeta({
 
 .upi-payment dd {
   font-size: 0.875rem;
+}
+
+.payment-report {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 2rem;
+  margin-top: 2rem;
+  padding-block: 1.5rem;
+  border-block: 1px solid var(--color-border);
+}
+
+.payment-report h3 {
+  margin-bottom: 0.5rem;
+}
+
+.payment-report p {
+  max-width: 52ch;
+  margin-bottom: 0;
+  color: var(--color-text-muted);
 }
 
 .membership-contact {
