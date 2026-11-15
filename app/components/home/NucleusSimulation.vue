@@ -241,7 +241,7 @@ function launchEjectedParticle(particle: SimulationParticle, vx: number, vy: num
   particle.timeSinceImpact = 0
   particle.vx = vx
   particle.vy = vy
-  // Allow time to cross the canvas before recovering a stalled ejection.
+  // Cap the time an interrupted ejection can keep the nucleus waiting.
   const crossingTime = Math.hypot(width, height) / Math.hypot(vx, vy)
   temporaryAbsorption = { stage: 'released', retryTime: simulationTime + crossingTime * 1.6 + 1 }
 }
@@ -262,7 +262,7 @@ function releaseNucleon(type: NucleonType): void {
   }
   if (!outgoing) return
 
-  const speed = randomBetween(190, 265)
+  const speed = randomBetween(285, 400)
   outgoing.trail = [{ x: outgoing.x, y: outgoing.y, time: simulationTime }]
   launchEjectedParticle(outgoing, directionX * speed, directionY * speed)
 }
@@ -344,6 +344,7 @@ function updateSimulation(deltaTime: number): void {
 
   const nucleusCentre = { x: nucleusX, y: nucleusY }
   const captureRadius = nucleusRadius * 0.82
+  const escapeRadius = Math.max(captureRadius, clusterRadius + interactionRange) + 2 * particleRadius
   particles = particles.filter((particle) => {
     const trail = particle.trail
     if (!trail) return true
@@ -364,15 +365,23 @@ function updateSimulation(deltaTime: number): void {
     const onScreen = !isBodyOutsideViewport(particle, width, height, 90)
       || trail.some(point => point.x >= -3 && point.x <= width + 3 && point.y >= -3 && point.y <= height + 3)
     if (particle.phase === 'emitted') {
-      if (!onScreen) {
+      const dx = particle.x - nucleusX
+      const dy = particle.y - nucleusY
+      const distance = Math.hypot(dx, dy)
+      const movingOutward = dx * particle.vx + dy * particle.vy > 0
+      if (!onScreen || (distance - particle.radius >= escapeRadius && movingOutward)) {
         temporaryAbsorption = null
+        // Keep its existing trail. A later return requires a new impact.
+        particle.phase = 'incoming'
+        particle.hasImpacted = false
+        particle.timeSinceImpact = 0
       } else if (temporaryAbsorption?.stage === 'released' && simulationTime >= temporaryAbsorption.retryTime) {
-        if (Math.hypot(particle.x - nucleusX, particle.y - nucleusY) <= captureRadius) {
+        if (distance <= captureRadius) {
           holdProjectile(particle)
         } else {
           // The particle is already outside the cluster. Resume its exit from
           // its current position without creating or removing a nucleon.
-          const velocity = aimAt(nucleusCentre, particle, 230)
+          const velocity = aimAt(nucleusCentre, particle, 345)
           launchEjectedParticle(particle, velocity.vx, velocity.vy)
         }
       }
