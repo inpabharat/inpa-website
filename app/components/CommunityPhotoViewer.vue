@@ -99,11 +99,11 @@ function handleWheel(event: WheelEvent): void {
 
         <div v-if="photos.length > 1" class="community-photo-dialog__controls" role="group" aria-label="Photo navigation">
           <button type="button" aria-label="Previous photo" :aria-disabled="visibleIndex === 0" @click="movePhoto(-1)">
-            <span aria-hidden="true">←</span>
+            <PhotoCarouselChevron direction="previous" />
           </button>
           <span role="status" class="community-photo-dialog__position">Photo {{ visibleIndex + 1 }} of {{ photos.length }}</span>
           <button type="button" aria-label="Next photo" :aria-disabled="visibleIndex === photos.length - 1" @click="movePhoto(1)">
-            <span aria-hidden="true">→</span>
+            <PhotoCarouselChevron direction="next" />
           </button>
         </div>
       </div>
@@ -192,7 +192,6 @@ function handleWheel(event: WheelEvent): void {
   background: var(--color-navy-950);
   color: white;
   cursor: pointer;
-  font-size: 1.3rem;
   line-height: 1;
   place-items: center;
 }
@@ -222,6 +221,15 @@ function handleWheel(event: WheelEvent): void {
 .community-photo-dialog__controls button[aria-disabled="true"] {
   opacity: 0.45;
   cursor: default;
+}
+
+.community-photo-dialog__controls button:hover:not([aria-disabled="true"]) {
+  border-color: white;
+  background: var(--color-navy-800);
+}
+
+.community-photo-dialog__controls button:focus-visible {
+  outline-color: var(--color-gold-300);
 }
 
 .community-photo-dialog__position {

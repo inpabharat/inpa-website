@@ -101,7 +101,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', updateScrollState))
             :disabled="!canScrollBack"
             @click="move(-1)"
           >
-            <span aria-hidden="true">←</span>
+            <PhotoCarouselChevron direction="previous" />
           </button>
           <button
             type="button"
@@ -109,7 +109,7 @@ onBeforeUnmount(() => window.removeEventListener('resize', updateScrollState))
             :disabled="!canScrollForward"
             @click="move(1)"
           >
-            <span aria-hidden="true">→</span>
+            <PhotoCarouselChevron direction="next" />
           </button>
         </div>
       </div>
