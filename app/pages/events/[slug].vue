@@ -8,6 +8,7 @@ interface EventDetail {
   status: string
   startAt: string
   timezone: string
+  externalUrl: string | null
   speaker: string | null
   speakerAffiliation: string | null
   posterPdfKey: string | null
@@ -48,6 +49,7 @@ useSeoMeta({
           <p v-if="item.speaker || item.speakerAffiliation"><strong>Speaker:</strong> {{ [item.speaker, item.speakerAffiliation].filter(Boolean).join(' · ') }}</p>
           <p>{{ item.body }}</p>
           <p v-if="item.posterPdfKey"><a class="text-link" :href="publicMediaUrl(item.posterPdfKey) ?? undefined" target="_blank" rel="noopener noreferrer">View seminar PDF <span aria-hidden="true">↗</span></a></p>
+          <p v-if="item.externalUrl"><NuxtLink class="text-link" :to="item.externalUrl">External event link <span aria-hidden="true">→</span></NuxtLink></p>
         </template>
         <NuxtLink class="text-link" to="/events">Return to events <span aria-hidden="true">→</span></NuxtLink>
       </div>

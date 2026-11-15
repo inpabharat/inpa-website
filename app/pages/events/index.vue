@@ -28,7 +28,7 @@ useSeoMeta({
         <ol v-if="archivedItems.length" class="timeline timeline--light">
           <li v-for="item in archivedItems" :key="item.slug" class="timeline__item">
             <time :datetime="item.startAt">{{ formatEventDate(item.startAt, item.timezone) }}</time>
-            <div><p v-if="item.status !== 'published'" class="status-chip">{{ item.status }}</p><h3>{{ item.title }}</h3><p>{{ item.summary }}</p><NuxtLink class="text-link" :to="item.externalUrl ?? `/events/${item.slug}`">Event record <span aria-hidden="true">→</span></NuxtLink></div>
+            <div><p v-if="item.status !== 'published'" class="status-chip">{{ item.status }}</p><h3>{{ item.title }}</h3><p>{{ item.summary }}</p><NuxtLink class="text-link" :to="`/events/${item.slug}`">Event record <span aria-hidden="true">→</span></NuxtLink></div>
           </li>
         </ol>
         <PlaceholderNotice v-else message="No past event records have been published." />

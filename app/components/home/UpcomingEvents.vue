@@ -22,7 +22,7 @@ defineProps<{ items: PublicEventItem[] }>()
             <h3>{{ item.title }}</h3>
             <p>{{ item.summary }}</p>
             <p class="meta meta--light">{{ item.isOnline ? 'Online' : (item.locationName ?? 'Location awaiting confirmation') }} · {{ item.timezone }}</p>
-            <NuxtLink class="text-link text-link--light" :to="item.externalUrl ?? `/events/${item.slug}`">Event details <span aria-hidden="true">→</span></NuxtLink>
+            <NuxtLink class="text-link text-link--light" :to="`/events/${item.slug}`">Event details <span aria-hidden="true">→</span></NuxtLink>
           </div>
         </li>
       </ol>

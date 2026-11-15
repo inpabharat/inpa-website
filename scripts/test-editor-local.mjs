@@ -64,7 +64,7 @@ try {
     startAt: new Date(stamp - 120_000).toISOString(), endAt: new Date(stamp + 3_600_000).toISOString(),
     timezone: 'Asia/Kolkata', isOnline: true, isFeatured: false, status: 'draft',
     speaker: 'Local test speaker', speakerAffiliation: 'Local test affiliation', seminarLabel: 'Test seminar',
-    posterPdfKey: pdf.key,
+    posterPdfKey: pdf.key, externalUrl: 'https://example.com/local-seminar',
   }
   await request('/api/admin/events', 'POST', { ...colloquium, posterPdfKey: '/other.pdf' }, 422)
   const seminar = (await request('/api/admin/events', 'POST', colloquium)).data
@@ -81,6 +81,10 @@ try {
   const liveSeminar = liveProgramme.upcoming.find(item => item.slug === seminar.slug)
   assert.equal(liveSeminar?.speaker, colloquium.speaker)
   assert.equal(liveSeminar?.posterPdfKey, pdf.key)
+  const detailsLink = new RegExp(`<a[^>]+href="/events/${seminar.slug}"[^>]*>Event details`)
+  for (const path of ['/events', '/']) {
+    assert.match(await (await fetch(`${base}${path}`)).text(), detailsLink)
+  }
 
   await request(eventPath, 'PUT', { ...colloquium, status: 'published', endAt: new Date(stamp - 60_000).toISOString() })
   const { data: pastProgramme } = await request('/api/public/colloquium')
@@ -92,6 +96,9 @@ try {
   assert.ok(programmeHtml.includes(`href="/media/${pdf.key}"`))
   const eventHtml = await (await fetch(`${base}/events/${seminar.slug}`)).text()
   assert.ok(eventHtml.includes(`href="/media/${pdf.key}"`))
+  assert.ok(eventHtml.includes(`href="${colloquium.externalUrl}"`))
+  const eventsHtml = await (await fetch(`${base}/events`)).text()
+  assert.match(eventsHtml, new RegExp(`<a[^>]+href="/events/${seminar.slug}"[^>]*>Event record`))
 
   await request(eventPath, 'PUT', { ...colloquium, eventType: 'general', status: 'published' })
   const { data: generalProgramme } = await request('/api/public/colloquium')

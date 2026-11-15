@@ -56,7 +56,7 @@ const visibleEvents = computed(() => props.events.slice(0, 2))
                 <h4>{{ item.title }}</h4>
                 <p>{{ item.summary }}</p>
                 <p class="meta">{{ item.isOnline ? 'Online' : (item.locationName ?? 'Location awaiting confirmation') }} · {{ item.timezone }}</p>
-                <NuxtLink :to="item.externalUrl ?? `/events/${item.slug}`">Event details <span aria-hidden="true">→</span></NuxtLink>
+                <NuxtLink :to="`/events/${item.slug}`">Event details <span aria-hidden="true">→</span></NuxtLink>
               </div>
             </li>
           </ol>
