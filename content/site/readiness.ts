@@ -1,7 +1,7 @@
 export const contentReadinessItems = [
   'Official logo and brand guidance',
   'Official domain and final organisation-name styling approval',
-  'Optional longer President message and named portrait credit',
+  'Named credit for the President’s portrait, if available',
   'Leadership terms and profiles',
   'Official social links',
   'Membership and donations information',

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { aboutContent, presidentContent } from '~~/content/site/home'
+import { aboutContent } from '~~/content/site/home'
+import { presidentContent } from '~~/content/site/president'
 </script>
 
 <template>
@@ -15,19 +16,16 @@ import { aboutContent, presidentContent } from '~~/content/site/home'
       <aside class="institutional-snapshot__president" aria-labelledby="snapshot-president-title">
         <figure>
           <img
-            src="/images/profile-ak-jain.jpg"
-            alt="Prof. A. K. Jain, President of the Indian Nuclear Physics Association"
-            width="1600"
-            height="1600"
+            v-bind="presidentContent.portrait"
+            alt=""
             loading="lazy"
           >
-          <figcaption>Prof. A. K. Jain, President, Indian Nuclear Physics Association.</figcaption>
         </figure>
         <div>
           <p class="eyebrow">From the President</p>
-          <h3 id="snapshot-president-title">{{ presidentContent.title }}</h3>
-        <p class="profile-role">{{ presidentContent.role }}</p>
-          <p>{{ presidentContent.message }}</p>
+          <h3 id="snapshot-president-title">{{ presidentContent.name }}</h3>
+          <p class="profile-role">{{ presidentContent.role }}</p>
+          <p>{{ presidentContent.welcome }}</p>
           <NuxtLink class="text-link" :to="presidentContent.to">Read the President’s Message <span aria-hidden="true">→</span></NuxtLink>
         </div>
       </aside>

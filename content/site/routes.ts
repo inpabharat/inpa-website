@@ -1,5 +1,6 @@
 import { bulletinSources, currentLeadership, publicContact } from './bulletin-sources'
 import { advisoryCommitteeMembers, executiveCouncilSections } from './committees'
+import { presidentContent } from './president'
 import { isPublicPathVisible } from './visibility'
 
 export interface RouteSection {
@@ -57,18 +58,10 @@ const routeContent: Record<string, PendingRouteContent> = {
       },
     ],
   },
-  '/about/presidents-message': {
-    title: 'President’s message',
-    description: currentLeadership.president.name + ' is President of the Indian Nuclear Physics Association.',
-    sections: [
-      {
-        heading: 'Message summary',
-        paragraphs: [
-          'The President describes INPA as a connected national community with a shared responsibility to strengthen nuclear physics in India.',
-          'The published priorities include scientific collaboration, educational resources, laboratory courses, mentorship for younger researchers and public awareness of nuclear science and its applications.',
-        ],
-      },
-    ],
+  [presidentContent.to]: {
+    title: presidentContent.title,
+    description: presidentContent.description,
+    indexable: true,
   },
   '/about/executive-council': {
     title: 'Executive Council',

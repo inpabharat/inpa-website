@@ -7,8 +7,8 @@ The website publishes only information supported by supplied INPA material or ex
 - [ ] Confirmed legal/official organisation name and abbreviation styling.
 - [x] INPA-owned domain options purchased: `inpaindia.org`, `inpa-india.org` and `inpa-bharat.org`.
 - [ ] Confirm the primary domain. `inpa-india.org` is the current preference, but DNS has not been connected.
-- [x] Prof. A. K. Jain confirmed as INPA President; portrait and website message summary supplied.
-- [ ] Optional longer President's message and named portrait credit.
+- [x] Prof. Ashok Kumar Jain confirmed as INPA President. Full President’s message and updated portrait supplied.
+- [ ] Named credit for the President’s portrait, if available.
 - [ ] Approved About copy.
 - [x] Executive Council and Advisory Committee rosters, roles and affiliations supplied.
 - [ ] Executive Council and Advisory Committee terms of office.
@@ -58,7 +58,7 @@ The website publishes only information supported by supplied INPA material or ex
 2. Supply the three authorised editor email addresses and configure Cloudflare Access.
 3. Configure Cloudflare Access and complete the production editor acceptance test.
 4. Confirm Executive Council and Advisory Committee terms of office.
-5. Supply an optional longer President’s message and named portrait credit.
+5. Supply a named credit for the President’s portrait, if available.
 6. Confirm membership application instructions and eligibility rules.
 7. Provide at least one current news item and one upcoming event, or explicitly approve launching with empty archives.
 8. Supply the Nuclear Horizons author and submission route.

@@ -1,3 +1,4 @@
+import { presidentContent } from './president'
 import { isPublicPathVisible } from './visibility'
 
 export interface NavigationLink {
@@ -21,7 +22,7 @@ const allNavigationGroups: readonly NavigationGroup[] = [
     description: 'INPA’s purpose, leadership and governance.',
     links: [
       { label: 'About INPA', to: '/about', description: 'Formation, registration and published objectives.' },
-      { label: 'President’s Message', to: '/about/presidents-message', description: 'Prof. A. K. Jain on INPA’s priorities.' },
+      { label: presidentContent.title, to: presidentContent.to, description: `${presidentContent.name} on INPA’s priorities.` },
       { label: 'Executive Council', to: '/about/executive-council', description: 'Office bearers and council members.' },
       { label: 'Advisory Committee', to: '/about/committees', description: 'Committee members and their role in guiding INPA.' },
       { label: 'Contact INPA', to: '/contact', description: 'Office address, phone and email.' },

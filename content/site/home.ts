@@ -134,13 +134,6 @@ export const scienceDestinations: readonly EditorialLinkItem[] = ([
   },
 ] satisfies EditorialLinkItem[]).filter(item => isPublicPathVisible(item.to))
 
-export const presidentContent = {
-  title: 'Prof. A. K. Jain',
-  role: 'President, Indian Nuclear Physics Association',
-  message: 'INPA is building a connected national community for nuclear physics, with priorities that include scientific collaboration, educational resources, laboratory training, mentorship and wider public awareness of nuclear science and its applications.',
-  to: '/about/presidents-message',
-} as const
-
 export const aboutContent = {
   status: 'Institutional profile',
   title: 'About INPA',
