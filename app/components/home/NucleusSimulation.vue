@@ -72,6 +72,8 @@ const shortRangeRadiusMultiplier = 5.4
 const fieldRingPeriod = 3.4
 const fieldRingCount = 2
 const excitationDuration = 0.44
+const clusterStretchTolerance = 0.12
+const clusterShapeStrength = 4
 
 function randomBetween(minimum: number, maximum: number): number {
   return minimum + Math.random() * (maximum - minimum)
@@ -97,6 +99,43 @@ function measureClusterRadius(): number {
     radius = Math.max(radius, Math.hypot(particle.x - nucleusX, particle.y - nucleusY))
   }
   return radius
+}
+
+function measureClusterStretch() {
+  let count = 0
+  let sumX = 0
+  let sumY = 0
+  let sumXX = 0
+  let sumYY = 0
+  let sumXY = 0
+  for (const particle of particles) {
+    if (particle.phase !== 'bound') continue
+    const x = particle.x - nucleusX
+    const y = particle.y - nucleusY
+    count += 1
+    sumX += x
+    sumY += y
+    sumXX += x * x
+    sumYY += y * y
+    sumXY += x * y
+  }
+  if (count < 2) return null
+
+  const centreX = sumX / count
+  const centreY = sumY / count
+  const spreadX = sumXX / count - centreX * centreX
+  const spreadY = sumYY / count - centreY * centreY
+  const totalSpread = spreadX + spreadY
+  if (totalSpread <= 0) return null
+
+  // The covariance captures elongation in any direction, including diagonally.
+  const diagonal = (spreadX - spreadY) / totalSpread
+  const cross = 2 * (sumXY / count - centreX * centreY) / totalSpread
+  const stretch = Math.hypot(diagonal, cross)
+  if (stretch <= clusterStretchTolerance) return null
+
+  const strength = clusterShapeStrength * (1 - clusterStretchTolerance / stretch)
+  return { centreX, centreY, diagonal: diagonal * strength, cross: cross * strength }
 }
 
 function seedNucleus(): void {
@@ -285,14 +324,9 @@ function excitationAngleAt(time: number): number {
 }
 
 function updateSimulation(deltaTime: number): void {
-  const previousTime = simulationTime
   simulationTime += deltaTime
-  // Apply only the change in angle so the cluster returns to its resting
-  // orientation at release without adding an easing delay or extra velocity.
-  const rotation = excitationAngleAt(simulationTime) - excitationAngleAt(previousTime)
-  const cosRotation = Math.cos(rotation)
-  const sinRotation = Math.sin(rotation)
   resolveParticleContacts()
+  const clusterStretch = measureClusterStretch()
   const acceleration = particles.map(() => ({ x: 0, y: 0 }))
   const interactionRange = particleRadius * shortRangeRadiusMultiplier
   const coreRadius = particleRadius * 2.05
@@ -350,6 +384,15 @@ function updateSimulation(deltaTime: number): void {
       const meanFieldAcceleration = calculateMeanFieldRestoringAcceleration(distance, edge)
       particleAcceleration.x -= dx / distance * meanFieldAcceleration
       particleAcceleration.y -= dy / distance * meanFieldAcceleration
+
+      // Gently compress the long axis and open the short axis of the cluster.
+      if (clusterStretch) {
+        const x = dx - clusterStretch.centreX
+        const y = dy - clusterStretch.centreY
+        particleAcceleration.x -= clusterStretch.diagonal * x + clusterStretch.cross * y
+        particleAcceleration.y -= clusterStretch.cross * x - clusterStretch.diagonal * y
+      }
+
       particleAcceleration.x += randomBetween(-18, 18)
       particleAcceleration.y += randomBetween(-18, 18)
     }
@@ -361,13 +404,6 @@ function updateSimulation(deltaTime: number): void {
     particle.vy *= damping
     particle.x += particle.vx * deltaTime
     particle.y += particle.vy * deltaTime
-
-    if (particle.phase === 'bound' && rotation !== 0) {
-      const dx = particle.x - nucleusX
-      const dy = particle.y - nucleusY
-      particle.x = nucleusX + dx * cosRotation - dy * sinRotation
-      particle.y = nucleusY + dx * sinRotation + dy * cosRotation
-    }
   }
 
   resolveParticleContacts()
@@ -487,6 +523,7 @@ function drawFieldRings(activeContext: CanvasRenderingContext2D): void {
 
 function drawBonds(activeContext: CanvasRenderingContext2D): void {
   const boundParticles = particles.filter(particle => particle.phase === 'bound')
+  const bondRange = particleRadius * 3.2
   for (let firstIndex = 0; firstIndex < boundParticles.length; firstIndex += 1) {
     const first = boundParticles[firstIndex]
     if (!first) continue
@@ -494,7 +531,6 @@ function drawBonds(activeContext: CanvasRenderingContext2D): void {
       const second = boundParticles[secondIndex]
       if (!second) continue
       const distance = Math.hypot(second.x - first.x, second.y - first.y)
-      const bondRange = particleRadius * 4.2
       if (distance >= bondRange) continue
       const alpha = (1 - distance / bondRange) * 0.1
       activeContext.strokeStyle = `rgba(205, 225, 236, ${alpha})`
@@ -599,12 +635,28 @@ function drawSimulation(): void {
   context.clearRect(0, 0, width, height)
   drawConfinement(context)
   drawFieldRings(context)
-  drawBonds(context)
   for (const particle of particles) drawProjectileTrail(context, particle)
+
+  const angle = excitationAngleAt(simulationTime)
+  context.save()
+  if (angle !== 0) {
+    // Keep the vibration in the drawing so it cannot change collisions or ejection.
+    context.translate(nucleusX, nucleusY)
+    context.rotate(angle)
+    context.translate(-nucleusX, -nucleusY)
+  }
+  drawBonds(context)
   for (const particle of particles) {
     if (particle.phase === 'bound') drawNucleonPulse(context, particle)
   }
-  for (const particle of particles) drawParticle(context, particle)
+  for (const particle of particles) {
+    if (particle.phase === 'bound') drawParticle(context, particle)
+  }
+  context.restore()
+
+  for (const particle of particles) {
+    if (particle.phase !== 'bound') drawParticle(context, particle)
+  }
 }
 
 function runFrame(timestamp: number): void {
