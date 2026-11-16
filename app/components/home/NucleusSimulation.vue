@@ -71,6 +71,7 @@ const trailDotInterval = 0.065
 const shortRangeRadiusMultiplier = 5.4
 const fieldRingPeriod = 3.4
 const fieldRingCount = 2
+const excitationDuration = 0.44
 
 function randomBetween(minimum: number, maximum: number): number {
   return minimum + Math.random() * (maximum - minimum)
@@ -267,8 +268,30 @@ function releaseNucleon(type: NucleonType): void {
   launchEjectedParticle(outgoing, directionX * speed, directionY * speed)
 }
 
+function excitationProgressAt(time: number): number {
+  if (temporaryAbsorption?.stage !== 'held') return 0
+
+  const progress = 1 - (temporaryAbsorption.releaseTime - time) / excitationDuration
+  return progress > 0 && progress < 1 ? progress : 0
+}
+
+function excitationStrength(progress: number): number {
+  return Math.sin(Math.PI * progress) ** 2
+}
+
+function excitationAngleAt(time: number): number {
+  const progress = excitationProgressAt(time)
+  return 0.065 * excitationStrength(progress) * Math.sin(6 * Math.PI * progress)
+}
+
 function updateSimulation(deltaTime: number): void {
+  const previousTime = simulationTime
   simulationTime += deltaTime
+  // Apply only the change in angle so the cluster returns to its resting
+  // orientation at release without adding an easing delay or extra velocity.
+  const rotation = excitationAngleAt(simulationTime) - excitationAngleAt(previousTime)
+  const cosRotation = Math.cos(rotation)
+  const sinRotation = Math.sin(rotation)
   resolveParticleContacts()
   const acceleration = particles.map(() => ({ x: 0, y: 0 }))
   const interactionRange = particleRadius * shortRangeRadiusMultiplier
@@ -338,6 +361,13 @@ function updateSimulation(deltaTime: number): void {
     particle.vy *= damping
     particle.x += particle.vx * deltaTime
     particle.y += particle.vy * deltaTime
+
+    if (particle.phase === 'bound' && rotation !== 0) {
+      const dx = particle.x - nucleusX
+      const dy = particle.y - nucleusY
+      particle.x = nucleusX + dx * cosRotation - dy * sinRotation
+      particle.y = nucleusY + dx * sinRotation + dy * cosRotation
+    }
   }
 
   resolveParticleContacts()
@@ -408,6 +438,7 @@ function updateSimulation(deltaTime: number): void {
 }
 
 function drawConfinement(activeContext: CanvasRenderingContext2D): void {
+  const excitation = excitationStrength(excitationProgressAt(simulationTime))
   const glow = activeContext.createRadialGradient(
     nucleusX,
     nucleusY,
@@ -417,14 +448,14 @@ function drawConfinement(activeContext: CanvasRenderingContext2D): void {
     nucleusRadius * 1.2,
   )
   glow.addColorStop(0, 'rgba(97, 164, 198, 0.07)')
-  glow.addColorStop(0.72, 'rgba(200, 155, 60, 0.055)')
+  glow.addColorStop(0.72, `rgba(200, 155, 60, ${0.055 + 0.18 * excitation})`)
   glow.addColorStop(1, 'rgba(6, 26, 44, 0)')
   activeContext.fillStyle = glow
   activeContext.beginPath()
   activeContext.arc(nucleusX, nucleusY, nucleusRadius * 1.2, 0, Math.PI * 2)
   activeContext.fill()
 
-  activeContext.strokeStyle = 'rgba(230, 200, 121, 0.38)'
+  activeContext.strokeStyle = `rgba(230, 200, 121, ${0.38 + 0.32 * excitation})`
   activeContext.lineWidth = 1
   activeContext.setLineDash([3, 8])
   activeContext.beginPath()
