@@ -34,7 +34,7 @@ export const editorialBoard = [
     affiliation: ['Department of Physics', 'Aligarh Muslim University', 'Aligarh 202002 (U.P.), India'],
   },
   {
-    name: 'Dr Abhishek',
+    name: 'Dr. Abhishek',
     portrait: '/images/publications/editorial-board/abhishek.webp',
     role: 'Project Consultant',
     affiliation: [
