@@ -40,7 +40,7 @@ export const heroContent = {
   actions: [
     { label: 'Become a Member', to: '/membership' },
     { label: 'Nuclear Horizons', to: '/nuclear-horizons' },
-    { label: 'Upcoming Conference', to: '/events' },
+    { label: 'Upcoming Events', to: '/events#events-title' },
   ],
 } as const
 

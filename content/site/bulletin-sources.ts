@@ -59,6 +59,7 @@ export const currentLeadership = {
   },
   editorInChief: {
     name: 'Prof. Dr. M. Balasubramaniam',
+    portrait: '/images/publications/editorial-board/m-balasubramaniam.webp',
     title: 'Professor',
     department: 'Department of Physics',
     affiliation: 'Bharathiar University',
