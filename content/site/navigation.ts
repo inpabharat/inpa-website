@@ -75,7 +75,7 @@ const allNavigationGroups: readonly NavigationGroup[] = [
       { label: 'Community Highlights', to: '/community', description: 'Stories and photographs from INPA gatherings.' },
       { label: 'Membership', to: '/membership', description: 'Membership categories, fees and payment details.' },
       { label: 'Awards and Recognition', to: '/awards', description: 'INPA award announcements.' },
-      { label: 'Jobs', to: '/jobs', description: 'Employment listings in nuclear physics.' },
+      { label: 'Academic Candidates', to: '/jobs', description: 'Find nuclear science researchers seeking academic roles.' },
     ],
   },
 ] as const

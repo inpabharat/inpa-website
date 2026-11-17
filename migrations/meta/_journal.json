@@ -29,6 +29,13 @@
       "when": 1794732795203,
       "tag": "0003_colloquium_events",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1794938182446,
+      "tag": "0004_academic_candidates",
+      "breakpoints": true
     }
   ]
 }

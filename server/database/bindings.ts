@@ -4,6 +4,7 @@ export interface CloudflareBindings {
   DB?: D1Database
   MEDIA?: R2Bucket
   ASSETS?: Fetcher
+  CANDIDATE_RATE_LIMIT?: { limit: (input: { key: string, delta?: number }) => Promise<{ success: boolean }> }
   INPA_ENVIRONMENT?: 'local' | 'preview' | 'production'
   NUXT_DEV_AUTH_BYPASS?: string
 }

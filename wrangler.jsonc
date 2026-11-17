@@ -35,6 +35,10 @@
     "preview": {
       "name": "inpa-website-preview",
       "workers_dev": true,
+      "triggers": { "crons": ["0 3 * * *"] },
+      "ratelimits": [
+        { "name": "CANDIDATE_RATE_LIMIT", "namespace_id": "822601", "simple": { "limit": 60, "period": 60 } }
+      ],
       "vars": {
         "INPA_ENVIRONMENT": "preview",
         "NUXT_PUBLIC_SITE_URL": "https://inpa-website-preview.inpa-website.workers.dev",
@@ -59,6 +63,10 @@
     "production": {
       "name": "inpa-website",
       "workers_dev": true,
+      "triggers": { "crons": ["0 3 * * *"] },
+      "ratelimits": [
+        { "name": "CANDIDATE_RATE_LIMIT", "namespace_id": "822602", "simple": { "limit": 60, "period": 60 } }
+      ],
       "vars": {
         "INPA_ENVIRONMENT": "production",
         "NUXT_PUBLIC_SITE_URL": "https://inpa-website.inpa-website.workers.dev",

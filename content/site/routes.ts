@@ -184,10 +184,6 @@ const routeContent: Record<string, PendingRouteContent> = {
     title: 'Awards',
     description: 'There are currently no award announcements.',
   },
-  '/jobs': {
-    title: 'Jobs',
-    description: 'There are currently no job listings.',
-  },
   '/contact': {
     title: 'Contact INPA',
     description: 'Contact the Indian Nuclear Physics Association by phone or email.',
@@ -222,13 +218,23 @@ const routeContent: Record<string, PendingRouteContent> = {
   '/privacy': {
     title: 'Privacy Policy',
     description: 'How the current INPA website handles information and third-party services.',
-    lastUpdated: '15 November 2026',
+    lastUpdated: '17 November 2026',
     sections: [
       {
         heading: 'Information collected through the public website',
         paragraphs: [
-          'The website currently has no public account system, payment facility, newsletter form or general contact form. It does not intentionally collect personal information directly from public visitors.',
+          'The website has no public account system, payment facility, newsletter form or general contact form. The Academic Candidates submission form collects the information described below.',
           'Like other websites, the hosting and security infrastructure may process technical request information needed to deliver and protect the service.',
+        ],
+      },
+      {
+        id: 'academic-candidates',
+        heading: 'Academic Candidates directory',
+        paragraphs: [
+          'Submitting a profile is voluntary. INPA uses your email to verify the submission, manage the listing and handle corrections or removal. Only authorised INPA editors can see this address in the directory workflow.',
+          'With your consent, INPA publishes the profile details you preview, including your public CV link, after email verification and editorial review. Anyone can view the directory. People may save or share copies, and external CV hosts handle access to their own files. Use a CV you intend to make public.',
+          'Published profiles are visible for 90 days. Daily cleanup removes unverified submissions after 14 days, submissions awaiting review after 30 days, and expired profiles after a further 30 days. A renewal request gives an editor up to 30 days to review it.',
+          'Use the private link sent to your verification email to withdraw your listing. For corrections, a replacement link, or privacy questions, write to ' + publicContact.email + ' from the address used to submit the profile. Withdrawal removes the listing and submission from the directory database. Previously saved copies, correspondence and temporary infrastructure backups may remain.',
         ],
       },
       {

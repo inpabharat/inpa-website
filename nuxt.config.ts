@@ -1,3 +1,9 @@
+const candidatePrivacyHeaders = {
+  'Cache-Control': 'private, no-store',
+  'Referrer-Policy': 'no-referrer',
+  'X-Robots-Tag': 'noindex, nofollow, noarchive',
+}
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-07-30',
   devtools: { enabled: false },
@@ -55,6 +61,12 @@ export default defineNuxtConfig({
     '/community': { prerender: true },
     '/membership': { prerender: true },
     '/privacy': { prerender: true },
+    '/jobs': { headers: candidatePrivacyHeaders },
+    '/jobs/**': { headers: candidatePrivacyHeaders },
+    '/api/public/candidates': { headers: candidatePrivacyHeaders },
+    '/api/public/candidates/**': { headers: candidatePrivacyHeaders },
+    '/api/admin/candidates': { headers: candidatePrivacyHeaders },
+    '/api/admin/candidates/**': { headers: candidatePrivacyHeaders },
     '/admin/**': {
       headers: { 'X-Robots-Tag': 'noindex, nofollow, noarchive' },
     },

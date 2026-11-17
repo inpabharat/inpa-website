@@ -8,7 +8,7 @@ import { getCarouselVisibility } from '~~/shared/utils/carousel-visibility'
 import { makeSlug } from '~~/shared/utils/content-validation'
 import { localDateTimeToIso, toDateTimeLocal } from '~~/shared/utils/editor-date'
 
-type Panel = 'overview' | 'news' | 'events' | 'carousel' | 'publications' | 'research' | 'media'
+type Panel = 'overview' | 'news' | 'events' | 'carousel' | 'publications' | 'research' | 'candidates' | 'media'
 type EntityKind = 'news' | 'events' | 'carousel'
 
 const props = defineProps<{ initialSnapshot: AdminContentSnapshot, editorEmail: string }>()
@@ -30,6 +30,7 @@ const panels: { id: Panel, label: string, description: string }[] = [
   { id: 'events', label: 'Events', description: 'Publish events and Young Scientist Colloquium seminars.' },
   { id: 'publications', label: 'Nuclear Horizons', description: 'Upload an issue PDF and cover, add its editorial and publish it in the archive.' },
   { id: 'research', label: 'Featured research', description: 'Publish a research story and select it for the homepage spotlight.' },
+  { id: 'candidates', label: 'Academic Candidates', description: 'Verify, review and publish candidate profiles.' },
   { id: 'carousel', label: 'Homepage slides', description: 'Add a featured image and link to the homepage banner.' },
   { id: 'media', label: 'Images & PDFs', description: 'Browse uploaded files and see which content uses them.' },
 ]
@@ -315,6 +316,7 @@ onBeforeRouteLeave(() => !dirty.value || window.confirm('Discard the changes you
     </section>
 
     <AdminScienceEditor v-else-if="panel === 'publications' || panel === 'research'" :key="panel" ref="scienceEditor" :kind="panel" />
+    <AdminCandidatesEditor v-else-if="panel === 'candidates'" />
     <section v-else aria-labelledby="media-editor-title">
       <div class="editor-heading"><div><p class="eyebrow">Reusable files</p><h2 id="media-editor-title">Images & PDFs</h2></div></div>
       <p>Uploads are saved in this library. To put a file on the website, open a news item, event, homepage slide, research story or Nuclear Horizons issue and choose the file there. Uploading alone does not add it to a page.</p>

@@ -257,7 +257,7 @@ export const quickLinks: LinkItem[] = ([
   { label: 'Executive Council', to: '/about/executive-council', icon: 'EC' },
   { label: 'Newsletter', to: '/nuclear-horizons', icon: 'NH' },
   { label: 'Awards', to: '/awards', icon: 'A' },
-  { label: 'Jobs', to: '/jobs', icon: 'J' },
+  { label: 'Academic Candidates', to: '/jobs', icon: 'J' },
   { label: 'Contact', to: '/contact', icon: '@' },
   { label: 'Donations', to: '/membership#donations', icon: 'D' },
 ] satisfies LinkItem[]).filter(item => isPublicPathVisible(item.to))

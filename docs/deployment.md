@@ -36,6 +36,8 @@ The direct alternative is `pnpm deploy:production`; it uploads and activates imm
 
 Migrations are never automatic. Apply and verify them in preview first. Run `pnpm db:migrate:production` only for a reviewed checked-in migration and only after confirming the application version is compatible with both the old and new schema. Never run the local seed against a remote database.
 
+Apply `0004_academic_candidates.sql` before releasing the Academic Candidates directory. The preview and production Workers configure separate rate-limit namespaces and a daily cleanup trigger for expired submissions. In Admin → Academic Candidates, editors prepare a verification email and send it from the INPA mailbox. Candidates confirm their address using that private link before publication. Test the submission, verification, publication and withdrawal flow with synthetic profiles in preview.
+
 ## Rollback
 
 In Cloudflare, open **Workers & Pages → inpa-website → Deployments**, choose the last known-good deployment, and roll back. The command-line equivalent is:

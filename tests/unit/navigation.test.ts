@@ -18,6 +18,7 @@ const requiredPublicDestinations = [
   '/nuclear-horizons/archive',
   '/community',
   '/membership',
+  '/jobs',
   '/contact',
   '/privacy',
 ]
@@ -44,7 +45,7 @@ describe('public navigation', () => {
   it('hides unpublished sections from routes and links', () => {
     const publicHomeLinks = [...audiencePathways, ...dedicatedSections, ...quickLinks, ...scienceDestinations]
 
-    for (const path of ['/students', '/students/opportunities', '/people', '/jobs', '/awards']) {
+    for (const path of ['/students', '/students/opportunities', '/people', '/awards']) {
       expect(pendingRoutes).not.toHaveProperty(path)
       expect(publicNavigationDestinations).not.toContain(path)
       expect(publicHomeLinks.some(link => link.to === path)).toBe(false)

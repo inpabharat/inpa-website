@@ -2,6 +2,7 @@ import { sql } from 'drizzle-orm'
 import { check, index, integer, sqliteTable, text, uniqueIndex } from 'drizzle-orm/sqlite-core'
 import { eventStatuses, eventTypes, linkedContentTypes, newsStatuses } from '../../shared/types/content'
 import { scienceStatuses } from '../../shared/types/science'
+import type { CandidateRole, CandidateStage } from '../../shared/types/candidates'
 
 const auditColumns = {
   createdAt: text('created_at').notNull(),
@@ -9,6 +10,36 @@ const auditColumns = {
   createdBy: text('created_by').notNull(),
   updatedBy: text('updated_by').notNull(),
 }
+
+export const academicCandidates = sqliteTable(
+  'academic_candidates',
+  {
+    id: text('id').primaryKey(),
+    email: text('email').notNull(),
+    name: text('name').notNull(),
+    affiliation: text('affiliation'),
+    stage: text('stage').$type<CandidateStage>().notNull(),
+    roles: text('roles', { mode: 'json' }).$type<CandidateRole[]>().notNull(),
+    research: text('research').notNull(),
+    availability: text('availability'),
+    summary: text('summary').notNull(),
+    cvUrl: text('cv_url').notNull(),
+    consentAt: text('consent_at').notNull(),
+    createdAt: text('created_at').notNull(),
+    verifiedAt: text('verified_at'),
+    tokenHash: text('token_hash'),
+    linkExpiresAt: text('link_expires_at'),
+    expiresAt: text('expires_at'),
+    renewalRequestedAt: text('renewal_requested_at'),
+    deleteAfter: text('delete_after').notNull(),
+  },
+  table => [
+    uniqueIndex('idx_candidates_email').on(table.email),
+    uniqueIndex('idx_candidates_token').on(table.tokenHash),
+    index('idx_candidates_expiry').on(table.expiresAt, table.id),
+    index('idx_candidates_retention').on(table.deleteAfter),
+  ],
+)
 
 export const news = sqliteTable(
   'news',

@@ -5,7 +5,7 @@ import { getD1Binding } from './bindings'
 
 export type InpaDatabase = ReturnType<typeof createDatabase>
 
-function createDatabase(binding: D1Database) {
+export function createDatabase(binding: D1Database) {
   return drizzle(binding, { schema })
 }
 
