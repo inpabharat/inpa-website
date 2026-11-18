@@ -250,7 +250,7 @@ h4 {
 }
 
 .desktop-nav__trigger[aria-expanded="true"] .navigation-chevron,
-.mobile-nav__group[open] > summary .navigation-chevron {
+.mobile-nav__group[open]:not([data-collapsing]) > summary .navigation-chevron {
   transform: rotate(225deg);
 }
 
@@ -360,12 +360,17 @@ h4 {
   z-index: 2;
 }
 
-.mobile-nav > summary {
+.mobile-nav__trigger,
+.mobile-nav__close {
+  inline-size: 4.5rem;
   min-height: 2.75rem;
   padding: 0.55rem 0.8rem;
   border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-navy-950);
   cursor: pointer;
   font-weight: 700;
+  text-align: center;
   list-style: none;
 }
 
@@ -373,40 +378,77 @@ h4 {
   display: none;
 }
 
-.mobile-nav__backdrop {
+.mobile-nav__dialog {
+  --mobile-nav-offset: calc(var(--header-height) + 1px);
   position: fixed;
-  inset: calc(var(--header-height) + 1px) 0 0;
-  z-index: 0;
-  display: none;
+  inset: 0;
   width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
   padding: 0;
+  overflow: hidden;
   border: 0;
-  background: rgb(6 26 44 / 42%);
-  cursor: default;
-}
-
-.mobile-nav[open] .mobile-nav__backdrop {
-  display: block;
-}
-
-.mobile-nav__panel {
-  position: fixed;
-  top: calc(var(--header-height) + 1px);
-  right: 0;
-  bottom: 0;
-  z-index: 1;
-  display: flex;
-  width: min(28rem, 100vw);
-  overflow-y: auto;
-  padding: 1rem;
-  border-left: 1px solid var(--color-border);
-  background: var(--color-surface);
-  box-shadow: -1rem 1rem 2.5rem rgb(6 26 44 / 18%);
-  flex-direction: column;
+  background: transparent;
   overscroll-behavior: contain;
 }
 
-.mobile-nav__panel nav:first-child {
+.mobile-nav__dialog::backdrop {
+  overflow: hidden;
+  background: transparent;
+  overscroll-behavior: contain;
+}
+
+.mobile-nav__bar {
+  position: absolute;
+  inset: 0 0 auto;
+  display: flex;
+  height: calc(var(--mobile-nav-offset) - 1px);
+  align-items: center;
+  justify-content: flex-end;
+  pointer-events: none;
+}
+
+.mobile-nav__close {
+  border-color: var(--color-navy-800);
+  background: var(--color-navy-800);
+  color: var(--color-surface);
+  pointer-events: auto;
+}
+
+.mobile-nav__dialog .mobile-nav__surface {
+  position: absolute;
+  inset: var(--mobile-nav-offset) 0 0;
+  overflow: hidden;
+}
+
+.mobile-nav__scrim {
+  position: absolute;
+  inset: 0;
+  background: rgb(6 26 44 / 38%);
+}
+
+.mobile-nav__panel {
+  position: absolute;
+  inset: 0 0 auto auto;
+  width: min(28rem, 100%);
+  max-height: calc(100% - 2.75rem);
+  overflow-y: auto;
+  padding: 0.5rem 1rem 1rem;
+  border-radius: 0 0 var(--radius) var(--radius);
+  background: var(--color-surface);
+  box-shadow: 0 0.7rem 1.8rem rgb(6 26 44 / 18%);
+  overscroll-behavior: contain;
+}
+
+.mobile-nav__disclosure .mobile-nav__panel {
+  position: fixed;
+  top: calc(var(--header-height) + 1px);
+  max-height: calc(100% - var(--header-height) - 1px);
+}
+
+.mobile-nav__panel nav:first-of-type {
   display: grid;
 }
 
@@ -430,20 +472,19 @@ h4 {
 
 .mobile-nav__group > summary span {
   color: var(--color-navy-700);
-  transition: transform 160ms ease;
-}
-
-.mobile-nav__group[open] > summary span {
-  transform: rotate(225deg);
 }
 
 .mobile-nav__group--active {
   color: var(--color-navy-700) !important;
 }
 
-.mobile-nav__group > div {
+.mobile-nav__group-body {
+  overflow: clip;
+}
+
+.mobile-nav__group-links {
   display: grid;
-  padding: 0.35rem 0 0.75rem 0.8rem;
+  padding: 0.35rem 0.25rem 0.75rem 0.8rem;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -3059,6 +3100,19 @@ a.future-card:hover {
     max-width: none;
     font-size: clamp(3rem, 4vw, 4.2rem);
     text-wrap: balance;
+  }
+
+  @supports not selector(:has(*)) {
+    .hero__copy--full {
+      grid-column: 1 / -1;
+      max-width: min(63%, 46rem);
+    }
+
+    .hero__copy--full h1 {
+      max-width: none;
+      font-size: clamp(3rem, 4vw, 4.2rem);
+      text-wrap: balance;
+    }
   }
 
   .section-heading-row {

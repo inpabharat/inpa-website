@@ -19,6 +19,8 @@ function showSlide(index: number): void {
 }
 
 function onKeydown(event: KeyboardEvent): void {
+  if (props.items.length < 2) return
+
   if (event.key === 'ArrowLeft') {
     event.preventDefault()
     showSlide(activeIndex.value - 1)
@@ -57,14 +59,17 @@ function markImageFailed(id: string): void {
     role="region"
     aria-roledescription="carousel"
     aria-label="Featured updates"
-    tabindex="0"
-    @keydown="onKeydown"
+    :tabindex="items.length > 1 ? 0 : undefined"
+    @keydown.self="onKeydown"
     @touchstart.passive="onTouchStart"
     @touchend.passive="onTouchEnd"
     @touchcancel="touchStart = null"
   >
+    <p v-if="items.length > 1" class="slideshow__status" role="status">
+      {{ `Update ${activeIndex + 1} of ${items.length}: ${activeSlide.title}` }}
+    </p>
     <Transition name="slide" mode="out-in">
-      <article :key="activeSlide.id" class="slideshow__slide" aria-live="polite">
+      <article :key="activeSlide.id" class="slideshow__slide">
         <div class="slideshow__media">
           <img
             v-if="!failedImages.has(activeSlide.id) && publicMediaUrl(activeSlide.imageKey)"
@@ -95,7 +100,7 @@ function markImageFailed(id: string): void {
       <button type="button" class="slideshow__arrow" aria-label="Show previous featured update" @click="showSlide(activeIndex - 1)">
         <span aria-hidden="true">←</span>
       </button>
-      <div class="slideshow__selectors" aria-label="Choose featured update">
+      <div class="slideshow__selectors" role="group" aria-label="Choose featured update">
         <button
           v-for="(item, index) in items"
           :key="item.id"
@@ -110,7 +115,7 @@ function markImageFailed(id: string): void {
         <span aria-hidden="true">→</span>
       </button>
     </div>
-    <p class="slideshow__hint">Use left and right arrow keys when this feature is focused.</p>
+    <p v-if="items.length > 1" class="slideshow__hint">Use left and right arrow keys when this feature is focused.</p>
   </div>
 </template>
 
@@ -123,6 +128,15 @@ function markImageFailed(id: string): void {
 
 .slideshow:focus-visible {
   box-shadow: inset 0 0 0 3px var(--color-gold-300);
+}
+
+.slideshow__status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .slideshow__slide {

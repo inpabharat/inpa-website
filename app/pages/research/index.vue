@@ -29,7 +29,7 @@ useSeoMeta({
           <button class="button button--navy" type="button" @click="refresh()">Try again</button>
         </div>
         <div v-else-if="items.length" class="research-list">
-          <article v-for="item in items" :key="item.id" class="research-card">
+          <article v-for="item in items" :key="item.id" class="research-card" :class="{ 'research-card--illustrated': item.imageKey }">
             <img
               v-if="item.imageKey"
               :src="publicMediaUrl(item.imageKey) ?? undefined"
@@ -120,6 +120,12 @@ useSeoMeta({
 @media (min-width: 52rem) {
   .research-card:has(> img) {
     grid-template-columns: minmax(18rem, 0.8fr) minmax(0, 1.2fr);
+  }
+
+  @supports not selector(:has(*)) {
+    .research-card--illustrated {
+      grid-template-columns: minmax(18rem, 0.8fr) minmax(0, 1.2fr);
+    }
   }
 }
 </style>

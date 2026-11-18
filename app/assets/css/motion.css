@@ -62,13 +62,45 @@
 .desktop-nav__links a:hover > span:last-child {
   transform: translateX(3px);
 }
-.mobile-nav[open] > .mobile-nav__panel,
-.mobile-nav__group[open] > div {
-  animation: navigation-arrive 220ms ease both;
-}
-@keyframes navigation-arrive {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: translateY(0); }
+@media (prefers-reduced-motion: no-preference) {
+  .mobile-nav__group > summary .navigation-chevron {
+    transition: transform 160ms ease;
+  }
+
+  @supports selector(::details-content) and (interpolate-size: allow-keywords) and (transition-behavior: allow-discrete) {
+    .mobile-nav__group::details-content {
+      block-size: auto;
+      overflow: clip;
+      contain: layout;
+      interpolate-size: allow-keywords;
+      transition: block-size 220ms cubic-bezier(.2, .7, .2, 1), content-visibility 220ms allow-discrete, display 220ms allow-discrete;
+    }
+
+    .mobile-nav__group:not([open])::details-content {
+      block-size: 0;
+    }
+  }
+
+  .mobile-menu-enter-active {
+    transition: opacity 220ms ease;
+  }
+  .mobile-menu-leave-active {
+    transition: opacity 160ms ease;
+  }
+  .mobile-menu-enter-active .mobile-nav__panel {
+    transition: transform 220ms cubic-bezier(.2, .7, .2, 1);
+  }
+  .mobile-menu-leave-active .mobile-nav__panel {
+    transition: transform 160ms ease-in;
+  }
+  .mobile-menu-enter-from,
+  .mobile-menu-leave-to {
+    opacity: 0;
+  }
+  .mobile-menu-enter-from .mobile-nav__panel,
+  .mobile-menu-leave-to .mobile-nav__panel {
+    transform: translateY(-0.75rem);
+  }
 }
 @media (min-width: 64rem) and (prefers-reduced-motion: no-preference) {
   .scroll-reveal {
@@ -93,7 +125,5 @@
   .navigation-panel-enter-from,
   .navigation-panel-leave-to { transform: none; }
   .navigation-panel-enter-active .desktop-nav__introduction,
-  .navigation-panel-enter-active .desktop-nav__links a,
-  .mobile-nav[open] > .mobile-nav__panel,
-  .mobile-nav__group[open] > div { animation: none; }
+  .navigation-panel-enter-active .desktop-nav__links a { animation: none; }
 }

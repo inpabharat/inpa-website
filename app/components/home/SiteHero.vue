@@ -10,7 +10,7 @@ const animationPaused = ref(false)
   <section class="hero" aria-labelledby="hero-title">
     <HomeNucleusSimulation :paused="animationPaused" />
     <div class="container hero__content">
-      <div class="hero__copy">
+      <div class="hero__copy" :class="{ 'hero__copy--full': !carousel.length }">
         <p class="eyebrow eyebrow--light">Official digital home</p>
         <h1 id="hero-title">{{ heroContent.title }}</h1>
         <p class="hero__mission">{{ heroContent.mission }}</p>

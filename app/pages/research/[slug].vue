@@ -33,7 +33,7 @@ useSeoMeta({
     </section>
 
     <section class="section">
-      <div class="container research-detail">
+      <div class="container research-detail" :class="{ 'research-detail--illustrated': item.imageKey }">
         <figure v-if="item.imageKey" class="research-detail__figure">
           <img :src="publicMediaUrl(item.imageKey) ?? undefined" :alt="item.imageAlt ?? ''" width="1200" height="675">
           <figcaption v-if="item.imageCredit">{{ item.imageCredit }}</figcaption>
@@ -123,6 +123,12 @@ useSeoMeta({
 @media (min-width: 58rem) {
   .research-detail:has(.research-detail__figure) {
     grid-template-columns: minmax(20rem, 0.9fr) minmax(0, 1.1fr);
+  }
+
+  @supports not selector(:has(*)) {
+    .research-detail--illustrated {
+      grid-template-columns: minmax(20rem, 0.9fr) minmax(0, 1.1fr);
+    }
   }
 }
 </style>

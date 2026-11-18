@@ -68,11 +68,12 @@ function handleWheel(event: WheelEvent): void {
     class="community-photo-dialog"
     aria-label="Community highlight photos"
     @cancel.prevent="closePhoto"
+    @wheel="handleWheel"
     @keydown.left.prevent="movePhoto(-1)"
     @keydown.right.prevent="movePhoto(1)"
   >
     <Transition name="community-photo" @after-leave="finishClosingPhoto">
-      <div v-if="isOpen" class="community-photo-dialog__stage" @wheel="handleWheel">
+      <div v-if="isOpen" class="community-photo-dialog__stage">
         <button ref="closeButton" type="button" class="community-photo-dialog__close" aria-label="Close photo viewer" @click="closePhoto">
           <span aria-hidden="true">×</span>
         </button>
@@ -124,15 +125,14 @@ function handleWheel(event: WheelEvent): void {
   overflow: hidden;
   border: 0;
   background: transparent;
+  overscroll-behavior: contain;
+  touch-action: pan-x pinch-zoom;
 }
 
 .community-photo-dialog::backdrop {
-  background: transparent;
-}
-
-:global(html:has(.community-photo-dialog[open])) {
   overflow: hidden;
-  scrollbar-gutter: stable;
+  background: transparent;
+  overscroll-behavior: contain;
 }
 
 .community-photo-dialog__stage {
@@ -147,9 +147,10 @@ function handleWheel(event: WheelEvent): void {
   overflow: auto hidden;
   grid-auto-columns: 100%;
   grid-auto-flow: column;
-  overscroll-behavior: contain;
+  overscroll-behavior-x: contain;
   scroll-snap-type: x mandatory;
   scrollbar-width: none;
+  touch-action: pan-x pinch-zoom;
 }
 
 .community-photo-dialog__slide {
