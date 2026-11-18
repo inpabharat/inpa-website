@@ -53,6 +53,14 @@ export function calculateCoulombRepulsion(
   return -strength / (distance * distance + softeningRadius * softeningRadius)
 }
 
+export function calculateScatteringAcceleration(distance: number, chargeRadius: number, strength: number): number {
+  if (distance <= 0 || chargeRadius <= 0 || strength <= 0) return 0
+  // Approximate the target as a uniformly charged sphere so the field stays
+  // finite and continuous when a projectile reaches the nuclear interior.
+  if (distance < chargeRadius) return strength * distance / chargeRadius ** 3
+  return strength / distance ** 2
+}
+
 export function calculateMeanFieldRestoringAcceleration(
   distanceFromCentre: number,
   confinementRadius: number,

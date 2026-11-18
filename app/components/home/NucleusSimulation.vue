@@ -4,6 +4,7 @@ import {
   calculateCentralForce,
   calculateCoulombRepulsion,
   calculateMeanFieldRestoringAcceleration,
+  calculateScatteringAcceleration,
   isBodyOutsideViewport,
   isProjectileAbsorbed,
   resolveRigidCollisions,
@@ -60,12 +61,16 @@ let nucleusY = 0
 let nucleusRadius = 0
 let particleRadius = 9
 let clusterRadius = 0
+let launchSpeedScale = 1
 let nextParticleId = 0
 let nextProjectileIn = 1.25
 let lastTimestamp = 0
 let isVisible = true
 let prefersReducedMotion = false
 const maximumActiveProjectiles = 3
+const minimumLaunchSpeed = 225
+const maximumLaunchSpeed = 345
+const referenceLaunchSpeed = (minimumLaunchSpeed + maximumLaunchSpeed) / 2
 const trailDuration = 0.42
 const trailDotInterval = 0.065
 const shortRangeRadiusMultiplier = 5.4
@@ -81,6 +86,8 @@ function randomBetween(minimum: number, maximum: number): number {
 
 function configureGeometry(): void {
   const isNarrow = width < 720
+  // Slow shorter approaches so particles remain visible for longer on phones.
+  launchSpeedScale = Math.min(width / 960, 1)
   nucleusX = width * (isNarrow ? 0.8 : 0.75)
   nucleusY = height * (isNarrow ? 0.44 : 0.43)
   nucleusRadius = Math.min(
@@ -189,7 +196,7 @@ function spawnProjectile(): void {
     x: nucleusX + randomBetween(-nucleusRadius * 0.18, nucleusRadius * 0.18),
     y: nucleusY + impactParameter,
   }
-  const speed = randomBetween(width < 720 ? 175 : 225, width < 720 ? 255 : 345)
+  const speed = randomBetween(minimumLaunchSpeed, maximumLaunchSpeed) * launchSpeedScale
   const velocity = aimAt(start, target, speed)
 
   particles.push({
@@ -323,6 +330,10 @@ function excitationAngleAt(time: number): number {
   return 0.065 * excitationStrength(progress) * Math.sin(6 * Math.PI * progress)
 }
 
+function isApproachingProton(particle: SimulationParticle): boolean {
+  return particle.type === 'proton' && particle.phase === 'incoming' && !particle.hasImpacted
+}
+
 function updateSimulation(deltaTime: number): void {
   simulationTime += deltaTime
   resolveParticleContacts()
@@ -331,7 +342,12 @@ function updateSimulation(deltaTime: number): void {
   const interactionRange = particleRadius * shortRangeRadiusMultiplier
   const coreRadius = particleRadius * 2.05
   const coulombSofteningRadius = particleRadius * 1.25
-  const coulombStrength = particleRadius * particleRadius * 115
+  const coulombStrength = particleRadius * particleRadius * 135
+  const chargeRadius = nucleusRadius * 0.75
+  // Match the work from launch to the charge radius to the launch-energy scale.
+  const launchDistance = nucleusX + particleRadius * 4
+  const potentialChange = Math.max(0.5, 1 - chargeRadius / launchDistance)
+  const scatteringStrength = 0.30 * chargeRadius * (referenceLaunchSpeed * launchSpeedScale) ** 2 / potentialChange
 
   for (let firstIndex = 0; firstIndex < particles.length; firstIndex += 1) {
     const first = particles[firstIndex]
@@ -351,7 +367,11 @@ function updateSimulation(deltaTime: number): void {
         force += calculateCentralForce(distance, coreRadius, interactionRange)
       }
       if (first.type === 'proton' && second.type === 'proton') {
-        force += calculateCoulombRepulsion(distance, coulombSofteningRadius, coulombStrength)
+        const usesNuclearField = (first.phase === 'bound' && isApproachingProton(second))
+          || (second.phase === 'bound' && isApproachingProton(first))
+        if (!usesNuclearField) {
+          force += calculateCoulombRepulsion(distance, coulombSofteningRadius, coulombStrength)
+        }
       }
       if (force === 0) continue
 
@@ -370,6 +390,16 @@ function updateSimulation(deltaTime: number): void {
     if (!particle || !particleAcceleration) continue
 
     if (particle.phase !== 'bound' && particle.hasImpacted) particle.timeSinceImpact += deltaTime
+    const inScatteringField = isApproachingProton(particle)
+    if (inScatteringField) {
+      // The mean field acts on the projectile while the heavy target stays put.
+      const dx = particle.x - nucleusX
+      const dy = particle.y - nucleusY
+      const distance = Math.hypot(dx, dy) || 1
+      const outwardAcceleration = calculateScatteringAcceleration(distance, chargeRadius, scatteringStrength)
+      particleAcceleration.x += dx / distance * outwardAcceleration
+      particleAcceleration.y += dy / distance * outwardAcceleration
+    }
     if (particle.phase === 'bound') {
       const dx = particle.x - nucleusX
       const dy = particle.y - nucleusY
@@ -399,9 +429,11 @@ function updateSimulation(deltaTime: number): void {
 
     particle.vx += particleAcceleration.x * deltaTime
     particle.vy += particleAcceleration.y * deltaTime
-    const damping = Math.pow(particle.phase === 'bound' ? 0.986 : 0.999, deltaTime * 60)
-    particle.vx *= damping
-    particle.vy *= damping
+    if (!inScatteringField) {
+      const damping = Math.pow(particle.phase === 'bound' ? 0.986 : 0.999, deltaTime * 60)
+      particle.vx *= damping
+      particle.vy *= damping
+    }
     particle.x += particle.vx * deltaTime
     particle.y += particle.vy * deltaTime
   }

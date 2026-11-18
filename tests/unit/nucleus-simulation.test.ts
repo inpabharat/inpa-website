@@ -4,6 +4,7 @@ import {
   calculateCentralForce,
   calculateCoulombRepulsion,
   calculateMeanFieldRestoringAcceleration,
+  calculateScatteringAcceleration,
   isBodyOutsideViewport,
   isProjectileAbsorbed,
   resolveRigidCollision,
@@ -35,6 +36,17 @@ describe('qualitative nucleus simulation helpers', () => {
     expect(atCentre).toBe(0)
     expect(inBulk).toBeGreaterThan(0)
     expect(nearSurface).toBeGreaterThan(inBulk)
+  })
+
+  it('joins a finite interior scattering field to inverse-square repulsion at the surface', () => {
+    const radius = 20
+    const strength = 10_000
+    const surface = calculateScatteringAcceleration(radius, radius, strength)
+
+    expect(calculateScatteringAcceleration(0, radius, strength)).toBe(0)
+    expect(calculateScatteringAcceleration(radius / 2, radius, strength)).toBe(surface / 2)
+    expect(calculateScatteringAcceleration(radius - 0.001, radius, strength)).toBeCloseTo(surface, 2)
+    expect(calculateScatteringAcceleration(radius * 2, radius, strength)).toBe(surface / 4)
   })
 
   it('keeps a projectile alive until it is fully off screen', () => {
