@@ -33,7 +33,7 @@ import { strategicVision } from '~~/content/site/home'
             <p class="eyebrow eyebrow--light">{{ strategicVision.nnpi.descriptor }}</p>
             <h3>{{ strategicVision.nnpi.title }}</h3>
             <p>{{ strategicVision.nnpi.summary }}</p>
-            <NuxtLink class="text-link text-link--light" :to="strategicVision.nnpi.to">Explore the developing framework <span aria-hidden="true">→</span></NuxtLink>
+            <NuxtLink class="text-link text-link--light" :to="strategicVision.nnpi.to">{{ strategicVision.nnpi.linkLabel }} <span aria-hidden="true">→</span></NuxtLink>
           </div>
           <ul aria-label="NNPI framework elements">
             <li v-for="pillar in strategicVision.nnpi.pillars" :key="pillar">{{ pillar }}</li>

@@ -101,27 +101,6 @@ const routeContent: Record<string, PendingRouteContent> = {
       },
     ],
   },
-  '/nnpi': {
-    title: 'NNPI — From Vision to Action',
-    description: 'A community-driven framework for transforming India’s nuclear-physics aspirations into coordinated national action.',
-    sections: [
-      {
-        heading: 'A Community Action Framework for Realizing the Mega Science Vision–2035',
-        paragraphs: [
-          'NNPI connects scientific priorities with present and future national capabilities and the nuclear-physics community, creating the road from shared vision to coordinated action.',
-        ],
-      },
-      {
-        heading: 'Three connected elements',
-        items: [
-          'Science — frontier questions and national priorities.',
-          'Capability — theory, experiment, instrumentation, computing and facilities.',
-          'Community — collaboration, young researchers and national coordination.',
-          'Action — coordinated programmes, partnerships and implementation.',
-        ],
-      },
-    ],
-  },
   '/nuclear-horizons': {
     title: 'Nuclear Horizons',
     description: 'Nuclear Horizons is the official bulletin of the Indian Nuclear Physics Association and a platform for communication, collaboration and knowledge exchange.',

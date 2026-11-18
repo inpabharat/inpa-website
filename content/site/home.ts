@@ -47,7 +47,7 @@ export const heroContent = {
 export const strategicVision = {
   eyebrow: 'One connected scientific ecosystem',
   title: 'Community • Voice • Roadmap',
-  introduction: 'INPA connects the community, Nuclear Horizons carries its voice, and the developing NNPI framework is intended to help translate shared scientific aspirations into coordinated national action.',
+  introduction: 'INPA connects the community, Nuclear Horizons shares its work, and the NNPI consultation draft sets out how the community can turn shared scientific priorities into coordinated national action.',
   verticals: [
     {
       mark: 'INPA',
@@ -66,15 +66,17 @@ export const strategicVision = {
     {
       mark: 'NNPI',
       title: 'The Roadmap',
-      summary: 'A community-driven framework being prepared to turn India’s nuclear-physics aspirations into coordinated action.',
-      status: 'Framework in development',
+      summary: 'A framework for turning India’s nuclear physics priorities into coordinated national programmes.',
+      status: 'Draft for community consultation',
       to: '/nnpi',
     },
   ] satisfies readonly VisionItem[],
   nnpi: {
-    title: 'NNPI — From Vision to Action',
+    title: 'National Nuclear Physics Initiative',
+    status: 'Draft for community consultation',
     descriptor: 'A Community Action Framework for Realizing the Mega Science Vision–2035',
-    summary: 'NNPI connects scientific priorities with present and future national capabilities and the nuclear-physics community, creating the road from shared vision to coordinated action.',
+    summary: 'The draft proposes how researchers and institutions can develop shared scientific priorities into national programmes.',
+    linkLabel: 'Read the consultation draft',
     pillars: ['Science', 'Capability', 'Community', 'Action'],
     to: '/nnpi',
   },

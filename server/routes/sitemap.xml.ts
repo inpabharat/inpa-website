@@ -20,6 +20,7 @@ export default defineEventHandler(async (event) => {
     '/activities/young-scientist-colloquium',
     '/community',
     '/map',
+    '/nnpi',
     '/nuclear-horizons',
     '/nuclear-horizons/archive',
     ...(research.length ? ['/research', ...research.map(item => `/research/${item.slug}`)] : []),
