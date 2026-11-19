@@ -17,7 +17,7 @@ async function eventInput(event: H3Event, body: unknown) {
   const input = parseEventInput(body)
   const posterKey = input.posterPdfKey
   if (posterKey && !youngScientistColloquium.seminars.some(seminar => seminar.poster === posterKey)) {
-    await requireUploadedMedia(event, posterKey, 'pdf')
+    await requireUploadedMedia(event, posterKey, 'pdf', 'posterPdfKey')
   }
   return input
 }

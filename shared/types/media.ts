@@ -1,4 +1,5 @@
 export type MediaKind = 'image' | 'pdf'
+export const MAX_UPLOAD_BYTES = 8 * 1024 * 1024
 
 export interface MediaUsage {
   kind: string

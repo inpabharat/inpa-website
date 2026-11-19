@@ -7,11 +7,11 @@ import { requireUploadedMedia } from '../utils/uploaded-media'
 
 type Kind = 'publications' | 'research'
 function repository(event: H3Event) { return new ScienceRepository(requireAdminDatabase(event)) }
-async function checkMedia(event: H3Event, key: string | null, type: 'image' | 'pdf'): Promise<void> {
+async function checkMedia(event: H3Event, key: string | null, type: 'image' | 'pdf', field: string): Promise<void> {
   if (!key) return
   const known = staticPublicationMedia.get(key as Parameters<typeof staticPublicationMedia.get>[0])
   if (known && (type === 'pdf' ? known === 'application/pdf' : known.startsWith('image/'))) return
-  await requireUploadedMedia(event, key, type)
+  await requireUploadedMedia(event, key, type, field)
 }
 export async function adminScience(event: H3Event, kind: Kind, method: 'GET' | 'POST' | 'PUT' | 'DELETE') {
   prepareAdminResponse(event)
@@ -30,18 +30,18 @@ export async function adminScience(event: H3Event, kind: Kind, method: 'GET' | '
     let saved
     if (kind === 'publications') {
       const input = parsePublicationInput(body)
-      await checkMedia(event, input.pdfKey, 'pdf')
-      await checkMedia(event, input.coverImageKey, 'image')
+      await checkMedia(event, input.pdfKey, 'pdf', 'pdfKey')
+      await checkMedia(event, input.coverImageKey, 'image', 'coverImageKey')
       saved = method === 'POST' ? await store.createPublication(input, editor) : await store.updatePublication(id, input, editor)
     } else {
       const input = parseResearchInput(body)
-      await checkMedia(event, input.imageKey, 'image')
+      await checkMedia(event, input.imageKey, 'image', 'imageKey')
       saved = method === 'POST' ? await store.createResearch(input, editor) : await store.updateResearch(id, input, editor)
     }
     if (!saved) throw createError({ statusCode: 404, statusMessage: 'Item not found.' })
     return adminResponse(saved, 'Changes saved.')
   } catch (error) {
-    if (error instanceof ScienceValidationError) throw createError({ statusCode: 422, statusMessage: error.message, data: { issues: error.issues } })
+    if (error instanceof ScienceValidationError) throw createError({ statusCode: 422, statusMessage: error.message, data: { issues: error.issues, fieldIssues: error.fieldIssues } })
     validationError(error)
   }
 }

@@ -2952,12 +2952,17 @@ a.future-card:hover {
 .text-button { padding: 0.55rem 0.85rem; }
 .editor-workspace { display: grid; align-items: start; gap: 2rem; }
 .editor-form { display: grid; padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--color-border); background: var(--color-surface-subtle); gap: 1rem; }
+.editor-form .editor-form__fields { display: grid; min-width: 0; margin: 0; padding: 0; border: 0; gap: 1rem; }
 .editor-form > label,
+.editor-form__fields > label,
+.editor-form details > label,
 .editor-form__row label { display: grid; color: var(--color-navy-950); font-size: 0.88rem; font-weight: 750; gap: 0.4rem; }
 .editor-form input,
 .editor-form textarea,
 .editor-form select { width: 100%; min-height: 2.75rem; padding: 0.65rem 0.75rem; border: 1px solid #97acb9; border-radius: 0; background: var(--color-surface); color: var(--color-text); font: inherit; font-weight: 450; }
 .editor-form textarea { resize: vertical; }
+.editor-form [aria-invalid="true"] { border-color: var(--color-danger, #9e2525); }
+.admin-field-error { color: var(--color-danger, #9e2525); font-size: 0.88rem; }
 .editor-form__row { display: grid; gap: 1rem; }
 .editor-form .editor-check { display: flex; align-items: center; gap: 0.65rem; }
 .editor-check input { width: 1.2rem; min-height: 1.2rem; }

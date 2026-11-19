@@ -45,12 +45,15 @@ export function validationError(error: unknown): never {
     throw createError({
       statusCode: 422,
       statusMessage: error.message,
-      data: { issues: error.issues },
+      data: { issues: error.issues, fieldIssues: error.fieldIssues },
     })
   }
-  const message = error instanceof Error ? error.message : ''
+  const message = error instanceof Error ? [error.message, error.cause instanceof Error ? error.cause.message : ''].join(' ') : ''
   if (message.includes('UNIQUE constraint failed')) {
-    throw createError({ statusCode: 409, statusMessage: 'That slug is already in use.' })
+    const duplicateIssue = message.includes('publications.volume')
+    const field = duplicateIssue ? 'issueNumber' : 'slug'
+    const statusMessage = duplicateIssue ? 'An issue with this volume and issue number already exists.' : 'That slug is already in use.'
+    throw createError({ statusCode: 409, statusMessage, data: { fieldIssues: { [field]: statusMessage } } })
   }
   throw error
 }

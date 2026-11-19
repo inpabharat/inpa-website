@@ -35,7 +35,7 @@ function scheduleFor(item: RecordItem): string | null {
             <td><strong>{{ stateFor(item).label }}</strong><small v-if="stateFor(item).detail" class="editor-state-detail">{{ stateFor(item).detail }}</small><small v-if="scheduleFor(item)" class="editor-state-detail">{{ scheduleFor(item) }}</small></td>
             <td>{{ item.createdBy }}</td>
             <td><span :title="`Last updated by ${item.updatedBy}`">{{ new Date(item.updatedAt).toLocaleString('en-IN') }}</span></td>
-            <td><div class="editor-row-actions"><button type="button" @click="$emit('edit', item)">Edit</button><button type="button" class="danger-button" @click="$emit('remove', item.id, item.title)">Delete</button></div></td>
+            <td><div class="editor-row-actions"><button :id="`admin-edit-${kind}-${item.id}`" type="button" @click="$emit('edit', item)">Edit</button><button type="button" class="danger-button" @click="$emit('remove', item.id, item.title)">Delete</button></div></td>
           </tr>
         </tbody>
       </table>

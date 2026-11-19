@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { AdminFieldAttributes } from '~/composables/useAdminFormErrors'
 import type { MediaKind, MediaSelection } from '~~/shared/types/media'
 
 const props = withDefaults(defineProps<{
@@ -6,17 +7,23 @@ const props = withDefaults(defineProps<{
   alt?: string | null
   label: string
   accept?: MediaKind
-}>(), { alt: null, accept: 'image' })
+  field?: AdminFieldAttributes | null
+  altField?: AdminFieldAttributes | null
+}>(), { alt: null, accept: 'image', field: null, altField: null })
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
   'update:alt': [value: string]
+  'uploading': [value: boolean]
 }>()
 
 const mode = ref<'library' | 'upload' | null>(null)
 const refreshKey = ref(0)
 const selectedName = ref('')
 const fieldId = useId()
+const libraryButton = ref<HTMLButtonElement | null>(null)
+const uploadButton = ref<HTMLButtonElement | null>(null)
+const uploading = ref(false)
 
 const previewUrl = computed(() => {
   if (!props.modelValue) return ''
@@ -30,11 +37,22 @@ const fallbackName = computed(() => {
   try { return decodeURIComponent(part) } catch { return part }
 })
 
+function focusChooser(button: HTMLButtonElement | null): void {
+  void nextTick(() => button?.focus())
+}
+
 function useMedia(value: MediaSelection): void {
+  const trigger = mode.value === 'upload' ? uploadButton.value : libraryButton.value
   selectedName.value = value.originalName || ''
   emit('update:modelValue', value.key)
   emit('update:alt', props.accept === 'image' ? value.alt : '')
   mode.value = null
+  focusChooser(trigger)
+}
+
+function setUploading(value: boolean): void {
+  uploading.value = value
+  emit('uploading', value)
 }
 
 function uploaded(value: MediaSelection): void {
@@ -47,6 +65,7 @@ function clear(): void {
   emit('update:modelValue', '')
   emit('update:alt', '')
   mode.value = null
+  focusChooser(libraryButton.value)
 }
 </script>
 
@@ -63,25 +82,25 @@ function clear(): void {
         <a :href="previewUrl" target="_blank" rel="noopener">Open preview in a new tab</a>
       </div>
     </div>
-    <p v-else class="media-field__empty">No {{ accept === 'pdf' ? 'PDF' : 'image' }} selected.</p>
+    <p v-else :id="altField?.id" :tabindex="altField?.['aria-invalid'] ? -1 : undefined" :aria-describedby="altField?.['aria-describedby']" class="media-field__empty">No {{ accept === 'pdf' ? 'PDF' : 'image' }} selected.</p>
 
-    <label v-if="accept === 'image' && modelValue" :for="`${fieldId}-alt`" class="media-field__alt">
+    <label v-if="accept === 'image' && modelValue" class="media-field__alt">
       Image description
-      <textarea :id="`${fieldId}-alt`" :value="alt || ''" rows="2" maxlength="300" @input="emit('update:alt', ($event.target as HTMLTextAreaElement).value)" />
-      <span>Describe the important content for visitors who cannot see the image.</span>
+      <textarea v-bind="altField ?? {}" :aria-describedby="[altField?.['aria-describedby'], `${fieldId}-alt-help`].filter(Boolean).join(' ')" :value="alt || ''" rows="2" maxlength="300" @input="emit('update:alt', ($event.target as HTMLTextAreaElement).value)" />
+      <span :id="`${fieldId}-alt-help`">Describe the important content for visitors who cannot see the image.</span>
     </label>
 
     <div class="media-field__actions">
-      <button type="button" :aria-expanded="mode === 'library'" @click="mode = mode === 'library' ? null : 'library'">Choose from library</button>
-      <button type="button" :aria-expanded="mode === 'upload'" @click="mode = mode === 'upload' ? null : 'upload'">Upload new</button>
-      <button v-if="modelValue" type="button" class="danger-button" @click="clear">Remove selection</button>
+      <button ref="libraryButton" v-bind="field ?? {}" type="button" :disabled="uploading" :aria-expanded="mode === 'library'" @click="mode = mode === 'library' ? null : 'library'">Choose from library</button>
+      <button ref="uploadButton" type="button" :disabled="uploading" :aria-expanded="mode === 'upload'" @click="mode = mode === 'upload' ? null : 'upload'">Upload new</button>
+      <button v-if="modelValue" type="button" class="danger-button" :disabled="uploading" @click="clear">Remove selection</button>
     </div>
 
     <div v-if="mode === 'library'" class="media-field__panel">
       <AdminMediaLibrary :refresh-key="refreshKey" :accept="accept" @selected="useMedia" />
     </div>
     <div v-else-if="mode === 'upload'" class="media-field__panel">
-      <AdminMediaUploader :accept="accept" @uploaded="uploaded" />
+      <AdminMediaUploader :accept="accept" @uploaded="uploaded" @uploading="setUploading" />
     </div>
   </fieldset>
 </template>

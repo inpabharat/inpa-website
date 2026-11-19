@@ -1,9 +1,9 @@
 import { createError, readMultipartFormData } from 'h3'
+import { MAX_UPLOAD_BYTES } from '../../../../shared/types/media'
 import { getR2Binding } from '../../../database/bindings'
 import { AdminContentRepository } from '../../../repositories/admin-content.repository'
 import { assertSameOrigin, prepareAdminResponse, requireAdminDatabase, requireAdminIdentity } from '../../../utils/admin-api'
 
-const MAX_UPLOAD_BYTES = 8 * 1024 * 1024
 const allowedFiles = {
   'image/jpeg': { extension: 'jpg', extensions: ['jpg', 'jpeg'], signature: (data: Uint8Array) => data.length >= 3 && data[0] === 0xff && data[1] === 0xd8 && data[2] === 0xff },
   'image/png': { extension: 'png', extensions: ['png'], signature: (data: Uint8Array) => data.length >= 8 && data.slice(0, 8).every((byte, index) => byte === [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a][index]) },

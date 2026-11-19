@@ -38,7 +38,6 @@ useSeoMeta({ title: 'INPA editor', robots: 'noindex, nofollow, noarchive' })
           v-else-if="content && session"
           :initial-snapshot="content.data"
           :editor-email="session.data.email"
-          @refresh="refresh"
         />
       </div>
     </section>

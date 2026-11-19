@@ -20,6 +20,10 @@ The bypass works only with the local environment marker. Preview and production 
 - Deletion requires confirmation and retains an audit revision, but is not a substitute for D1 backups.
 - Carousel items require an approved image and alternative text. Their start/end times and sort order control visibility and order.
 
+For a date and time, choose the date, then type a 24-hour time such as `1430` or use **Pick a time**. These fields use your computer’s timezone. Once you set a start, earlier end dates are unavailable and the time picker offers only later times on the same day. Use **Clear** to remove an optional date and time.
+
+In News, **Scheduled go-live** appears when you select **Scheduled** and controls when the item appears. **Date shown to readers** sets the date in news listings. For an item marked **Published**, setting a future date also delays its appearance. **Take offline on** removes the item from listings and makes its detail page unavailable. Leave it blank to keep the item available.
+
 ## Young Scientist Colloquium
 
 Under **Events → Add event**, choose **Young Scientist Colloquium** as the event type. Enter the seminar details and optionally select or upload a seminar PDF. Publishing the event adds it to the Events and Colloquium pages. It moves to the programme archive after its end time, or after its start time if the end time is blank. The PDF remains linked in the archive. Edit the same record under Events to update both pages.

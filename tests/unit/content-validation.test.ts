@@ -20,6 +20,16 @@ describe('content validation', () => {
     expect(() => parseNewsInput({ ...news, status: 'scheduled' })).toThrow(ContentValidationError)
   })
 
+  it('applies the go-live time to expiry only for scheduled news', () => {
+    const dates = {
+      publishAt: '2026-09-03T10:00:00.000Z',
+      publishedAt: '2026-09-03T08:00:00.000Z',
+      expiresAt: '2026-09-03T09:00:00.000Z',
+    }
+    expect(parseNewsInput({ ...news, ...dates, status: 'published' })).toMatchObject(dates)
+    expect(() => parseNewsInput({ ...news, ...dates, status: 'scheduled' })).toThrow(/expiry date must be after publication/i)
+  })
+
   it('requires image alternative text with an image key', () => {
     expect(() => parseNewsInput({ ...news, coverImageKey: 'uploads/2026/09/file.jpg' })).toThrow(/alternative text/i)
   })

@@ -12,16 +12,23 @@ type Panel = 'overview' | 'news' | 'events' | 'carousel' | 'publications' | 'res
 type EntityKind = 'news' | 'events' | 'carousel'
 
 const props = defineProps<{ initialSnapshot: AdminContentSnapshot, editorEmail: string }>()
-const emit = defineEmits<{ refresh: [] }>()
 const snapshot = ref<AdminContentSnapshot>(structuredClone(props.initialSnapshot))
 const panel = ref<Panel>('overview')
 const busy = ref(false)
 const message = ref('')
 const errorMessage = ref('')
+const refreshError = ref('')
+const refreshing = ref(false)
+const activeUploads = ref(0)
+const formHeading = ref<HTMLHeadingElement | null>(null)
+const addButton = ref<HTMLButtonElement | null>(null)
+const panelNav = ref<HTMLElement | null>(null)
+const discardDialog = ref<{ confirm: () => Promise<boolean> } | null>(null)
+const { entries, summaryId, clear, clearField, clearOnInput, field, show } = useAdminFormErrors()
 const editingId = ref<string | null>(null)
 const formOpen = ref(false)
 const savedForm = ref('')
-const scienceEditor = ref<{ canLeave: () => boolean } | null>(null)
+const scienceEditor = ref<{ dirty: boolean, hasPendingWork: boolean } | null>(null)
 const mediaRefreshKey = ref(0)
 const editorTimeZone = ref('your computer’s local timezone')
 const panels: { id: Panel, label: string, description: string }[] = [
@@ -56,6 +63,7 @@ const eventForm = reactive(blankEvent())
 const carouselForm = reactive(blankCarousel())
 const activeForm = computed(() => panel.value === 'news' ? newsForm : panel.value === 'events' ? eventForm : carouselForm)
 const dirty = computed(() => formOpen.value && JSON.stringify(activeForm.value) !== savedForm.value)
+const hasUnsavedChanges = computed(() => dirty.value || Boolean(scienceEditor.value?.dirty))
 const counts = computed(() => ({
   drafts: snapshot.value.news.filter(item => item.status === 'draft').length + snapshot.value.events.filter(item => item.status === 'draft').length,
   scheduled: snapshot.value.news.filter(item => item.status === 'scheduled').length + snapshot.value.events.filter(item => item.status === 'scheduled').length,
@@ -79,24 +87,36 @@ function nullable(value: string | null): string | null {
 function resetFeedback(): void {
   message.value = ''
   errorMessage.value = ''
+  clear()
 }
 
-function canLeave(): boolean {
-  if (busy.value) return false
-  if (scienceEditor.value && !scienceEditor.value.canLeave()) return false
-  return !dirty.value || window.confirm('Discard the changes you have not saved?')
+function focusHeading(): void {
+  void nextTick(() => {
+    const target = formHeading.value ?? panelNav.value?.querySelector<HTMLButtonElement>('[aria-current="page"]')
+    target?.focus()
+  })
 }
 
-function selectPanel(next: Panel): void {
-  if (next === panel.value || !canLeave()) return
+function canLeave(): boolean | Promise<boolean> {
+  if (busy.value || activeUploads.value || scienceEditor.value?.hasPendingWork) return false
+  return !hasUnsavedChanges.value || (discardDialog.value?.confirm() ?? false)
+}
+
+function trackUpload(uploading: boolean): void {
+  activeUploads.value += uploading ? 1 : -1
+}
+
+async function selectPanel(next: Panel): Promise<void> {
+  if (next === panel.value || !await canLeave()) return
   panel.value = next
   editingId.value = null
   formOpen.value = false
   resetFeedback()
+  focusHeading()
 }
 
-function startNews(item?: AdminNewsRecord): void {
-  if (!canLeave()) return
+async function startNews(item?: AdminNewsRecord): Promise<void> {
+  if (!await canLeave()) return
   editingId.value = item?.id ?? null
   Object.assign(newsForm, item ? {
     ...item,
@@ -108,10 +128,11 @@ function startNews(item?: AdminNewsRecord): void {
   formOpen.value = true
   savedForm.value = JSON.stringify(newsForm)
   resetFeedback()
+  focusHeading()
 }
 
-function startEvent(item?: AdminEventRecord): void {
-  if (!canLeave()) return
+async function startEvent(item?: AdminEventRecord): Promise<void> {
+  if (!await canLeave()) return
   editingId.value = item?.id ?? null
   Object.assign(eventForm, item ? {
     ...item,
@@ -123,10 +144,11 @@ function startEvent(item?: AdminEventRecord): void {
   formOpen.value = true
   savedForm.value = JSON.stringify(eventForm)
   resetFeedback()
+  focusHeading()
 }
 
-function startCarousel(item?: AdminCarouselRecord): void {
-  if (!canLeave()) return
+async function startCarousel(item?: AdminCarouselRecord): Promise<void> {
+  if (!await canLeave()) return
   editingId.value = item?.id ?? null
   Object.assign(carouselForm, item ? {
     ...item,
@@ -137,6 +159,7 @@ function startCarousel(item?: AdminCarouselRecord): void {
   formOpen.value = true
   savedForm.value = JSON.stringify(carouselForm)
   resetFeedback()
+  focusHeading()
 }
 
 function fillSlug(kind: 'news' | 'events'): void {
@@ -162,39 +185,39 @@ const carouselPreviewVisibility = computed(() => getCarouselVisibility({
   endsAt: localDateTimeToIso(carouselForm.endsAt),
 }))
 
-function describeError(error: unknown): string {
-  if (!error || typeof error !== 'object') return 'The request could not be completed.'
-  const candidate = error as { data?: { statusMessage?: string, data?: { issues?: string[] } }, message?: string }
-  return candidate.data?.data?.issues?.join(' ') ?? candidate.data?.statusMessage ?? candidate.message ?? 'The request could not be completed.'
-}
-
 async function reload(): Promise<void> {
-  const response = await $fetch<AdminApiResponse<AdminContentSnapshot>>('/api/admin/content')
-  snapshot.value = response.data
-  emit('refresh')
+  if (refreshing.value) return
+  refreshing.value = true
+  try {
+    const response = await $fetch<AdminApiResponse<AdminContentSnapshot>>('/api/admin/content')
+    snapshot.value = response.data
+    refreshError.value = ''
+  } catch {
+    refreshError.value = 'The content list could not be refreshed. Your saved changes are recorded.'
+  } finally {
+    refreshing.value = false
+  }
 }
 
 async function save(kind: EntityKind, body: AdminNewsInput | AdminEventInput | AdminCarouselInput): Promise<void> {
+  if (busy.value || refreshing.value || activeUploads.value) return
   busy.value = true
   resetFeedback()
   try {
     const id = editingId.value
     const response = await $fetch<{ message: string }>(id ? `/api/admin/${kind}/${id}` : `/api/admin/${kind}`, { method: id ? 'PUT' : 'POST', body })
     message.value = response.message
+    leaveForm()
     await reload()
-    editingId.value = null
-    formOpen.value = false
-    if (kind === 'news') Object.assign(newsForm, blankNews())
-    if (kind === 'events') Object.assign(eventForm, blankEvent())
-    if (kind === 'carousel') Object.assign(carouselForm, blankCarousel())
   } catch (error) {
-    errorMessage.value = describeError(error)
+    void show(error)
   } finally {
     busy.value = false
   }
 }
 
 async function remove(kind: EntityKind, id: string, title: string): Promise<void> {
+  if (busy.value || refreshing.value) return
   if (!window.confirm(`Permanently delete “${title}”? The audit record will be retained.`)) return
   busy.value = true
   resetFeedback()
@@ -203,30 +226,55 @@ async function remove(kind: EntityKind, id: string, title: string): Promise<void
     message.value = response.message
     await reload()
   } catch (error) {
-    errorMessage.value = describeError(error)
+    errorMessage.value = describeAdminError(error)
   } finally {
     busy.value = false
+    focusHeading()
   }
 }
 
-function closeForm(): void { if (canLeave()) formOpen.value = false }
-function beforeUnload(event: BeforeUnloadEvent): void {
-  if (dirty.value) { event.preventDefault(); event.returnValue = '' }
+function leaveForm(): void {
+  const id = editingId.value
+  editingId.value = null
+  formOpen.value = false
+  clear()
+  void nextTick(() => {
+    const editButton = id ? document.getElementById(`admin-edit-${panel.value}-${id}`) : null
+    const target = editButton ?? addButton.value ?? formHeading.value
+    target?.focus()
+  })
 }
-onMounted(() => window.addEventListener('beforeunload', beforeUnload))
+
+async function closeForm(): Promise<void> {
+  if (await canLeave()) leaveForm()
+}
+
+function beforeUnload(event: BeforeUnloadEvent): void {
+  event.preventDefault()
+  event.returnValue = true
+}
+watch(hasUnsavedChanges, (unsaved) => {
+  if (unsaved) window.addEventListener('beforeunload', beforeUnload)
+  else window.removeEventListener('beforeunload', beforeUnload)
+}, { flush: 'sync' })
 onBeforeUnmount(() => window.removeEventListener('beforeunload', beforeUnload))
-onBeforeRouteLeave(() => !dirty.value || window.confirm('Discard the changes you have not saved?'))
+onBeforeRouteLeave(canLeave)
 </script>
 
 <template>
   <div class="editor-dashboard">
-    <nav class="editor-tabs" aria-label="Editor sections">
+    <AdminDiscardDialog ref="discardDialog" />
+    <nav ref="panelNav" class="editor-tabs" aria-label="Editor sections">
       <button v-for="item in panels" :key="item.id" type="button" :disabled="busy" :aria-current="panel === item.id ? 'page' : undefined" @click="selectPanel(item.id)">
         {{ item.label }}
       </button>
     </nav>
     <p v-if="message" class="admin-alert admin-alert--success" role="status">{{ message }}</p>
     <p v-if="errorMessage" class="admin-alert admin-alert--error" role="alert">{{ errorMessage }}</p>
+    <div v-if="refreshError" class="admin-alert admin-alert--error">
+      <p role="status">{{ refreshError }}</p>
+      <button class="text-button" type="button" :aria-disabled="refreshing" @click="reload()">Retry list refresh</button>
+    </div>
 
     <section v-if="panel === 'overview'" aria-labelledby="editor-overview-title">
       <div class="editor-heading"><div><p class="eyebrow">Dashboard</p><h2 id="editor-overview-title">Publishing overview</h2></div><p>Administrative actions are recorded under {{ editorEmail }}.</p></div>
@@ -239,21 +287,40 @@ onBeforeRouteLeave(() => !dirty.value || window.confirm('Discard the changes you
     </section>
 
     <section v-else-if="panel === 'news'" aria-labelledby="news-editor-title">
-      <div class="editor-heading"><div><p class="eyebrow">News</p><h2 id="news-editor-title">{{ formOpen ? (editingId ? 'Edit news item' : 'Create news item') : 'News items' }}</h2></div><button v-if="!formOpen" type="button" class="button button--navy" @click="startNews()">Add news</button><button v-else type="button" class="text-button" @click="closeForm()">Back to all news</button></div>
+      <div class="editor-heading"><div><p class="eyebrow">News</p><h2 id="news-editor-title" ref="formHeading" tabindex="-1">{{ formOpen ? (editingId ? 'Edit news item' : 'Create news item') : 'News items' }}</h2></div><button v-if="!formOpen" ref="addButton" type="button" class="button button--navy" @click="startNews()">Add news</button><button v-else type="button" class="text-button" @click="closeForm()">Back to all news</button></div>
       <p>Published news appears on the News page and in homepage updates. Save a draft to finish it later.</p>
       <div v-if="formOpen" class="editor-workspace">
-        <form class="editor-form" @submit.prevent="save('news', normaliseNews())">
-          <label>Title <input v-model="newsForm.title" required maxlength="180" @blur="fillSlug('news')"></label>
-          <details><summary>Page address (generated from the title)</summary><label>Address ending <input v-model="newsForm.slug" required maxlength="120" pattern="[a-z0-9]+(?:-[a-z0-9]+)*"></label></details>
-          <label>Summary <textarea v-model="newsForm.summary" required maxlength="500" rows="3" /></label>
-          <label>Full article <textarea v-model="newsForm.body" required maxlength="50000" rows="10" /></label>
-          <div class="editor-form__row"><label>Category <input v-model="newsForm.category" maxlength="80"></label><label>Status <select v-model="newsForm.status"><option v-for="status in newsStatuses" :key="status" :value="status">{{ status }}</option></select></label></div>
-          <div class="editor-form__row"><label>Publish/schedule time <input v-model="newsForm.publishAt" type="datetime-local"></label><label>Published date <input v-model="newsForm.publishedAt" type="datetime-local"></label></div>
-          <label>Expiry time <input v-model="newsForm.expiresAt" type="datetime-local"></label>
-          <label>External URL <input v-model="newsForm.externalUrl" maxlength="500" placeholder="https://… or /route"></label>
-          <AdminMediaField v-model="newsForm.coverImageKey" v-model:alt="newsForm.coverImageAlt" label="News cover image" accept="image" />
-          <label class="editor-check"><input v-model="newsForm.isFeatured" type="checkbox"> Feature this item</label>
-          <button class="button button--gold" type="submit" :disabled="busy">{{ busy ? 'Saving…' : newsForm.status === 'published' ? 'Publish news' : newsForm.status === 'scheduled' ? 'Schedule news' : 'Save ' + newsForm.status }}</button>
+        <form class="editor-form" @submit.prevent="save('news', normaliseNews())" @invalid.capture="revealInvalidAdminField" @input="clearOnInput">
+          <AdminFormErrors :id="summaryId" :entries="entries" />
+          <fieldset class="editor-form__fields" :disabled="busy || refreshing">
+            <label>Title <input v-model="newsForm.title" v-bind="field('title')" required maxlength="180" @blur="fillSlug('news')"></label>
+            <details><summary>Page address (generated from the title)</summary><label>Address ending <input v-model="newsForm.slug" v-bind="field('slug')" required maxlength="120" pattern="[a-z0-9]+(?:-[a-z0-9]+)*"></label></details>
+            <label>Summary <textarea v-model="newsForm.summary" v-bind="field('summary')" required maxlength="500" rows="3" /></label>
+            <label>Full article <textarea v-model="newsForm.body" v-bind="field('body')" required maxlength="50000" rows="10" /></label>
+            <div class="editor-form__row"><label>Category <input v-model="newsForm.category" v-bind="field('category')" maxlength="80"></label><label>Status <select v-model="newsForm.status" v-bind="field('status')" @change="clearField('publishAt', 'expiresAt')"><option v-for="status in newsStatuses" :key="status" :value="status">{{ status }}</option></select></label></div>
+            <p class="meta">Enter dates and times in your computer’s timezone ({{ editorTimeZone }}).</p>
+            <AdminDateTimeField
+              v-if="newsForm.status === 'scheduled'" v-model="newsForm.publishAt" :field="field('publishAt')" label="Scheduled go-live"
+              description="Sets when the item first appears on the website."
+              required @update:model-value="clearField('publishAt')"
+            />
+            <div class="editor-form__row">
+              <AdminDateTimeField
+                v-model="newsForm.publishedAt" :field="field('publishedAt')" label="Date shown to readers"
+                description="Sets the date shown in news listings. Leave blank to use the publication date. A future date also delays when an item marked Published goes live."
+                @update:model-value="clearField('publishedAt')"
+              />
+              <AdminDateTimeField
+                v-model="newsForm.expiresAt" :field="field('expiresAt')" label="Take offline on"
+                description="Removes the item from the homepage and News, including its detail page. Leave blank to keep it available."
+                :after="newsForm.status === 'scheduled' ? newsForm.publishAt : newsForm.publishedAt" @update:model-value="clearField('expiresAt')"
+              />
+            </div>
+            <label>External URL <input v-model="newsForm.externalUrl" v-bind="field('externalUrl')" maxlength="500" placeholder="https://… or /route"></label>
+            <AdminMediaField v-model="newsForm.coverImageKey" v-model:alt="newsForm.coverImageAlt" :field="field('coverImageKey')" :alt-field="field('coverImageAlt')" label="News cover image" accept="image" @update:model-value="clearField('coverImageKey', 'coverImageAlt')" @uploading="trackUpload" />
+            <label class="editor-check"><input v-model="newsForm.isFeatured" v-bind="field('isFeatured')" type="checkbox"> Feature this item</label>
+            <button class="button button--gold" type="submit" :disabled="busy || activeUploads > 0">{{ busy ? 'Saving…' : newsForm.status === 'published' ? 'Publish news' : newsForm.status === 'scheduled' ? 'Schedule news' : 'Save ' + newsForm.status }}</button>
+          </fieldset>
         </form>
         <aside class="editor-preview" aria-label="News preview"><p class="eyebrow">Preview</p><p class="meta">{{ newsForm.category || 'INPA news' }} · {{ newsForm.status }}</p><h3>{{ newsForm.title || 'Untitled news item' }}</h3><p>{{ newsForm.summary || 'A summary will appear here.' }}</p><div class="editor-preview__body">{{ newsForm.body || 'The article body will appear here.' }}</div></aside>
       </div>
@@ -261,37 +328,43 @@ onBeforeRouteLeave(() => !dirty.value || window.confirm('Discard the changes you
     </section>
 
     <section v-else-if="panel === 'events'" aria-labelledby="event-editor-title">
-      <div class="editor-heading"><div><p class="eyebrow">Events</p><h2 id="event-editor-title">{{ formOpen ? (editingId ? 'Edit event' : 'Create event') : 'Events' }}</h2></div><button v-if="!formOpen" type="button" class="button button--navy" @click="startEvent()">Add event</button><button v-else type="button" class="text-button" @click="closeForm()">Back to all events</button></div>
-      <p>Published upcoming events appear on the homepage. Past events remain available in the event archive. Start and end fields use your computer’s local time (<strong>{{ editorTimeZone }}</strong>); the separate event timezone tells visitors how to interpret the published time.</p>
+      <div class="editor-heading"><div><p class="eyebrow">Events</p><h2 id="event-editor-title" ref="formHeading" tabindex="-1">{{ formOpen ? (editingId ? 'Edit event' : 'Create event') : 'Events' }}</h2></div><button v-if="!formOpen" ref="addButton" type="button" class="button button--navy" @click="startEvent()">Add event</button><button v-else type="button" class="text-button" @click="closeForm()">Back to all events</button></div>
+      <p>Published upcoming events appear on the homepage. Past events remain available in the event archive. Dates and times use your computer’s local timezone (<strong>{{ editorTimeZone }}</strong>). The event timezone controls how the published time appears to visitors.</p>
       <div v-if="formOpen" class="editor-workspace">
-        <form class="editor-form" @submit.prevent="save('events', normaliseEvent())">
-          <label>Event type
-            <select v-model="eventForm.eventType">
-              <option value="general">General event</option>
-              <option value="colloquium">Young Scientist Colloquium</option>
-            </select>
-          </label>
-          <p v-if="eventForm.eventType === 'colloquium'" class="meta">Published seminars also appear on the Young Scientist Colloquium page and move to its archive after the end time. If you leave the end time blank, the start time is used.</p>
-          <label>Title <input v-model="eventForm.title" required maxlength="180" @blur="fillSlug('events')"></label>
-          <details><summary>Page address (generated from the title)</summary><label>Address ending <input v-model="eventForm.slug" required maxlength="120" pattern="[a-z0-9]+(?:-[a-z0-9]+)*"></label></details>
-          <template v-if="eventForm.eventType === 'colloquium'">
+        <form class="editor-form" @submit.prevent="save('events', normaliseEvent())" @invalid.capture="revealInvalidAdminField" @input="clearOnInput">
+          <AdminFormErrors :id="summaryId" :entries="entries" />
+          <fieldset class="editor-form__fields" :disabled="busy || refreshing">
+            <label>Event type
+              <select v-model="eventForm.eventType" v-bind="field('eventType')" :disabled="activeUploads > 0">
+                <option value="general">General event</option>
+                <option value="colloquium">Young Scientist Colloquium</option>
+              </select>
+            </label>
+            <p v-if="eventForm.eventType === 'colloquium'" class="meta">Published seminars also appear on the Young Scientist Colloquium page and move to its archive after the end time. If you leave the end time blank, the start time is used.</p>
+            <label>Title <input v-model="eventForm.title" v-bind="field('title')" required maxlength="180" @blur="fillSlug('events')"></label>
+            <details><summary>Page address (generated from the title)</summary><label>Address ending <input v-model="eventForm.slug" v-bind="field('slug')" required maxlength="120" pattern="[a-z0-9]+(?:-[a-z0-9]+)*"></label></details>
+            <template v-if="eventForm.eventType === 'colloquium'">
+              <div class="editor-form__row">
+                <label>Speaker <input v-model="eventForm.speaker" v-bind="field('speaker')" maxlength="180"></label>
+                <label>Speaker affiliation <input v-model="eventForm.speakerAffiliation" v-bind="field('speakerAffiliation')" maxlength="200"></label>
+              </div>
+              <label>Seminar label (optional) <input v-model="eventForm.seminarLabel" v-bind="field('seminarLabel')" maxlength="80" placeholder="Third seminar"></label>
+            </template>
+            <label>Summary <textarea v-model="eventForm.summary" v-bind="field('summary')" required maxlength="500" rows="3" /></label>
+            <label>Body <textarea v-model="eventForm.body" v-bind="field('body')" required maxlength="50000" rows="8" /></label>
             <div class="editor-form__row">
-              <label>Speaker <input v-model="eventForm.speaker" maxlength="180"></label>
-              <label>Speaker affiliation <input v-model="eventForm.speakerAffiliation" maxlength="200"></label>
+              <AdminDateTimeField :model-value="eventForm.startAt" :field="field('startAt')" label="Starts" required @update:model-value="eventForm.startAt = $event ?? ''; clearField('startAt')" />
+              <AdminDateTimeField v-model="eventForm.endAt" :field="field('endAt')" label="Ends" :after="eventForm.startAt" @update:model-value="clearField('endAt')" />
             </div>
-            <label>Seminar label (optional) <input v-model="eventForm.seminarLabel" maxlength="80" placeholder="Third seminar"></label>
-          </template>
-          <label>Summary <textarea v-model="eventForm.summary" required maxlength="500" rows="3" /></label>
-          <label>Body <textarea v-model="eventForm.body" required maxlength="50000" rows="8" /></label>
-          <div class="editor-form__row"><label>Starts <input v-model="eventForm.startAt" type="datetime-local" required></label><label>Ends <input v-model="eventForm.endAt" type="datetime-local"></label></div>
-          <div class="editor-form__row"><label>Event timezone (IANA) <input v-model="eventForm.timezone" required maxlength="80" placeholder="Asia/Kolkata or Europe/Brussels"></label><label>Status <select v-model="eventForm.status"><option v-for="status in eventStatuses" :key="status" :value="status">{{ status }}</option></select></label></div>
-          <label>Publication schedule (only used when status is Scheduled) <input v-model="eventForm.publishAt" type="datetime-local"></label>
-          <label>Location <input v-model="eventForm.locationName" maxlength="180"></label>
-          <label>External URL <input v-model="eventForm.externalUrl" maxlength="500" placeholder="https://… or /route"></label>
-          <AdminMediaField v-model="eventForm.coverImageKey" v-model:alt="eventForm.coverImageAlt" label="Event image or poster" accept="image" />
-          <AdminMediaField v-if="eventForm.eventType === 'colloquium'" v-model="eventForm.posterPdfKey" label="Seminar PDF (optional)" accept="pdf" />
-          <div class="editor-check-row"><label class="editor-check"><input v-model="eventForm.isOnline" type="checkbox"> Online event</label><label class="editor-check"><input v-model="eventForm.isFeatured" type="checkbox"> Feature this event</label></div>
-          <button class="button button--gold" type="submit" :disabled="busy">{{ busy ? 'Saving…' : eventForm.status === 'published' ? 'Publish event' : eventForm.status === 'scheduled' ? 'Schedule event' : 'Save ' + eventForm.status }}</button>
+            <div class="editor-form__row"><label>Event timezone (IANA) <input v-model="eventForm.timezone" v-bind="field('timezone')" required maxlength="80" placeholder="Asia/Kolkata or Europe/Brussels"></label><label>Status <select v-model="eventForm.status" v-bind="field('status')" @change="clearField('publishAt')"><option v-for="status in eventStatuses" :key="status" :value="status">{{ status }}</option></select></label></div>
+            <AdminDateTimeField v-if="eventForm.status === 'scheduled'" v-model="eventForm.publishAt" :field="field('publishAt')" label="Publication schedule" required @update:model-value="clearField('publishAt')" />
+            <label>Location <input v-model="eventForm.locationName" v-bind="field('locationName')" maxlength="180"></label>
+            <label>External URL <input v-model="eventForm.externalUrl" v-bind="field('externalUrl')" maxlength="500" placeholder="https://… or /route"></label>
+            <AdminMediaField v-model="eventForm.coverImageKey" v-model:alt="eventForm.coverImageAlt" :field="field('coverImageKey')" :alt-field="field('coverImageAlt')" label="Event image or poster" accept="image" @update:model-value="clearField('coverImageKey', 'coverImageAlt')" @uploading="trackUpload" />
+            <AdminMediaField v-if="eventForm.eventType === 'colloquium'" v-model="eventForm.posterPdfKey" :field="field('posterPdfKey')" label="Seminar PDF (optional)" accept="pdf" @update:model-value="clearField('posterPdfKey')" @uploading="trackUpload" />
+            <div class="editor-check-row"><label class="editor-check"><input v-model="eventForm.isOnline" v-bind="field('isOnline')" type="checkbox"> Online event</label><label class="editor-check"><input v-model="eventForm.isFeatured" v-bind="field('isFeatured')" type="checkbox"> Feature this event</label></div>
+            <button class="button button--gold" type="submit" :disabled="busy || activeUploads > 0">{{ busy ? 'Saving…' : eventForm.status === 'published' ? 'Publish event' : eventForm.status === 'scheduled' ? 'Schedule event' : 'Save ' + eventForm.status }}</button>
+          </fieldset>
         </form>
         <aside class="editor-preview" aria-label="Event preview"><p class="eyebrow">Preview</p><p class="status-chip">{{ eventForm.status }}</p><h3>{{ eventForm.title || 'Untitled event' }}</h3><p>{{ eventForm.summary || 'An event summary will appear here.' }}</p><p class="meta">{{ eventForm.startAt || 'Start date required' }} · {{ eventForm.timezone }}</p><div class="editor-preview__body">{{ eventForm.body || 'Event details will appear here.' }}</div></aside>
       </div>
@@ -299,23 +372,29 @@ onBeforeRouteLeave(() => !dirty.value || window.confirm('Discard the changes you
     </section>
 
     <section v-else-if="panel === 'carousel'" aria-labelledby="carousel-editor-title">
-      <div class="editor-heading"><div><p class="eyebrow">Homepage</p><h2 id="carousel-editor-title">{{ formOpen ? (editingId ? 'Edit homepage slide' : 'Create homepage slide') : 'Homepage slides' }}</h2></div><button v-if="!formOpen" type="button" class="button button--navy" @click="startCarousel()">Add slide</button><button v-else type="button" class="text-button" @click="closeForm()">Back to all slides</button></div>
+      <div class="editor-heading"><div><p class="eyebrow">Homepage</p><h2 id="carousel-editor-title" ref="formHeading" tabindex="-1">{{ formOpen ? (editingId ? 'Edit homepage slide' : 'Create homepage slide') : 'Homepage slides' }}</h2></div><button v-if="!formOpen" ref="addButton" type="button" class="button button--navy" @click="startCarousel()">Add slide</button><button v-else type="button" class="text-button" @click="closeForm()">Back to all slides</button></div>
       <p>Enable a slide to show it on the homepage. Leave both schedule fields blank for immediate, continuous display; use them only when the slide should appear or disappear at a particular time. Times use your computer’s local timezone (<strong>{{ editorTimeZone }}</strong>). A lower position number appears first.</p>
       <div v-if="formOpen" class="editor-workspace">
-        <form class="editor-form" @submit.prevent="save('carousel', normaliseCarousel())">
-          <label>Small heading above title <input v-model="carouselForm.eyebrow" maxlength="80"></label><label>Title <input v-model="carouselForm.title" required maxlength="180"></label><label>Summary <textarea v-model="carouselForm.summary" maxlength="500" rows="3" /></label>
-          <AdminMediaField v-model="carouselForm.imageKey" v-model:alt="carouselForm.imageAlt" label="Homepage slide image" accept="image" />
-          <div class="editor-form__row"><label>Action label <input v-model="carouselForm.ctaLabel" maxlength="80"></label><label>Action URL <input v-model="carouselForm.ctaUrl" maxlength="500"></label></div>
-          <div class="editor-form__row"><label>Show from (optional) <input v-model="carouselForm.startsAt" type="datetime-local"></label><label>Hide after (optional) <input v-model="carouselForm.endsAt" type="datetime-local"></label></div>
-          <label>Sort order <input v-model.number="carouselForm.sortOrder" type="number" min="0" max="10000" step="1" required></label><label class="editor-check"><input v-model="carouselForm.isActive" type="checkbox"> Show on homepage</label>
-          <button class="button button--gold" type="submit" :disabled="busy">{{ busy ? 'Saving…' : (editingId ? 'Save changes' : 'Create item') }}</button>
+        <form class="editor-form" @submit.prevent="save('carousel', normaliseCarousel())" @invalid.capture="revealInvalidAdminField" @input="clearOnInput">
+          <AdminFormErrors :id="summaryId" :entries="entries" />
+          <fieldset class="editor-form__fields" :disabled="busy || refreshing">
+            <label>Small heading above title <input v-model="carouselForm.eyebrow" v-bind="field('eyebrow')" maxlength="80"></label><label>Title <input v-model="carouselForm.title" v-bind="field('title')" required maxlength="180"></label><label>Summary <textarea v-model="carouselForm.summary" v-bind="field('summary')" maxlength="500" rows="3" /></label>
+            <AdminMediaField v-model="carouselForm.imageKey" v-model:alt="carouselForm.imageAlt" :field="field('imageKey')" :alt-field="field('imageAlt')" label="Homepage slide image" accept="image" @update:model-value="clearField('imageKey', 'imageAlt')" @uploading="trackUpload" />
+            <div class="editor-form__row"><label>Action label <input v-model="carouselForm.ctaLabel" v-bind="field('ctaLabel')" maxlength="80"></label><label>Action URL <input v-model="carouselForm.ctaUrl" v-bind="field('ctaUrl')" maxlength="500"></label></div>
+            <div class="editor-form__row">
+              <AdminDateTimeField v-model="carouselForm.startsAt" :field="field('startsAt')" label="Show from" @update:model-value="clearField('startsAt')" />
+              <AdminDateTimeField v-model="carouselForm.endsAt" :field="field('endsAt')" label="Hide after" :after="carouselForm.startsAt" @update:model-value="clearField('endsAt')" />
+            </div>
+            <label>Sort order <input v-model.number="carouselForm.sortOrder" v-bind="field('sortOrder')" type="number" min="0" max="10000" step="1" required></label><label class="editor-check"><input v-model="carouselForm.isActive" v-bind="field('isActive')" type="checkbox"> Show on homepage</label>
+            <button class="button button--gold" type="submit" :disabled="busy || activeUploads > 0">{{ busy ? 'Saving…' : (editingId ? 'Save changes' : 'Create item') }}</button>
+          </fieldset>
         </form>
         <aside class="editor-preview editor-preview--dark" aria-label="Carousel preview"><p class="eyebrow eyebrow--light">{{ carouselForm.eyebrow || 'Featured update' }}</p><h3>{{ carouselForm.title || 'Untitled carousel item' }}</h3><p>{{ carouselForm.summary || 'Optional summary text will appear here.' }}</p><p class="meta meta--light"><strong>{{ carouselPreviewVisibility.label }}</strong> — {{ carouselPreviewVisibility.detail }} Position {{ carouselForm.sortOrder }}.</p></aside>
       </div>
       <AdminRecordList v-if="!formOpen" :items="snapshot.carousel" kind="carousel" @edit="item => startCarousel(item as AdminCarouselRecord)" @remove="(id, title) => remove('carousel', id, title)" />
     </section>
 
-    <AdminScienceEditor v-else-if="panel === 'publications' || panel === 'research'" :key="panel" ref="scienceEditor" :kind="panel" />
+    <AdminScienceEditor v-else-if="panel === 'publications' || panel === 'research'" :key="panel" ref="scienceEditor" :kind="panel" :can-leave="canLeave" />
     <AdminCandidatesEditor v-else-if="panel === 'candidates'" />
     <section v-else aria-labelledby="media-editor-title">
       <div class="editor-heading"><div><p class="eyebrow">Reusable files</p><h2 id="media-editor-title">Images & PDFs</h2></div></div>

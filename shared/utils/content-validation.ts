@@ -2,10 +2,14 @@ import type { AdminCarouselInput, AdminEventInput, AdminNewsInput } from '../typ
 import { eventStatuses, eventTypes, linkedContentTypes, newsStatuses } from '../types/content'
 
 export class ContentValidationError extends Error {
-  constructor(readonly issues: string[]) {
+  constructor(readonly issues: string[], readonly fieldIssues: Record<string, string> = {}) {
     super(issues.join(' '))
     this.name = 'ContentValidationError'
   }
+}
+
+function fieldError(key: string, message: string): ContentValidationError {
+  return new ContentValidationError([message], { [key]: message })
 }
 
 function recordOf(input: unknown): Record<string, unknown> {
@@ -17,37 +21,37 @@ function recordOf(input: unknown): Record<string, unknown> {
 
 function requiredText(record: Record<string, unknown>, key: string, label: string, max: number): string {
   const value = typeof record[key] === 'string' ? record[key].trim() : ''
-  if (!value) throw new ContentValidationError([`${label} is required.`])
-  if (value.length > max) throw new ContentValidationError([`${label} must be ${max} characters or fewer.`])
+  if (!value) throw fieldError(key, `${label} is required.`)
+  if (value.length > max) throw fieldError(key, `${label} must be ${max} characters or fewer.`)
   return value
 }
 
 function optionalText(record: Record<string, unknown>, key: string, label: string, max: number): string | null {
   const raw = record[key]
   if (raw === null || raw === undefined || raw === '') return null
-  if (typeof raw !== 'string') throw new ContentValidationError([`${label} must be text.`])
+  if (typeof raw !== 'string') throw fieldError(key, `${label} must be text.`)
   const value = raw.trim()
   if (!value) return null
-  if (value.length > max) throw new ContentValidationError([`${label} must be ${max} characters or fewer.`])
+  if (value.length > max) throw fieldError(key, `${label} must be ${max} characters or fewer.`)
   return value
 }
 
 function booleanValue(record: Record<string, unknown>, key: string): boolean {
-  if (typeof record[key] !== 'boolean') throw new ContentValidationError([`${key} must be true or false.`])
+  if (typeof record[key] !== 'boolean') throw fieldError(key, `${key} must be true or false.`)
   return record[key]
 }
 
 function isoDate(record: Record<string, unknown>, key: string, label: string, required = false): string | null {
   const value = optionalText(record, key, label, 64)
   if (!value) {
-    if (required) throw new ContentValidationError([`${label} is required.`])
+    if (required) throw fieldError(key, `${label} is required.`)
     return null
   }
   if (!/^\d{4}-\d{2}-\d{2}T.*(?:Z|[+-]\d{2}:\d{2})$/i.test(value)) {
-    throw new ContentValidationError([`${label} must include an explicit timezone.`])
+    throw fieldError(key, `${label} must include an explicit timezone.`)
   }
   const timestamp = Date.parse(value)
-  if (!Number.isFinite(timestamp)) throw new ContentValidationError([`${label} must be a valid date and time.`])
+  if (!Number.isFinite(timestamp)) throw fieldError(key, `${label} must be a valid date and time.`)
   return new Date(timestamp).toISOString()
 }
 
@@ -60,14 +64,14 @@ function urlValue(record: Record<string, unknown>, key: string, label: string): 
     if (parsed.protocol !== 'https:' && parsed.protocol !== 'http:') throw new Error('Unsupported protocol')
     return parsed.toString()
   } catch {
-    throw new ContentValidationError([`${label} must be an HTTPS, HTTP, or site-relative URL.`])
+    throw fieldError(key, `${label} must be an HTTPS, HTTP, or site-relative URL.`)
   }
 }
 
 function slugValue(record: Record<string, unknown>): string {
   const slug = requiredText(record, 'slug', 'Slug', 120).toLowerCase()
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
-    throw new ContentValidationError(['Slug may contain lowercase letters, numbers, and single hyphens only.'])
+    throw fieldError('slug', 'Slug may contain lowercase letters, numbers, and single hyphens only.')
   }
   return slug
 }
@@ -80,20 +84,20 @@ function enumValue<const T extends readonly string[]>(
 ): T[number] {
   const value = record[key]
   if (typeof value !== 'string' || !allowed.includes(value)) {
-    throw new ContentValidationError([`${label} is not recognised.`])
+    throw fieldError(key, `${label} is not recognised.`)
   }
   return value as T[number]
 }
 
 function validateImagePair(key: string | null, alt: string | null): void {
   if ((key && !alt) || (!key && alt)) {
-    throw new ContentValidationError(['Image key and alternative text must be supplied together.'])
+    throw fieldError(key ? 'coverImageAlt' : 'coverImageKey', 'Image key and alternative text must be supplied together.')
   }
 }
 
-function validateOrder(first: string | null, second: string | null, message: string): void {
+function validateOrder(first: string | null, second: string | null, key: string, message: string): void {
   if (first && second && Date.parse(second) <= Date.parse(first)) {
-    throw new ContentValidationError([message])
+    throw fieldError(key, message)
   }
 }
 
@@ -124,11 +128,11 @@ export function parseNewsInput(input: unknown): AdminNewsInput {
   const publishAt = isoDate(record, 'publishAt', 'Publication schedule')
   const publishedAt = isoDate(record, 'publishedAt', 'Published date')
   const expiresAt = isoDate(record, 'expiresAt', 'Expiry date')
-  validateOrder(publishedAt ?? publishAt, expiresAt, 'Expiry date must be after publication.')
   const status = enumValue(record, 'status', 'News status', newsStatuses)
   if (status === 'scheduled' && !publishAt) {
-    throw new ContentValidationError(['A scheduled news item requires a publication time.'])
+    throw fieldError('publishAt', 'A scheduled news item requires a publication time.')
   }
+  validateOrder(status === 'scheduled' ? publishAt : publishedAt, expiresAt, 'expiresAt', 'Expiry date must be after publication.')
 
   return {
     slug: slugValue(record),
@@ -153,19 +157,19 @@ export function parseEventInput(input: unknown): AdminEventInput {
   const colloquium = eventType === 'colloquium'
   const startAt = isoDate(record, 'startAt', 'Start date', true) as string
   const endAt = isoDate(record, 'endAt', 'End date')
-  validateOrder(startAt, endAt, 'End date must be after the start date.')
+  validateOrder(startAt, endAt, 'endAt', 'End date must be after the start date.')
   const coverImageKey = optionalText(record, 'coverImageKey', 'Cover image key', 500)
   const coverImageAlt = optionalText(record, 'coverImageAlt', 'Cover image alternative text', 300)
   validateImagePair(coverImageKey, coverImageAlt)
   const status = enumValue(record, 'status', 'Event status', eventStatuses)
   const publishAt = isoDate(record, 'publishAt', 'Publication schedule')
   if (status === 'scheduled' && !publishAt) {
-    throw new ContentValidationError(['A scheduled event requires a publication time.'])
+    throw fieldError('publishAt', 'A scheduled event requires a publication time.')
   }
 
   const timezone = requiredText(record, 'timezone', 'Timezone', 80)
   if (!isValidTimeZone(timezone)) {
-    throw new ContentValidationError(['Timezone must be a valid IANA timezone, such as Asia/Kolkata or Europe/Brussels.'])
+    throw fieldError('timezone', 'Timezone must be a valid IANA timezone, such as Asia/Kolkata or Europe/Brussels.')
   }
 
   return {
@@ -196,22 +200,22 @@ export function parseCarouselInput(input: unknown): AdminCarouselInput {
   const record = recordOf(input)
   const startsAt = isoDate(record, 'startsAt', 'Start date')
   const endsAt = isoDate(record, 'endsAt', 'End date')
-  validateOrder(startsAt, endsAt, 'End date must be after the start date.')
+  validateOrder(startsAt, endsAt, 'endsAt', 'End date must be after the start date.')
   const sortOrder = record.sortOrder
   if (!Number.isInteger(sortOrder) || (sortOrder as number) < 0 || (sortOrder as number) > 10_000) {
-    throw new ContentValidationError(['Sort order must be a whole number from 0 to 10000.'])
+    throw fieldError('sortOrder', 'Sort order must be a whole number from 0 to 10000.')
   }
   const ctaLabel = optionalText(record, 'ctaLabel', 'Action label', 80)
   const ctaUrl = urlValue(record, 'ctaUrl', 'Action URL')
   if ((ctaLabel && !ctaUrl) || (!ctaLabel && ctaUrl)) {
-    throw new ContentValidationError(['Action label and action URL must be supplied together.'])
+    throw fieldError(ctaLabel ? 'ctaUrl' : 'ctaLabel', 'Action label and action URL must be supplied together.')
   }
   const linkedContentType = record.linkedContentType === null || record.linkedContentType === ''
     ? null
     : enumValue(record, 'linkedContentType', 'Linked content type', linkedContentTypes)
   const linkedContentId = optionalText(record, 'linkedContentId', 'Linked content ID', 120)
   if ((linkedContentType && !linkedContentId) || (!linkedContentType && linkedContentId)) {
-    throw new ContentValidationError(['Linked content type and ID must be supplied together.'])
+    throw fieldError(linkedContentType ? 'linkedContentId' : 'linkedContentType', 'Linked content type and ID must be supplied together.')
   }
 
   return {
