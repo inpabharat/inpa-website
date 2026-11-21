@@ -47,9 +47,10 @@ const paragraphs: readonly (readonly MessagePart[])[] = [
 
 export const presidentContent = {
   title: 'President’s Message',
-  name: 'Prof. Ashok Kumar Jain',
+  name: 'Prof. A. K. Jain',
+  affiliation: 'Former Senior Professor and Emeritus Fellow, IIT Roorkee',
   role: 'President, Indian Nuclear Physics Association',
-  description: 'Prof. Ashok Kumar Jain addresses INPA’s priorities for nuclear physics education, training, research and collaboration in India.',
+  description: 'Prof. A. K. Jain, Former Senior Professor and Emeritus Fellow, IIT Roorkee, on INPA’s priorities for nuclear physics education and research.',
   portrait: { src: '/images/president-ashok-kumar-jain.webp', width: 630, height: 792 },
   greeting: 'Dear Colleagues and Friends,',
   welcome,

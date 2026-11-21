@@ -24,7 +24,7 @@ import { presidentContent } from '~~/content/site/president'
         <div>
           <p class="eyebrow">From the President</p>
           <h3 id="snapshot-president-title">{{ presidentContent.name }}</h3>
-          <p class="profile-role">{{ presidentContent.role }}</p>
+          <p class="profile-role">{{ presidentContent.affiliation }}<br>{{ presidentContent.role }}</p>
           <p>{{ presidentContent.welcome }}</p>
           <NuxtLink class="text-link" :to="presidentContent.to">Read the President’s Message <span aria-hidden="true">→</span></NuxtLink>
         </div>

@@ -1,3 +1,5 @@
+import { presidentContent } from './president'
+
 export interface BulletinSource {
   id: 'nuclear-horizons-1-1' | 'nuclear-horizons-1-2'
   title: string
@@ -50,8 +52,8 @@ export const publicContact = {
 export const currentLeadership = {
   asOf: 'September 2026',
   president: {
-    name: 'Prof. A. K. Jain',
-    affiliation: 'Indian Institute of Technology Roorkee',
+    name: presidentContent.name,
+    affiliation: presidentContent.affiliation,
   },
   executiveSecretary: {
     name: 'Prof. Manoj Kumar Sharma',

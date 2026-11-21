@@ -22,6 +22,7 @@ useSeoMeta({
           <img v-bind="presidentContent.portrait" :alt="`Portrait of ${presidentContent.name}`">
           <figcaption>
             <strong>{{ presidentContent.name }}</strong>
+            <span>{{ presidentContent.affiliation }}</span>
             <span>{{ presidentContent.role }}</span>
           </figcaption>
         </figure>
@@ -37,6 +38,7 @@ useSeoMeta({
           </p>
           <p class="presidents-letter__signoff">
             <strong>{{ presidentContent.name }}</strong>
+            <br>{{ presidentContent.affiliation }}
             <br>{{ presidentContent.role }}
           </p>
         </div>

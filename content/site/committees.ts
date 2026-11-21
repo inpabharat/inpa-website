@@ -1,3 +1,5 @@
+import { presidentContent } from './president'
+
 export const advisoryCommitteeMembers = [
   'Prof. P. C. Sood (Padma Shri awardee, 2023) – Banaras Hindu University, Varanasi',
   'Prof. S. C. Pancholi – University of Delhi, Delhi',
@@ -24,7 +26,7 @@ export const advisoryCommitteeMembers = [
 export const executiveCouncilSections = [
   {
     heading: 'President',
-    items: ['Prof. A. K. Jain – Indian Institute of Technology, Roorkee'],
+    items: [`${presidentContent.name} – ${presidentContent.affiliation}`],
   },
   {
     heading: 'Vice Presidents',
