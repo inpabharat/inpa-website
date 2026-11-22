@@ -28,7 +28,7 @@ useSeoMeta({
         <dl class="membership-fees">
           <div v-for="fee in membershipFees" :key="fee.category">
             <dt>{{ fee.category }}</dt>
-            <dd>{{ rupees.format(fee.amount) }}</dd>
+            <dd>{{ 'minimumAmount' in fee ? `Minimum Rs.${fee.minimumAmount}` : rupees.format(fee.amount) }}</dd>
           </div>
         </dl>
       </div>
@@ -37,7 +37,7 @@ useSeoMeta({
     <section class="section section--subtle" aria-labelledby="membership-payment-heading">
       <div class="container membership-container">
         <h2 id="membership-payment-heading">Payment details</h2>
-        <p class="payment-intro">Enter the fee for your membership category when paying by bank transfer or UPI.</p>
+        <p class="payment-intro">Enter the fee for your membership category when paying by bank transfer or UPI. If a minimum is listed, you can pay that amount or more.</p>
 
         <div class="payment-methods">
           <section aria-labelledby="membership-bank-heading">

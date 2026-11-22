@@ -1,8 +1,8 @@
 export const membershipFees = [
-  { category: 'Founding membership', amount: 21000 },
+  { category: 'Founding membership', minimumAmount: 21000 },
   { category: 'Life membership', amount: 11000 },
   { category: 'Annual membership', amount: 1000 },
-  { category: 'Institutional / corporate membership', amount: 51000 },
+  { category: 'Institutional / corporate membership', minimumAmount: 51000 },
 ] as const
 
 export const membershipBankDetails = [
