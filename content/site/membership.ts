@@ -2,7 +2,7 @@ export const membershipFees = [
   { category: 'Founding membership', minimumFeeLabel: 'Minimum ₹21,000' },
   { category: 'Life membership', amount: 11000 },
   { category: 'Annual membership', amount: 1000 },
-  { category: 'Institutional / corporate membership', minimumFeeLabel: 'Minimum ₹1 Lac' },
+  { category: 'Institutional / corporate membership', minimumFeeLabel: 'Minimum ₹1,00,000' },
 ] as const
 
 export const membershipBankDetails = [

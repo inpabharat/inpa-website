@@ -18,7 +18,7 @@ The website publishes only information supported by supplied INPA material or ex
 - [ ] Formal NNPI public-launch approval, framework figure, final document, owners and publication date.
 - [ ] Owners, scope, launch status and approved destination content for the five proposed future initiatives.
 - [ ] Official social-media URLs.
-- [x] Membership fees supplied for founding (Minimum ₹21,000), life (₹11,000), annual (₹1,000), and institutional / corporate (Minimum ₹1 Lac) membership.
+- [x] Membership fees supplied for founding (Minimum ₹21,000), life (₹11,000), annual (₹1,000), and institutional / corporate (Minimum ₹1,00,000) membership.
 - [x] Membership bank transfer details and the association’s UPI QR code supplied.
 - [ ] Membership eligibility, duration, renewal, application process, approval process and destination.
 - [ ] Donations information or approved destination, if shown.
