@@ -28,7 +28,7 @@ useSeoMeta({
         <dl class="membership-fees">
           <div v-for="fee in membershipFees" :key="fee.category">
             <dt>{{ fee.category }}</dt>
-            <dd>{{ 'minimumAmount' in fee ? `Minimum Rs.${fee.minimumAmount}` : rupees.format(fee.amount) }}</dd>
+            <dd>{{ 'minimumFeeLabel' in fee ? fee.minimumFeeLabel : rupees.format(fee.amount) }}</dd>
           </div>
         </dl>
       </div>
