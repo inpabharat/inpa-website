@@ -6,9 +6,9 @@ import { strategicVision } from '~~/content/site/home'
   <section class="nnpi-front" aria-labelledby="nnpi-front-title">
     <div class="container nnpi-front__layout">
       <div class="nnpi-front__content">
-        <p class="eyebrow eyebrow--light">{{ strategicVision.nnpi.status }}</p>
         <h2 id="nnpi-front-title">{{ strategicVision.nnpi.title }}</h2>
         <p class="nnpi-front__descriptor">{{ strategicVision.nnpi.descriptor }}</p>
+        <p class="nnpi-front__status">{{ strategicVision.nnpi.status }} · comments welcome</p>
       </div>
       <NuxtLink class="button button--gold" :to="strategicVision.nnpi.to">
         {{ strategicVision.nnpi.linkLabel }} <span aria-hidden="true">→</span>

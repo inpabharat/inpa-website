@@ -30,10 +30,9 @@ withDefaults(defineProps<{
       >
     </a>
     <div class="issue-card__body">
-      <p class="eyebrow"><time :datetime="issue.publicationDate">{{ formatIssueMonth(issue.publicationDate) }}</time></p>
       <component :is="headingLevel">{{ issue.issueLabel }}</component>
+      <p class="issue-card__meta"><time :datetime="issue.publicationDate">{{ formatIssueMonth(issue.publicationDate) }}</time> · {{ issue.pageCount }} pages</p>
       <p>{{ issue.summary }}</p>
-      <p class="issue-card__meta">Volume {{ issue.volume }} · Issue {{ issue.issueNumber }} · {{ issue.pageCount }} pages</p>
 
       <div v-if="showEditorial" class="issue-card__notes">
         <div v-if="issue.editorial">

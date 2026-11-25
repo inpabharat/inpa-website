@@ -22,7 +22,6 @@ import { presidentContent } from '~~/content/site/president'
           >
         </figure>
         <div>
-          <p class="eyebrow">From the President</p>
           <h3 id="snapshot-president-title">{{ presidentContent.name }}</h3>
           <p class="profile-role">{{ presidentContent.affiliation }}<br>{{ presidentContent.role }}</p>
           <p>{{ presidentContent.welcome }}</p>

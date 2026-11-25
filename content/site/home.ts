@@ -40,7 +40,7 @@ export const heroContent = {
   actions: [
     { label: 'Become a Member', to: '/membership' },
     { label: 'Nuclear Horizons', to: '/nuclear-horizons' },
-    { label: 'Upcoming Events', to: '/events#events-title' },
+    { label: 'See upcoming events', to: '/events#events-title' },
   ],
 } as const
 
@@ -229,25 +229,25 @@ export const studentResourceCategories = [
 
 export const dedicatedSections = ([
   {
-    mark: 'F',
+    icon: 'facility',
     title: 'Find a Facility',
     summary: 'Accelerators, detectors, laboratories and experimental capabilities.',
     to: '/map',
   },
   {
-    mark: 'O',
+    icon: 'opportunity',
     title: 'Find an Opportunity',
     summary: 'Beam time, PhD and postdoctoral positions, schools, workshops and jobs.',
     to: '/students/opportunities',
   },
   {
-    mark: 'E',
+    icon: 'expertise',
     title: 'Find Expertise',
     summary: 'Researchers, research groups and areas of activity.',
     to: '/map',
   },
   {
-    mark: 'C',
+    icon: 'collaboration',
     title: 'Find a Collaboration',
     summary: 'Connect scientific questions with people and capabilities.',
     to: '/map',

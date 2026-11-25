@@ -10,7 +10,7 @@ defineProps<{ items: PublicEventItem[] }>()
   <section class="section section--navy" aria-labelledby="events-title">
     <div class="container">
       <div class="section-heading-row">
-        <SectionHeading id="events-title" eyebrow="Upcoming events" title="What’s ahead" intro="Events are ordered chronologically. Times are shown in each event’s stated timezone." />
+        <SectionHeading id="events-title" title="Upcoming events" intro="Events are ordered chronologically. Times are shown in each event’s stated timezone." />
         <NuxtLink class="text-link text-link--light" to="/events">View event archive <span aria-hidden="true">→</span></NuxtLink>
       </div>
       <ol v-if="items.length" class="timeline">

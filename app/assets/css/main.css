@@ -87,6 +87,7 @@ h3 {
   font-weight: 600;
   letter-spacing: -0.025em;
   line-height: 1.12;
+  text-wrap: balance;
 }
 
 h1 {
@@ -99,6 +100,10 @@ h2 {
 
 h3 {
   font-size: clamp(1.3rem, 2vw, 1.65rem);
+}
+
+p {
+  text-wrap: pretty;
 }
 
 h4 {
@@ -593,10 +598,10 @@ h4 {
 }
 
 .hero__tagline {
-  max-width: 48rem;
-  margin-bottom: 1.25rem;
-  color: #cbd8df;
-  font-size: clamp(1rem, 2vw, 1.22rem);
+  max-width: 34rem;
+  margin-bottom: 1.75rem;
+  color: #dce7ed;
+  font-size: clamp(1.1rem, 2vw, 1.4rem);
   line-height: 1.5;
 }
 
@@ -649,7 +654,12 @@ h4 {
 .hero__actions {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 0.8rem;
+}
+
+.hero__text-action {
+  margin-left: 0.6rem;
 }
 
 .hero__motion-control {
@@ -676,9 +686,15 @@ h4 {
   }
 
   .hero__actions .button {
+    flex: 1 1 0;
     min-height: 2.75rem;
     padding: 0.55rem 0.85rem;
     font-size: 0.9rem;
+  }
+
+  .hero__text-action {
+    flex-basis: 100%;
+    margin-left: 0;
   }
 }
 
@@ -692,6 +708,7 @@ h4 {
   border-radius: var(--radius);
   cursor: pointer;
   font-weight: 750;
+  gap: 0.45rem;
   text-decoration: none;
 }
 
@@ -873,6 +890,27 @@ h4 {
   line-height: 1.35;
 }
 
+.nnpi-front__status {
+  display: flex;
+  align-items: flex-start;
+  margin: 0.9rem 0 0;
+  color: var(--color-gold-300);
+  font-size: 0.92rem;
+  font-weight: 650;
+  gap: 0.55rem;
+}
+
+.nnpi-front__status::before {
+  width: 0.5rem;
+  height: 0.5rem;
+  flex: 0 0 auto;
+  margin-top: 0.45em;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 0 0.25rem rgb(230 200 121 / 18%);
+  content: "";
+}
+
 .institutional-snapshot {
   padding-block: var(--section-space);
 }
@@ -935,6 +973,29 @@ h4 {
   display: grid;
   align-items: stretch;
   gap: 1rem;
+}
+
+.updates-empty {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem clamp(1.25rem, 3vw, 2rem);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  gap: 0.5rem 2rem;
+}
+
+.updates-empty p {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 1.02rem;
+}
+
+.updates-empty__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 1.5rem;
 }
 
 .science-publications {
@@ -1900,8 +1961,7 @@ a.future-card:hover {
   border: 1px solid var(--color-border);
 }
 
-.colloquium-seminars time {
-  display: block;
+.colloquium-seminar__when {
   margin-bottom: 1rem;
   color: var(--color-navy-700);
   font-size: 0.82rem;
@@ -2030,11 +2090,15 @@ a.future-card:hover {
   width: 2.5rem;
   height: 2.5rem;
   place-items: center;
-  border: 1px solid var(--color-gold-500);
   border-radius: 50%;
+  background: rgb(200 155 60 / 14%);
   color: var(--color-navy-800);
-  font-size: 0.68rem;
-  font-weight: 800;
+  transition: background-color 220ms ease, color 220ms ease;
+}
+
+.explore-gateway__links a:hover .explore-gateway__mark {
+  background: var(--color-navy-800);
+  color: var(--color-gold-300);
 }
 
 .map-section {
@@ -2773,6 +2837,18 @@ a.future-card:hover {
   margin-top: 0.625rem;
 }
 
+.page-hero .container > .page-hero__meta {
+  margin-bottom: 0.75rem;
+  color: var(--color-gold-300);
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 650;
+}
+
+.page-hero__status {
+  text-transform: capitalize;
+}
+
 .page-hero .container > p:not(.eyebrow) {
   max-width: 65ch;
   margin-bottom: 0;
@@ -2810,6 +2886,28 @@ a.future-card:hover {
 
 .site-footer__identity {
   max-width: 42rem;
+}
+
+.site-footer__brand {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  color: var(--color-surface);
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 600;
+  gap: 0.85rem;
+  line-height: 1.2;
+}
+
+.site-footer__brand img {
+  width: 3rem;
+  height: 3rem;
+  flex: 0 0 auto;
+  border: 1px solid var(--color-gold-500);
+  border-radius: 50%;
+  background: var(--color-surface);
+  object-fit: contain;
 }
 
 .site-footer__navigation {
@@ -3166,12 +3264,20 @@ a.future-card:hover {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .updates-grid--single {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
   .institutional-snapshot__layout {
     grid-template-columns: minmax(0, 1.1fr) minmax(24rem, 0.9fr);
   }
 
   .science-publications__grid {
     grid-template-columns: minmax(0, 1.15fr) minmax(22rem, 0.85fr);
+  }
+
+  .science-publications__grid--single {
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .opportunity-panel {
@@ -3291,6 +3397,11 @@ a.future-card:hover {
   .explore-gateway__links a {
     padding-inline: 1rem;
     border-right: 1px solid var(--color-border);
+  }
+
+  /* An odd last card takes the full row instead of leaving an empty cell. */
+  .explore-gateway__links a:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
   }
 
   .research-grid {

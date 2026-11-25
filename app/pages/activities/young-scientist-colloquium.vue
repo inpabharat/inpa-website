@@ -28,7 +28,6 @@ useSeoMeta({
     <div class="section section--white">
       <div class="container colloquium-layout">
         <section aria-labelledby="colloquium-participate-title">
-          <p class="eyebrow">Participate</p>
           <h2 id="colloquium-participate-title">A platform for early-career science</h2>
           <p class="lead">{{ youngScientistColloquium.callToAction }}</p>
           <p><strong>Coordinator:</strong> {{ youngScientistColloquium.coordinator }}<br><strong>Joint coordinator:</strong> {{ youngScientistColloquium.jointCoordinator }}</p>
@@ -51,9 +50,10 @@ useSeoMeta({
         <h2 :id="section.id">{{ section.title }}</h2>
         <div class="colloquium-seminars">
           <article v-for="seminar in section.seminars" :key="seminar.slug">
-            <p v-if="seminar.seminarLabel" class="eyebrow">{{ seminar.seminarLabel }}</p>
             <p v-if="seminar.status === 'postponed' || seminar.status === 'cancelled'" class="status-chip">{{ seminar.status }}</p>
-            <time :datetime="seminar.startAt">{{ formatEventDate(seminar.startAt, seminar.timezone) }} {{ seminar.timezone === 'Asia/Kolkata' ? 'IST' : seminar.timezone }}</time>
+            <p class="colloquium-seminar__when">
+              <span v-if="seminar.seminarLabel">{{ seminar.seminarLabel }} · </span><time :datetime="seminar.startAt">{{ formatEventDate(seminar.startAt, seminar.timezone) }} {{ seminar.timezone === 'Asia/Kolkata' ? 'IST' : seminar.timezone }}</time>
+            </p>
             <h3>{{ seminar.title }}</h3>
             <p v-if="seminar.speaker || seminar.speakerAffiliation">
               <strong v-if="seminar.speaker">{{ seminar.speaker }}</strong><br v-if="seminar.speaker && seminar.speakerAffiliation">{{ seminar.speakerAffiliation }}

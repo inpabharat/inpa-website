@@ -24,7 +24,7 @@ useSeoMeta({
     <HomeUpcomingEvents :items="items" />
     <section class="section section--subtle" aria-labelledby="past-events-title">
       <div class="container">
-        <SectionHeading id="past-events-title" eyebrow="Archive" title="Past events" />
+        <SectionHeading id="past-events-title" title="Past events" />
         <ol v-if="archivedItems.length" class="timeline timeline--light">
           <li v-for="item in archivedItems" :key="item.slug" class="timeline__item">
             <time :datetime="item.startAt">{{ formatEventDate(item.startAt, item.timezone) }}</time>

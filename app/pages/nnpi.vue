@@ -26,9 +26,9 @@ useSeoMeta({
     <section class="nnpi-cover" aria-labelledby="nnpi-title">
       <div class="container nnpi-cover__layout">
         <div class="nnpi-cover__title">
-          <p class="nnpi-edition" data-nnpi-source>{{ cover.label }}</p>
           <h1 id="nnpi-title" data-nnpi-source>{{ cover.title }}</h1>
           <p class="nnpi-subtitle" data-nnpi-source>{{ cover.subtitle }}</p>
+          <p class="nnpi-edition" data-nnpi-source>{{ cover.label }}</p>
           <p class="nnpi-version" data-nnpi-source>{{ cover.version }}</p>
           <div class="nnpi-actions">
             <a class="button button--gold" href="#chapter-1">Read the framework</a>
@@ -146,11 +146,12 @@ useSeoMeta({
 .nnpi-chapter__label {
   font-size: 0.77rem;
   font-weight: 750;
-  letter-spacing: 0.085em;
+  letter-spacing: 0.02em;
   color: var(--color-navy-700);
   margin-bottom: 0.65rem;
 }
-.nnpi-edition { color: var(--color-gold-300); }
+/* The cover's edition line reads as publication details under the subtitle, beside the version. */
+.nnpi-edition { color: var(--color-gold-300); letter-spacing: 0.04em; margin-bottom: 0.2rem; }
 .nnpi-cover h1 {
   color: var(--color-surface);
   font-size: clamp(2.45rem, 6vw, 5.25rem);
@@ -215,7 +216,7 @@ useSeoMeta({
 .nnpi-section + .nnpi-section { margin-top: clamp(2rem, 5vw, 3.3rem); }
 .nnpi-section h3 { font-size: clamp(1.42rem, 3vw, 2.02rem); margin-bottom: 0.75rem; }
 .nnpi-subheading { margin-top: 1.95rem; margin-bottom: 0.55rem; font-size: clamp(1.12rem, 2vw, 1.3rem); }
-.nnpi-section p { margin-bottom: 0.95rem; max-width: 74ch; white-space: pre-line; }
+.nnpi-section p { margin-bottom: 0.95rem; max-width: 64ch; white-space: pre-line; }
 .nnpi-section .nnpi-callout {
   padding: 0.85rem 1rem;
   border-inline-start: 1px solid var(--color-gold-500);
@@ -247,7 +248,7 @@ useSeoMeta({
 .nnpi-table thead { color: white; background: var(--color-navy-900); }
 .nnpi-table th:first-child { width: 27%; }
 .nnpi-table tbody tr:nth-child(odd) { background: var(--color-surface-subtle); }
-.nnpi-questions { padding-inline-start: 1.5rem; margin-bottom: 1.25rem; }
+.nnpi-questions { max-width: 64ch; padding-inline-start: 1.5rem; margin-bottom: 1.25rem; }
 .nnpi-questions li { padding-inline-start: 0.2rem; margin-bottom: 0.65rem; }
 .nnpi-back { display: inline-block; margin-top: 0.8rem; }
 

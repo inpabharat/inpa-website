@@ -35,8 +35,10 @@ useSeoMeta({
   <article>
     <section class="page-hero">
       <div class="container container--reading">
-        <p class="eyebrow eyebrow--light">{{ item?.status ?? 'Event' }}</p>
         <h1>{{ item?.title ?? 'Event unavailable' }}</h1>
+        <p v-if="item" class="page-hero__meta">
+          <span v-if="item.status !== 'published'" class="page-hero__status">{{ item.status }} · </span><time :datetime="item.startAt">{{ formatEventDate(item.startAt, item.timezone) }}</time>
+        </p>
         <p>{{ item?.summary ?? 'No verified published record was found for this route.' }}</p>
       </div>
     </section>

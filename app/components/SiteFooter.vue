@@ -13,7 +13,10 @@ const footerExploreLinks = navigationGroups.map(group => ({
   <footer class="site-footer">
     <div class="container site-footer__grid">
       <div class="site-footer__identity">
-        <p class="eyebrow eyebrow--light">Indian Nuclear Physics Association</p>
+        <p class="site-footer__brand">
+          <img src="/images/inpa-logo.jpg" alt="" width="256" height="256" loading="lazy">
+          <span>Indian Nuclear Physics Association</span>
+        </p>
         <h2>Connecting People and Enabling Discovery</h2>
         <address class="site-footer__contact">
           <span><strong>{{ publicContact.address.department }}</strong>, {{ publicContact.address.location }}</span>

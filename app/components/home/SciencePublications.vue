@@ -7,7 +7,17 @@ const [{ data: publicationResponse, error: publicationError }, { data: researchR
 ])
 
 const latestIssue = computed(() => publicationResponse.value?.data[0] ?? null)
-const featuredResearch = computed(() => researchResponse.value?.data.find(item => item.isFeatured) ?? null)
+// Prefer the editor's featured pick; otherwise show the most recent published feature.
+const featuredResearch = computed(() => {
+  const items = researchResponse.value?.data ?? []
+  return items.find(item => item.isFeatured) ?? items[0] ?? null
+})
+// With no research to show, the bulletin takes the full row instead of sitting beside an empty panel.
+// A failed research request hides the panel too; the research page carries its own error state.
+const showResearch = computed(() => !researchError.value && Boolean(featuredResearch.value))
+const sectionIntro = computed(() => showResearch.value
+  ? 'Explore a selected Indian research achievement and the latest issue of INPA’s official bulletin.'
+  : 'The latest issue of Nuclear Horizons, INPA’s official bulletin, with ideas, research perspectives and community news.')
 </script>
 
 <template>
@@ -16,26 +26,19 @@ const featuredResearch = computed(() => researchResponse.value?.data.find(item =
       <SectionHeading
         id="science-publications-title"
         title="Research at the centre of INPA"
-        intro="Explore a selected Indian research achievement and the latest issue of INPA’s official bulletin."
+        :intro="sectionIntro"
       />
 
-      <div class="science-publications__grid">
-        <article class="science-publications__research">
-          <template v-if="featuredResearch">
-            <h3>{{ featuredResearch.title }}</h3>
-            <p>{{ featuredResearch.summary }}</p>
-            <dl class="science-publications__metadata">
-              <div><dt>Authors</dt><dd>{{ featuredResearch.authors }}</dd></div>
-              <div><dt>Institutions</dt><dd>{{ featuredResearch.institutions }}</dd></div>
-              <div><dt>Journal</dt><dd>{{ featuredResearch.journal }}</dd></div>
-            </dl>
-            <NuxtLink class="text-link text-link--light" :to="`/research/${featuredResearch.slug}`">Read the research feature <span aria-hidden="true">→</span></NuxtLink>
-          </template>
-          <template v-else>
-            <h3>Research spotlight</h3>
-            <p>{{ researchError ? 'The research feature could not be loaded.' : 'No research feature is currently selected.' }}</p>
-            <NuxtLink class="text-link text-link--light" to="/research">Browse published research features <span aria-hidden="true">→</span></NuxtLink>
-          </template>
+      <div class="science-publications__grid" :class="{ 'science-publications__grid--single': !showResearch }">
+        <article v-if="showResearch && featuredResearch" class="science-publications__research">
+          <h3>{{ featuredResearch.title }}</h3>
+          <p>{{ featuredResearch.summary }}</p>
+          <dl class="science-publications__metadata">
+            <div><dt>Authors</dt><dd>{{ featuredResearch.authors }}</dd></div>
+            <div><dt>Institutions</dt><dd>{{ featuredResearch.institutions }}</dd></div>
+            <div><dt>Journal</dt><dd>{{ featuredResearch.journal }}</dd></div>
+          </dl>
+          <NuxtLink class="text-link text-link--light" :to="`/research/${featuredResearch.slug}`">Read the research feature <span aria-hidden="true">→</span></NuxtLink>
         </article>
 
         <article class="science-publications__bulletin">
@@ -49,8 +52,8 @@ const featuredResearch = computed(() => researchResponse.value?.data.find(item =
                 loading="lazy"
               >
               <div>
-                <p class="eyebrow">Official INPA bulletin</p>
                 <h3>{{ latestIssue.title }}</h3>
+                <p class="science-publications__kind">INPA’s official bulletin</p>
                 <p>{{ latestIssue.summary }}</p>
                 <p><strong>Latest issue:</strong> {{ latestIssue.issueLabel }} · {{ formatIssueMonth(latestIssue.publicationDate) }}</p>
               </div>
@@ -62,8 +65,8 @@ const featuredResearch = computed(() => researchResponse.value?.data.find(item =
             </div>
           </template>
           <template v-else>
-            <p class="eyebrow">Official INPA bulletin</p>
             <h3>Nuclear Horizons</h3>
+            <p class="science-publications__kind">INPA’s official bulletin</p>
             <p>{{ publicationError ? 'The latest issue could not be loaded.' : 'No issue is currently published.' }}</p>
             <NuxtLink class="text-link" to="/nuclear-horizons">Visit Nuclear Horizons <span aria-hidden="true">→</span></NuxtLink>
           </template>
@@ -102,10 +105,34 @@ const featuredResearch = computed(() => researchResponse.value?.data.find(item =
   border: 1px solid var(--color-border);
 }
 
+.science-publications__kind {
+  margin-top: -0.35rem;
+  color: var(--color-navy-700);
+  font-weight: 650;
+}
+
 /* Use the card's available width, not the viewport shared with research. */
 @container (min-width: 28rem) {
   .science-publications__issue {
     grid-template-columns: 8.5rem minmax(0, 1fr);
+  }
+}
+
+/* Alone on its row, the bulletin gives the cover room and keeps the text to a reading measure. */
+@container (min-width: 48rem) {
+  .science-publications__issue {
+    grid-template-columns: 12rem minmax(0, 40rem);
+    gap: 2.5rem;
+    align-items: center;
+  }
+
+  .science-publications__issue img {
+    width: 12rem;
+  }
+
+  /* Line the links up under the text column, not under the cover. */
+  .science-publications__actions {
+    padding-left: 14.5rem;
   }
 }
 </style>

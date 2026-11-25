@@ -19,6 +19,12 @@ useSeoMeta({
     <header class="page-hero">
       <div class="container membership-container">
         <h1>Membership</h1>
+        <p>Join India’s national community for nuclear physics in three steps.</p>
+        <ol class="membership-steps">
+          <li><a href="#membership-fees-heading">Choose your membership category</a></li>
+          <li><a href="#membership-payment-heading">Pay by bank transfer or UPI</a></li>
+          <li><a href="#membership-report-heading">Submit your payment details</a></li>
+        </ol>
       </div>
     </header>
 
@@ -78,6 +84,55 @@ useSeoMeta({
 <style scoped>
 .membership-container {
   --content-width: 64rem;
+}
+
+.membership-steps {
+  display: grid;
+  margin: 1.25rem 0 0.25rem;
+  padding: 0;
+  counter-reset: membership-step;
+  gap: 0.5rem;
+  list-style: none;
+}
+
+.membership-steps li {
+  display: flex;
+  align-items: center;
+  counter-increment: membership-step;
+  gap: 0.75rem;
+}
+
+.membership-steps li::before {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid rgb(230 200 121 / 60%);
+  border-radius: 50%;
+  color: var(--color-gold-300);
+  content: counter(membership-step);
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 750;
+}
+
+.membership-steps a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  color: var(--color-surface);
+  font-weight: 650;
+  text-decoration-color: rgb(230 200 121 / 70%);
+  text-underline-offset: 0.25rem;
+}
+
+@media (min-width: 48rem) {
+  .membership-steps {
+    grid-template-columns: repeat(3, auto);
+    justify-content: start;
+    gap: 0.5rem 2.5rem;
+  }
 }
 
 .membership-fees {

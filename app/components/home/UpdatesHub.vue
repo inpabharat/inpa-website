@@ -9,6 +9,16 @@ const props = defineProps<{
 
 const visibleNews = computed(() => props.news.slice(0, 2))
 const visibleEvents = computed(() => props.events.slice(0, 2))
+const hasNews = computed(() => visibleNews.value.length > 0)
+const hasEvents = computed(() => visibleEvents.value.length > 0)
+
+// Name only what is actually shown, and never frame an empty list as a panel of its own.
+const sectionTitle = computed(() => {
+  if (hasNews.value && hasEvents.value) return 'News and upcoming events'
+  if (hasNews.value) return 'Latest news'
+  if (hasEvents.value) return 'Upcoming events'
+  return 'News and events'
+})
 </script>
 
 <template>
@@ -17,20 +27,27 @@ const visibleEvents = computed(() => props.events.slice(0, 2))
       <div class="section-heading-row updates-heading">
         <SectionHeading
           id="updates-title"
-          title="News and upcoming events"
+          :title="sectionTitle"
         />
-        <NuxtLink class="text-link" to="/news">View all updates <span aria-hidden="true">→</span></NuxtLink>
       </div>
 
-      <div class="updates-grid">
-        <section class="updates-panel" aria-labelledby="latest-news-title">
+      <div v-if="!hasNews && !hasEvents" class="updates-empty">
+        <p>No new announcements or upcoming events are listed right now.</p>
+        <div class="updates-empty__links">
+          <NuxtLink class="text-link" to="/events#past-events-title">Browse past events</NuxtLink>
+          <NuxtLink class="text-link" to="/nuclear-horizons">Read Nuclear Horizons</NuxtLink>
+        </div>
+      </div>
+
+      <div v-else class="updates-grid" :class="{ 'updates-grid--single': !(hasNews && hasEvents) }">
+        <section v-if="hasNews" class="updates-panel" :aria-labelledby="hasEvents ? 'latest-news-title' : 'updates-title'">
           <div class="updates-panel__heading">
             <div>
-              <h3 id="latest-news-title">Latest news</h3>
+              <h3 v-if="hasEvents" id="latest-news-title">Latest news</h3>
             </div>
             <NuxtLink to="/news" aria-label="View the news archive">View all <span aria-hidden="true">→</span></NuxtLink>
           </div>
-          <ul v-if="visibleNews.length" class="updates-list">
+          <ul class="updates-list">
             <li v-for="item in visibleNews" :key="item.slug">
               <p class="meta"><span v-if="item.category">{{ item.category }} · </span>{{ formatIndiaDate(item.publishedAt) }} IST</p>
               <h4>{{ item.title }}</h4>
@@ -38,17 +55,16 @@ const visibleEvents = computed(() => props.events.slice(0, 2))
               <NuxtLink :to="item.externalUrl ?? `/news/${item.slug}`">Read news <span aria-hidden="true">→</span></NuxtLink>
             </li>
           </ul>
-          <PlaceholderNotice v-else message="No current news has been published." />
         </section>
 
-        <section class="updates-panel" aria-labelledby="upcoming-events-title">
+        <section v-if="hasEvents" class="updates-panel" :aria-labelledby="hasNews ? 'upcoming-events-title' : 'updates-title'">
           <div class="updates-panel__heading">
             <div>
-              <h3 id="upcoming-events-title">Upcoming events</h3>
+              <h3 v-if="hasNews" id="upcoming-events-title">Upcoming events</h3>
             </div>
             <NuxtLink to="/events" aria-label="View the events archive">View all <span aria-hidden="true">→</span></NuxtLink>
           </div>
-          <ol v-if="visibleEvents.length" class="updates-list updates-list--events">
+          <ol class="updates-list updates-list--events">
             <li v-for="item in visibleEvents" :key="item.slug">
               <time :datetime="item.startAt">{{ formatEventDate(item.startAt, item.timezone) }}</time>
               <div>
@@ -60,7 +76,6 @@ const visibleEvents = computed(() => props.events.slice(0, 2))
               </div>
             </li>
           </ol>
-          <PlaceholderNotice v-else message="No upcoming events have been published." />
         </section>
 
       </div>

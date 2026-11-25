@@ -39,8 +39,8 @@ useSeoMeta({
               loading="lazy"
             >
             <div class="research-card__body">
-              <p class="eyebrow"><span v-if="item.isFeatured">Featured · </span><time :datetime="item.publishedAt">{{ formatIndiaDate(item.publishedAt) }}</time></p>
               <h2><NuxtLink :to="`/research/${item.slug}`">{{ item.title }}</NuxtLink></h2>
+              <p class="meta"><span v-if="item.isFeatured">Featured · </span><time :datetime="item.publishedAt">{{ formatIndiaDate(item.publishedAt) }}</time></p>
               <p>{{ item.summary }}</p>
               <dl class="research-card__facts">
                 <div><dt>Authors</dt><dd>{{ item.authors }}</dd></div>

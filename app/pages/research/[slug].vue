@@ -26,8 +26,8 @@ useSeoMeta({
   <article v-if="item">
     <section class="page-hero">
       <div class="container container--reading">
-        <p class="eyebrow eyebrow--light">Research feature · <time :datetime="item.publishedAt">{{ formatIndiaDate(item.publishedAt) }}</time></p>
         <h1>{{ item.title }}</h1>
+        <p class="page-hero__meta">Research feature · <time :datetime="item.publishedAt">{{ formatIndiaDate(item.publishedAt) }}</time></p>
         <p>{{ item.summary }}</p>
       </div>
     </section>

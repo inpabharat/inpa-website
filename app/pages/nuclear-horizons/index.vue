@@ -26,7 +26,6 @@ useSeoMeta({
     <section class="section">
       <div class="container publication-page-intro">
         <div>
-          <p class="eyebrow">Latest issue</p>
           <h2>Ideas, research and community news</h2>
           <p class="lead">Nuclear Horizons is a bulletin of the Indian Nuclear Physics Association.</p>
           <dl class="publication-facts">

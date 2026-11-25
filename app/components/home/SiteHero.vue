@@ -11,18 +11,17 @@ const animationPaused = ref(false)
     <HomeNucleusSimulation :paused="animationPaused" />
     <div class="container hero__content">
       <div class="hero__copy" :class="{ 'hero__copy--full': !carousel.length }">
-        <p class="eyebrow eyebrow--light">Official digital home</p>
         <h1 id="hero-title">{{ heroContent.title }}</h1>
-        <p class="hero__mission">{{ heroContent.mission }}</p>
+        <!-- The motto stays on every page as the footer statement; the hero leads with what INPA does. -->
         <p class="hero__tagline">{{ heroContent.tagline }}</p>
         <div class="hero__actions" aria-label="Featured destinations">
           <NuxtLink
             v-for="(action, index) in heroContent.actions"
             :key="action.to"
-            :class="['button', index === 0 ? 'button--gold' : 'button--outline-light']"
+            :class="index === 0 ? 'button button--gold' : index === 1 ? 'button button--outline-light' : 'text-link text-link--light hero__text-action'"
             :to="action.to"
           >
-            {{ action.label }}
+            {{ action.label }}<span v-if="index > 1" aria-hidden="true"> →</span>
           </NuxtLink>
         </div>
         <button

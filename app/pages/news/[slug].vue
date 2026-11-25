@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { formatIndiaDate } from '~/utils/date'
+
 interface NewsDetail {
   slug: string
   title: string
@@ -29,8 +31,10 @@ useSeoMeta({
   <article>
     <section class="page-hero">
       <div class="container container--reading">
-        <p class="eyebrow eyebrow--light">{{ item?.category ?? 'INPA news' }}</p>
         <h1>{{ item?.title ?? 'News item unavailable' }}</h1>
+        <p v-if="item" class="page-hero__meta">
+          {{ item.category ?? 'INPA news' }}<template v-if="item.publishedAt"> · <time :datetime="item.publishedAt">{{ formatIndiaDate(item.publishedAt) }}</time></template>
+        </p>
         <p>{{ item?.summary ?? 'No verified published record was found for this route.' }}</p>
       </div>
     </section>
